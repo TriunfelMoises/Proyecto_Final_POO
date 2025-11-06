@@ -5,7 +5,7 @@ public class Paciente {
 	private String id;
 	private String nombre;
 	private String apellido;
-	private String probadno;
+	private String probando;
 
 
 }
