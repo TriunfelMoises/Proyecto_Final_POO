@@ -29,4 +29,5 @@ public class HistoriaClinica {
 		return fechaCreacion;
 	}
 
+
 }
