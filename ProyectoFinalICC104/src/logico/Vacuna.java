@@ -52,6 +52,16 @@ public class Vacuna {
 	public String getCodigoVacuna() {
 		return codigoVacuna;
 	}
+	
+	public void activar() {
+		this.activa = true;
+	}
+
+	public void desactivar() {
+
+		this.activa = false;
+
+	}
 
 
 }

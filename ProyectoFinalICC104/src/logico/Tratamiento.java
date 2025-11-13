@@ -3,7 +3,7 @@ package logico;
 import java.util.ArrayList;
 
 public class Tratamiento {
-	
+
 	private String codigoTratamiento;
 	private String nombreTratamiento;
 	private String descripcion;
@@ -64,6 +64,24 @@ public class Tratamiento {
 
 	public String getCodigoTratamiento() {
 		return codigoTratamiento;
+	}
+
+	public void agregarMedicamentos(String medicamento) {
+
+		medicamentos.add(medicamento);
+
+	}
+
+	public boolean eliminarMedicamento(String medicamento) {
+
+		if (medicamento != null && medicamentos.contains(medicamento)) {
+
+			medicamentos.remove(medicamento);
+			return true;
+		}
+
+		return false;
+
 	}
 
 }

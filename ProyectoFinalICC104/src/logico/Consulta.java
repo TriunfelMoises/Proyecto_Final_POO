@@ -3,7 +3,7 @@ package logico;
 import java.time.LocalDate;
 
 public class Consulta {
-	
+
 	private String codigoConsulta;
 	private Paciente paciente;
 	private Doctor doctor;
@@ -96,9 +96,20 @@ public class Consulta {
 		this.incluidaEnResumen = true;
 	}
 
+	public void desmarcarParaResumen() {
+		this.incluidaEnResumen = false;
+	}
+
 	public void marcarComoVigilancia() {
 		this.esEnfermedadVigilancia = true;
 	}
 
+	public boolean vaAlResumen() {
+		if (incluidaEnResumen == true || esEnfermedadVigilancia == true) {
+			return true;
+		} else {
+			return false;
+		}
 
-}
+
+	}

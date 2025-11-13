@@ -73,5 +73,21 @@ public class Doctor extends Persona {
 	public String getNumeroLicencia() {
 		return numeroLicencia;
 	}
+	
+	public boolean puedeAtenderEnHorario(LocalTime hora) {
+		
+		if (hora.isAfter(horarioInicio) && hora.isBefore(horarioFin)) {
+			
+			return true;
+			
+		}
+		
+		else {
+			return false;
+		}
+		
+		
+	}
+
 
 }

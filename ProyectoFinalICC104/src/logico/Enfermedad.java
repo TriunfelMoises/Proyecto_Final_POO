@@ -1,7 +1,7 @@
 package logico;
 
 public class Enfermedad {
-	
+
 	private String codigoEnfermedad;
 	private String nombre;
 	private String descripcion;
@@ -41,6 +41,16 @@ public class Enfermedad {
 
 	public String getCodigoEnfermedad() {
 		return codigoEnfermedad;
+	}
+
+	public void activarVigilancia() {
+
+		this.bajoVigilancia = true;
+	}
+
+	public void desactivarVigilancia() {
+
+		this.bajoVigilancia = false;
 	}
 
 }

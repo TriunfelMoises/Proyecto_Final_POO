@@ -21,81 +21,77 @@ import java.awt.event.ActionEvent;
 
 public class regUser extends JDialog {
 
-    private final JPanel contentPanel = new JPanel();
-    private JTextField txtUserName;
-    private JPasswordField txtPass;
-    private JComboBox<String> comboTipo;
+	private final JPanel contentPanel = new JPanel();
+	private JTextField txtUserName;
+	private JPasswordField txtPass;
+	private JComboBox<String> comboTipo;
 
-    public regUser() {
-        setTitle("Registrar Usuario");
-        setBounds(100, 100, 380, 240);
-        setLocationRelativeTo(null);
-        getContentPane().setLayout(new BorderLayout());
-        contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        getContentPane().add(contentPanel, BorderLayout.CENTER);
-        contentPanel.setLayout(null);
+	public regUser() {
+		setTitle("Registrar Usuario");
+		setBounds(100, 100, 380, 240);
+		setLocationRelativeTo(null);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(null);
 
-        JLabel lblNombreUsuario = new JLabel("Nombre de usuario:");
-        lblNombreUsuario.setBounds(20, 20, 150, 20);
-        contentPanel.add(lblNombreUsuario);
+		JLabel lblNombreUsuario = new JLabel("Nombre de usuario:");
+		lblNombreUsuario.setBounds(20, 20, 150, 20);
+		contentPanel.add(lblNombreUsuario);
 
-        txtUserName = new JTextField();
-        txtUserName.setBounds(20, 45, 150, 24);
-        contentPanel.add(txtUserName);
+		txtUserName = new JTextField();
+		txtUserName.setBounds(20, 45, 150, 24);
+		contentPanel.add(txtUserName);
 
-        JLabel lblPass = new JLabel("Contraseña:");
-        lblPass.setBounds(190, 20, 150, 20);
-        contentPanel.add(lblPass);
+		JLabel lblPass = new JLabel("Contraseña:");
+		lblPass.setBounds(190, 20, 150, 20);
+		contentPanel.add(lblPass);
 
-        txtPass = new JPasswordField();
-        txtPass.setBounds(190, 45, 150, 24);
-        contentPanel.add(txtPass);
+		txtPass = new JPasswordField();
+		txtPass.setBounds(190, 45, 150, 24);
+		contentPanel.add(txtPass);
 
-        JLabel lblTipo = new JLabel("Tipo de usuario:");
-        lblTipo.setBounds(20, 85, 150, 20);
-        contentPanel.add(lblTipo);
+		JLabel lblTipo = new JLabel("Tipo de usuario:");
+		lblTipo.setBounds(20, 85, 150, 20);
+		contentPanel.add(lblTipo);
 
-        comboTipo = new JComboBox<>();
-        comboTipo.setModel(new DefaultComboBoxModel<>(new String[] {
-            "<Seleccione>", "Administrador", "Doctor"
-        }));
-        comboTipo.setBounds(20, 110, 150, 24);
-        contentPanel.add(comboTipo);
+		comboTipo = new JComboBox<>();
+		comboTipo.setModel(new DefaultComboBoxModel<>(new String[] { "<Seleccione>", "Administrador", "Doctor" }));
+		comboTipo.setBounds(20, 110, 150, 24);
+		contentPanel.add(comboTipo);
 
-        JPanel buttonPane = new JPanel();
-        buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        getContentPane().add(buttonPane, BorderLayout.SOUTH);
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-        JButton okButton = new JButton("Registrar");
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                registrarUsuario();
-            }
-        });
-        buttonPane.add(okButton);
+		JButton okButton = new JButton("Registrar");
+		okButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				registrarUsuario();
+			}
+		});
+		buttonPane.add(okButton);
 
-        JButton cancelButton = new JButton("Cancelar");
-        cancelButton.addActionListener(e -> dispose());
-        buttonPane.add(cancelButton);
-    }
+		JButton cancelButton = new JButton("Cancelar");
+		cancelButton.addActionListener(e -> dispose());
+		buttonPane.add(cancelButton);
+	}
 
-    private void registrarUsuario() {
-        String tipo = (String) comboTipo.getSelectedItem();
-        String user = txtUserName.getText();
-        String pass = new String(txtPass.getPassword());
+	private void registrarUsuario() {
+		String tipo = (String) comboTipo.getSelectedItem();
+		String user = txtUserName.getText();
+		String pass = new String(txtPass.getPassword());
 
-        if (tipo == null || "<Seleccione>".equals(tipo) || user.isEmpty() || pass.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Complete todos los campos y seleccione un tipo válido.",
-                "Datos incompletos",
-                javax.swing.JOptionPane.WARNING_MESSAGE);//
-            return;
-        }
+		if (tipo == null || "<Seleccione>".equals(tipo) || user.isEmpty() || pass.isEmpty()) {
+			javax.swing.JOptionPane.showMessageDialog(this, "Complete todos los campos y seleccione un tipo válido.",
+					"Datos incompletos", javax.swing.JOptionPane.WARNING_MESSAGE);//
+			return;
+		}
 
-        User nuevo = new User(tipo, user, pass);
-        Control.getInstance().regUser(nuevo);
-        javax.swing.JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente.");
-        dispose();
-    }
+		User nuevo = new User(tipo, user, pass);
+		Control.getInstance().regUser(nuevo);
+		javax.swing.JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente.");
+		dispose();
+	}
 }
 ///
