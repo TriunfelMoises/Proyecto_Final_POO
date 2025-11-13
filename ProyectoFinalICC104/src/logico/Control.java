@@ -51,4 +51,4 @@ public class Control implements Serializable {
     public ArrayList<User> getMisUsers() { return misUsers; }
     public void setMisUsers(ArrayList<User> misUsers) { this.misUsers = misUsers; }
 }
-//
+///
