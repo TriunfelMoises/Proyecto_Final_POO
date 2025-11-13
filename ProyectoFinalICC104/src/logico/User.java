@@ -2,9 +2,7 @@ package logico;
 
 import java.io.Serializable;
 
-/**
- * Representa un usuario del sistema.
- */
+
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,3 +28,4 @@ public class User implements Serializable {
     public String getPass() { return pass; }
     public void setPass(String pass) { this.pass = pass; }
 }
+//

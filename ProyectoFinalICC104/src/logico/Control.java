@@ -3,9 +3,7 @@ package logico;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Control central (Singleton). Maneja usuarios y sesión actual.
- */
+
 public class Control implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,3 +51,4 @@ public class Control implements Serializable {
     public ArrayList<User> getMisUsers() { return misUsers; }
     public void setMisUsers(ArrayList<User> misUsers) { this.misUsers = misUsers; }
 }
+//

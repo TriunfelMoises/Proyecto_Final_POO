@@ -23,9 +23,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-/**
- * Pantalla de Login del sistema.
- */
+
 public class login extends JFrame {
 
     private JPanel contentPane;
@@ -127,3 +125,4 @@ public class login extends JFrame {
         }
     }
 }
+//
