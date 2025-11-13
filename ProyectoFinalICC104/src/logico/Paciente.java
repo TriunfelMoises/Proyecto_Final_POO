@@ -20,7 +20,7 @@ public class Paciente extends Persona {
 		this.tipoSangre = tipoSangre;
 		this.alergias = new ArrayList<>();
 		this.fechaRegistro = fechaRegistro;
-		this.historiaClinica = new HistoriaClinica(this fechaRegistro);
+		this.historiaClinica = new HistoriaClinica( fechaRegistro);
 		this.registrosVacunas = new ArrayList<>();
 		this.activo = true;
 	}
