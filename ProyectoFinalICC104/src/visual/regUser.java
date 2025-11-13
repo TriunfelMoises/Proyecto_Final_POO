@@ -88,7 +88,7 @@ public class regUser extends JDialog {
             javax.swing.JOptionPane.showMessageDialog(this,
                 "Complete todos los campos y seleccione un tipo válido.",
                 "Datos incompletos",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.WARNING_MESSAGE);//
             return;
         }
 

@@ -9,7 +9,6 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // Tipo de usuario: "Administrador" o "Doctor"
     private String tipo;
     private String userName;
     private String pass;

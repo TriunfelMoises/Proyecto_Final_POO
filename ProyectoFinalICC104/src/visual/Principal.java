@@ -61,7 +61,7 @@ public class Principal extends JFrame {
 
         if (Control.getLoginUser() != null
                 && !"Administrador".equalsIgnoreCase(Control.getLoginUser().getTipo())) {
-            mnAdministracion.setVisible(false);
+            mnAdministracion.setVisible(false); //
         }
 
         contentPane = new JPanel();
