@@ -1,9 +1,15 @@
 package logico;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class Cita {
+public class Cita implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private String codigoCita;
 	private Paciente paciente;
@@ -12,6 +18,7 @@ public class Cita {
 	private LocalTime horaCita;
 	private String estadoCita;
 	private String motivoCita;
+	private Consulta consulta;
 
 	public Cita(String codigoCita, Paciente paciente, Doctor doctor, LocalDate fechaCita, LocalTime horaCita,
 			String motivoCita) {
@@ -23,6 +30,7 @@ public class Cita {
 		this.horaCita = horaCita;
 		this.estadoCita = "Pendiente";
 		this.motivoCita = motivoCita;
+		this.consulta = null;
 	}
 
 	public Doctor getDoctor() {
@@ -73,6 +81,10 @@ public class Cita {
 		return paciente;
 	}
 
+	public Consulta getConsulta() {
+		return consulta;
+	}
+
 	public void cambiarEstado(String nuevoEstado) {
 		if (nuevoEstado.equals("Pendiente") || nuevoEstado.equals("Completada") || nuevoEstado.equals("Cancelada")) {
 			this.estadoCita = nuevoEstado;
@@ -86,7 +98,5 @@ public class Cita {
 	public boolean estaPendiente() {
 		return this.estadoCita.equals("Pendiente");
 	}
-
-
 
 }

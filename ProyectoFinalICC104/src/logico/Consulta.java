@@ -1,9 +1,14 @@
 package logico;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Consulta {
+public class Consulta implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String codigoConsulta;
 	private Paciente paciente;
 	private Doctor doctor;
@@ -110,6 +115,6 @@ public class Consulta {
 		} else {
 			return false;
 		}
-
-
 	}
+
+}

@@ -1,9 +1,14 @@
 package logico;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class RegistroVacuna {
+public class RegistroVacuna implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Vacuna vacuna;
 	private LocalDate fechaAplicacion;
 	private String numeroLote;

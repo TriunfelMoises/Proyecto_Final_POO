@@ -1,11 +1,15 @@
 package logico;
 
+import java.io.Serializable;
 import java.time.LocalDate;
-
 import java.util.ArrayList;
 
-public class HistoriaClinica {
+public class HistoriaClinica implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Paciente paciente;
 	private ArrayList<Consulta> consultas;
 	private LocalDate fechaCreacion;
@@ -92,6 +96,12 @@ public class HistoriaClinica {
 
 	public int cantidadConsultas() {
 		return consultas.size();
+	}
+	
+	
+	public String generarResumen() {
+		
+		return "El resumen";
 	}
 
 }
