@@ -127,4 +127,8 @@ public class Paciente extends Persona {
 
 	}
 
+	public void setAlergias(ArrayList<String> alergias) {
+		this.alergias = alergias;
+	}
+
 }

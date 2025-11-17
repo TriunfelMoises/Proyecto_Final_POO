@@ -20,6 +20,8 @@ public class Clinica implements Serializable {
 	private ArrayList<Vacuna> vacunas;
 	private ArrayList<Tratamiento> tratamientosPredefinidos;
 	private ArrayList<Cita> citas;
+	private boolean primerIngresp = false;
+
 
 	private int contadorPacientes;
 	private int contadorDoctores;
@@ -913,6 +915,14 @@ public class Clinica implements Serializable {
 		}
 
 		return new ArrayList<>();
+	}
+
+	public boolean isPrimerIngresp() {
+		return primerIngresp;
+	}
+
+	public void setPrimerIngresp(boolean primerIngresp) {
+		this.primerIngresp = primerIngresp;
 	}
 
 }
