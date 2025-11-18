@@ -2,102 +2,137 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import logico.Clinica;
 import logico.Control;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Principal extends JFrame {
 
-    private JPanel contentPane;
+	private JPanel contentPane;
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            try {
-                Principal frame = new Principal();
-                frame.setVisible(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
+	public static void main(String[] args) {
+		EventQueue.invokeLater(() -> {
+			try {
+				Principal frame = new Principal();
+				frame.setVisible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+	}
 
-    public Principal() {
-        setTitle("Clínica - Principal");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 820, 520);
-        setLocationRelativeTo(null);
+	public Principal() {
+		setTitle("Clínica - Principal");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 820, 520);
+		setLocationRelativeTo(null);
 
-        JMenuBar menuBar = new JMenuBar();
-        setJMenuBar(menuBar);
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
 
-        JMenu mnPacientes = new JMenu("Pacientes");
-        menuBar.add(mnPacientes);
-        
-        JMenuItem mntmNewMenuItem = new JMenuItem("Registrar");
-        mntmNewMenuItem.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        		regPaciente llenar = new regPaciente();
-        		llenar.setModal(true);
-        		llenar.setVisible(true);
-        	}
-        });
-        mnPacientes.add(mntmNewMenuItem);
-        
-        JMenuItem mntmNewMenuItem_1 = new JMenuItem("Listar");
-        mntmNewMenuItem_1.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        		listPacientes paraVerlos = new listPacientes();
-        		paraVerlos.setModal(true);
-        		paraVerlos.setVisible(true);
-        	}
-        });
-        mnPacientes.add(mntmNewMenuItem_1);
+		// ------------------ MENÚ PACIENTES ------------------
+		JMenu mnPacientes = new JMenu("Pacientes");
+		menuBar.add(mnPacientes);
 
-        JMenu mnDoctores = new JMenu("Doctores");
-        menuBar.add(mnDoctores);
-        
-        JMenu mnEnfermedades = new JMenu("Enfermedades");
-        menuBar.add(mnEnfermedades);
+		JMenuItem mntmRegPac = new JMenuItem("Registrar");
+		mntmRegPac.addActionListener(e -> {
+			regPaciente dialog = new regPaciente();
+			dialog.setModal(true);
+			dialog.setVisible(true);
+		});
+		mnPacientes.add(mntmRegPac);
 
-        JMenu mnVacunas = new JMenu("Vacunas");
-        menuBar.add(mnVacunas);
+		JMenuItem mntmListPac = new JMenuItem("Listar");
+		mntmListPac.addActionListener(e -> {
+			listPacientes dialog = new listPacientes();
+			dialog.setModal(true);
+			dialog.setVisible(true);
+		});
+		mnPacientes.add(mntmListPac);
 
-        JMenu mnAdministracion = new JMenu("Administración");
-        menuBar.add(mnAdministracion);
+		// ------------------ MENÚ DOCTORES ------------------
+		JMenu mnDoctores = new JMenu("Doctores");
+		menuBar.add(mnDoctores);
 
-        JMenuItem mntmRegistrarUsuarios = new JMenuItem("Registrar Usuarios");
-        mntmRegistrarUsuarios.addActionListener(e -> {
-        	if (Clinica.getInstance().isPrimerIngresp()==false) {
-            regUser dialog = new regUser();
-            dialog.setModal(true);
-            dialog.setVisible(true);
-        	}
-        	else {
-        		Acceso intruso = new Acceso();
-        		intruso.setModal(true);
-        		intruso.setVisible(true);
-        	}
-        });
-        mnAdministracion.add(mntmRegistrarUsuarios);
+		JMenuItem mntmRegDoc = new JMenuItem("Registrar");
+		mntmRegDoc.addActionListener(e -> {
+			regDoctor dialog = new regDoctor();
+			dialog.setModal(true);
+			dialog.setVisible(true);
+		});
+		mnDoctores.add(mntmRegDoc);
 
-        if (Control.getLoginUser() != null
-                && !"Administrador".equalsIgnoreCase(Control.getLoginUser().getTipo())) {
-            mnAdministracion.setVisible(false); //
-        }
+		JMenuItem mntmListDoc = new JMenuItem("Listar");
+		mntmListDoc.addActionListener(e -> {
+			listDoctor dialog = new listDoctor();
+			dialog.setModal(true);
+			dialog.setVisible(true);
+		});
+		mnDoctores.add(mntmListDoc);
 
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
-        setContentPane(contentPane);
-        contentPane.setLayout(new BorderLayout());
-    }
+		// ------------------ MENÚ ENFERMEDADES ------------------
+		JMenu mnEnfermedades = new JMenu("Enfermedades");
+		menuBar.add(mnEnfermedades);
+
+		// ------------------ MENÚ VACUNAS ------------------
+		JMenu mnVacunas = new JMenu("Vacunas");
+		menuBar.add(mnVacunas);
+
+		// ------------------ MENÚ ADMINISTRACIÓN ------------------
+		JMenu mnAdministracion = new JMenu("Administración");
+		menuBar.add(mnAdministracion);
+
+		JMenuItem mntmRegistrarUsuarios = new JMenuItem("Registrar usuarios");
+		mntmRegistrarUsuarios.addActionListener(e -> {
+			// Como el menú solo es visible para admins, abrir directamente
+			regUser dialog = new regUser();
+			dialog.setModal(true);
+			dialog.setVisible(true);
+		});
+		mnAdministracion.add(mntmRegistrarUsuarios);
+
+		// Ocultar menú si no es admin
+		if (Control.getLoginUser() != null && !"Administrador".equalsIgnoreCase(Control.getLoginUser().getTipo())) {
+			mnAdministracion.setVisible(false);
+		}
+
+		// ------------------ PANEL PRINCIPAL ------------------
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		setContentPane(contentPane);
+		contentPane.setLayout(new BorderLayout());
+
+		// ------------------ GUARDADO AUTOMÁTICO ------------------
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				guardarTodo();
+				System.out.println("Datos guardados automáticamente al cerrar.");
+			}
+		});
+	}
+
+	// ------------------ MÉTODO DE GUARDADO AUTOMÁTICO ------------------
+	private void guardarTodo() {
+		try {
+			FileOutputStream fileOut = new FileOutputStream("control.dat");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(Control.getInstance());
+			out.close();
+			fileOut.close();
+			System.out.println("Datos guardados exitosamente");
+		} catch (Exception e) {
+			System.out.println("Error guardando datos: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
 }
-///

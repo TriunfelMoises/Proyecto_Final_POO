@@ -3,62 +3,72 @@ package logico;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-
 public class Control implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private ArrayList<User> misUsers;
+	private static Control control;
+	private static User loginUser;
+	private Clinica clinica; // AGREGAR ESTA LÍNEA
 
-    private static final long serialVersionUID = 1L;
+	private Control() {
+		misUsers = new ArrayList<>();
+		clinica = Clinica.getInstance(); // AGREGAR ESTA LÍNEA
+	}
 
-    private ArrayList<User> misUsers;
-    private static Control control;
-    private static User loginUser;
+	public static Control getInstance() {
+		if (control == null) {
+			control = new Control();
+		}
+		return control;
+	}
 
-    private Control() {
-        misUsers = new ArrayList<>();
-    }
+	public static void setControl(Control control) {
+		Control.control = control;
+	}
 
-    public static Control getInstance() {
-        if (control == null) {
-            control = new Control();
-        }
-        return control;
-    }
+	public static User getLoginUser() {
+		return loginUser;
+	}
 
-    public static void setControl(Control control) {
-        Control.control = control;
-    }
+	// AGREGAR ESTE GETTER
+	public Clinica getClinica() {
+		return clinica;
+	}
 
-    public static User getLoginUser() {
-        return loginUser;
-    }
+	public void regUser(User user) {
+		if (user != null) {
+			misUsers.add(user);
+		}
+	}
 
-    public void regUser(User user) {
-        if (user != null) {
-            misUsers.add(user);
-        }
-    }
+	public boolean confirmLogin(String text, String text2) {
+		boolean login = false;
+		for (User user : misUsers) {
+			if (user.getUserName().equals(text) && user.getPass().equals(text2)) {
+				loginUser = user;
+				login = true;
+			}
+		}
+		return login;
+	}
 
-    public boolean confirmLogin(String text, String text2) {
-        boolean login = false;
-        for (User user : misUsers) {
-            if (user.getUserName().equals(text) && user.getPass().equals(text2)) {
-                loginUser = user;
-                login = true;
-            }
-        }
-        return login;
-    }
-    public boolean confirmLoginAdmin(String text, String text2) {
-        boolean login = false;
-        for (User user : misUsers) {
-            if (user.getUserName().equals(text) && user.getPass().equals(text2) && user.getTipo().equals("Administrador")) {
-                loginUser = user;
-                login = true;
-            }
-        }
-        return login;
-    }
+	public boolean confirmLoginAdmin(String text, String text2) {
+		boolean login = false;
+		for (User user : misUsers) {
+			if (user.getUserName().equals(text) && user.getPass().equals(text2)
+					&& user.getTipo().equals("Administrador")) {
+				loginUser = user;
+				login = true;
+			}
+		}
+		return login;
+	}
 
-    public ArrayList<User> getMisUsers() { return misUsers; }
-    public void setMisUsers(ArrayList<User> misUsers) { this.misUsers = misUsers; }
+	public ArrayList<User> getMisUsers() {
+		return misUsers;
+	}
+
+	public void setMisUsers(ArrayList<User> misUsers) {
+		this.misUsers = misUsers;
+	}
 }
-///-

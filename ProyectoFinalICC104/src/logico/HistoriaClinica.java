@@ -97,10 +97,9 @@ public class HistoriaClinica implements Serializable {
 	public int cantidadConsultas() {
 		return consultas.size();
 	}
-	
-	
+
 	public String generarResumen() {
-		
+
 		return "El resumen";
 	}
 

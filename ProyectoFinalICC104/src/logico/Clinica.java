@@ -22,7 +22,6 @@ public class Clinica implements Serializable {
 	private ArrayList<Cita> citas;
 	private boolean primerIngresp = false;
 
-
 	private int contadorPacientes;
 	private int contadorDoctores;
 	private int contadorCitas;
@@ -57,6 +56,10 @@ public class Clinica implements Serializable {
 			instance = new Clinica();
 		}
 		return instance;
+	}
+
+	public static void setInstance(Clinica instance) {
+		Clinica.instance = instance;
 	}
 
 	public String getNombreClinica() {
@@ -174,17 +177,6 @@ public class Clinica implements Serializable {
 		return null;
 	}
 
-	public boolean eliminarDoctor(String cedula) {
-		Doctor doctor = buscarDoctorPorCedula(cedula);
-
-		if (doctor != null) {
-			doctores.remove(doctor);
-			return true;
-		}
-
-		return false;
-	}
-
 	public boolean modificarDoctor(Doctor doctorActualizado) {
 		if (doctorActualizado == null) {
 			return false;
@@ -280,17 +272,6 @@ public class Clinica implements Serializable {
 				return true;
 			}
 		}
-		return false;
-	}
-
-	public boolean eliminarPaciente(String cedula) {
-		Paciente paciente = buscarPacientePorCedula(cedula);
-
-		if (paciente != null) {
-			pacientes.remove(paciente);
-			return true;
-		}
-
 		return false;
 	}
 
@@ -390,17 +371,6 @@ public class Clinica implements Serializable {
 		return false;
 	}
 
-	public boolean eliminarEnfermedad(String codigo) {
-		Enfermedad enfermedad = buscarEnfermedadPorCodigo(codigo);
-
-		if (enfermedad != null) {
-			enfermedades.remove(enfermedad);
-			return true;
-		}
-
-		return false;
-	}
-
 	public ArrayList<Enfermedad> listarEnfermedades() {
 		return enfermedades;
 	}
@@ -475,17 +445,6 @@ public class Clinica implements Serializable {
 		return false;
 	}
 
-	public boolean eliminarVacuna(String codigo) {
-		Vacuna vacuna = buscarVacunaPorCodigo(codigo);
-
-		if (vacuna != null) {
-			vacunas.remove(vacuna);
-			return true;
-		}
-
-		return false;
-	}
-
 	public ArrayList<Vacuna> listarVacunas() {
 		return vacunas;
 	}
@@ -526,17 +485,6 @@ public class Clinica implements Serializable {
 			}
 		}
 		return null;
-	}
-
-	public boolean eliminarTratamiento(String codigo) {
-		Tratamiento tratamiento = buscarTratamientoPorCodigo(codigo);
-
-		if (tratamiento != null) {
-			tratamientosPredefinidos.remove(tratamiento);
-			return true;
-		}
-
-		return false;
 	}
 
 	public ArrayList<Tratamiento> listarTratamientos() {

@@ -18,7 +18,6 @@ public class Cita implements Serializable {
 	private LocalTime horaCita;
 	private String estadoCita;
 	private String motivoCita;
-	private Consulta consulta;
 
 	public Cita(String codigoCita, Paciente paciente, Doctor doctor, LocalDate fechaCita, LocalTime horaCita,
 			String motivoCita) {
@@ -30,7 +29,6 @@ public class Cita implements Serializable {
 		this.horaCita = horaCita;
 		this.estadoCita = "Pendiente";
 		this.motivoCita = motivoCita;
-		this.consulta = null;
 	}
 
 	public Doctor getDoctor() {
@@ -79,10 +77,6 @@ public class Cita implements Serializable {
 
 	public Paciente getPaciente() {
 		return paciente;
-	}
-
-	public Consulta getConsulta() {
-		return consulta;
 	}
 
 	public void cambiarEstado(String nuevoEstado) {
