@@ -1,72 +1,87 @@
 package logico;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Vacuna implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private String codigoVacuna;
-	private String nombre;
-	private String descripcion;
-	private int numeroDosis;
-	private boolean activa;
+    private static final long serialVersionUID = 1L;
 
-	public Vacuna(String codigoVacuna, String nombre, String descripcion, int numeroDosis, boolean activa) {
-		super();
-		this.codigoVacuna = codigoVacuna;
-		this.nombre = nombre;
-		this.descripcion = descripcion;
-		this.numeroDosis = numeroDosis;
-		this.activa = activa;
-	}
+    private String codigoVacuna;
+    private String numeroLote;
+    private String nombre;
+    private int cantidad;
+    private Date fechaCaducidad;
+    private boolean activa;
 
-	public String getNombre() {
-		return nombre;
-	}
+    public Vacuna() {
+        super();
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public Vacuna(String codigoVacuna, String numeroLote, String nombre, int cantidad,
+                  Date fechaCaducidad, boolean activa) {
+        super();
+        this.codigoVacuna = codigoVacuna;
+        this.numeroLote = numeroLote;
+        this.nombre = nombre;
+        this.cantidad = cantidad;
+        this.fechaCaducidad = fechaCaducidad;
+        this.activa = activa;
+    }
 
-	public String getDescripcion() {
-		return descripcion;
-	}
+    public String getCodigoVacuna() {
+        return codigoVacuna;
+    }
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+    public void setCodigoVacuna(String codigoVacuna) {
+        this.codigoVacuna = codigoVacuna;
+    }
 
-	public int getNumeroDosis() {
-		return numeroDosis;
-	}
+    public String getNumeroLote() {
+        return numeroLote;
+    }
 
-	public void setNumeroDosis(int numeroDosis) {
-		this.numeroDosis = numeroDosis;
-	}
+    public void setNumeroLote(String numeroLote) {
+        this.numeroLote = numeroLote;
+    }
 
-	public boolean isActiva() {
-		return activa;
-	}
+    public String getNombre() {
+        return nombre;
+    }
 
-	public void setActiva(boolean activa) {
-		this.activa = activa;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public String getCodigoVacuna() {
-		return codigoVacuna;
-	}
+    public int getCantidad() {
+        return cantidad;
+    }
 
-	public void activar() {
-		this.activa = true;
-	}
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
 
-	public void desactivar() {
+    public Date getFechaCaducidad() {
+        return fechaCaducidad;
+    }
 
-		this.activa = false;
+    public void setFechaCaducidad(Date fechaCaducidad) {
+        this.fechaCaducidad = fechaCaducidad;
+    }
 
-	}
+    public boolean isActiva() {
+        return activa;
+    }
 
+    public void setActiva(boolean activa) {
+        this.activa = activa;
+    }
+
+    public void activar() {
+        this.activa = true;
+    }
+
+    public void desactivar() {
+        this.activa = false;
+    }
 }
