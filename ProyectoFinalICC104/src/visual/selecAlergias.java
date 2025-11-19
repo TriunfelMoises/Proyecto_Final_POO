@@ -59,7 +59,7 @@ public class selecAlergias extends JDialog {
 	}
 
 	/**
-	 * Create the dialog.
+	 * Create the dialog. '
 	 */
 	public selecAlergias() {
 		setTitle("Selecci\u00F3n de alergias");
