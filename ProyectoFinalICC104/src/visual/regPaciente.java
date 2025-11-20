@@ -27,6 +27,8 @@ import java.time.ZoneId;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTextArea;
+import javax.swing.SpinnerNumberModel;
 
 public class regPaciente extends JDialog {
 
@@ -36,7 +38,6 @@ public class regPaciente extends JDialog {
 	private JTextField txtApellido;
 	private JTextField txtCedula;
 	private JTextField txtTelefono;
-	private JTextField txtDireccion;
 	private ArrayList<String> alegecitas;
 
 	/**
@@ -57,20 +58,21 @@ public class regPaciente extends JDialog {
 	 */
 	public regPaciente() {
 		setTitle("Registro de pacientes");
-		setBounds(100, 100, 582, 504);
+		setBounds(100, 100, 582, 591);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+		setLocationRelativeTo(null);
 		{
 			JLabel lblNewLabel = new JLabel("C\u00F3digo");
-			lblNewLabel.setBounds(476, 16, 69, 20);
+			lblNewLabel.setBounds(476, 4, 69, 20);
 			contentPanel.add(lblNewLabel);
 		}
 		
 		txtCodigo = new JTextField();
 		txtCodigo.setEditable(false);
-		txtCodigo.setBounds(451, 40, 94, 26);
+		txtCodigo.setBounds(451, 28, 94, 26);
 		contentPanel.add(txtCodigo);
 		txtCodigo.setColumns(10);
 		txtCodigo.setText(Clinica.getInstance().generarCodigoPaciente());
@@ -80,7 +82,7 @@ public class regPaciente extends JDialog {
 		contentPanel.add(lblNewLabel_1);
 		
 		txtNombre = new JTextField();
-		txtNombre.setBounds(111, 40, 239, 26);
+		txtNombre.setBounds(111, 40, 296, 26);
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 		
@@ -103,16 +105,16 @@ public class regPaciente extends JDialog {
 		txtCedula.setColumns(10);
 		
 		JLabel lblNewLabel_4 = new JLabel("Sexo");
-		lblNewLabel_4.setBounds(15, 188, 69, 20);
+		lblNewLabel_4.setBounds(338, 239, 69, 20);
 		contentPanel.add(lblNewLabel_4);
 		
 		JRadioButton rdbtnHombre = new JRadioButton("M");
 		rdbtnHombre.setSelected(true);
-		rdbtnHombre.setBounds(111, 184, 51, 29);
+		rdbtnHombre.setBounds(394, 235, 51, 29);
 		contentPanel.add(rdbtnHombre);
 		
 		JRadioButton rdbtnMujer = new JRadioButton("F");
-		rdbtnMujer.setBounds(169, 184, 51, 29);
+		rdbtnMujer.setBounds(466, 235, 51, 29);
 		contentPanel.add(rdbtnMujer);
 		
 		rdbtnHombre.addActionListener(new ActionListener() {
@@ -150,11 +152,6 @@ public class regPaciente extends JDialog {
 		lblNewLabel_7.setBounds(15, 285, 69, 20);
 		contentPanel.add(lblNewLabel_7);
 		
-		txtDireccion = new JTextField();
-		txtDireccion.setBounds(111, 278, 406, 26);
-		contentPanel.add(txtDireccion);
-		txtDireccion.setColumns(10);
-		
 		JLabel lblNewLabel_8 = new JLabel("Tipo de sangre");
 		lblNewLabel_8.setBounds(322, 142, 108, 20);
 		contentPanel.add(lblNewLabel_8);
@@ -165,7 +162,7 @@ public class regPaciente extends JDialog {
 		contentPanel.add(cbxTipoSangre);
 		
 		JLabel lblNewLabel_9 = new JLabel("Fecha");
-		lblNewLabel_9.setBounds(15, 377, 69, 20);
+		lblNewLabel_9.setBounds(15, 460, 69, 20);
 		contentPanel.add(lblNewLabel_9);
 		
 		JSpinner spnFechaActual = new JSpinner();
@@ -173,16 +170,38 @@ public class regPaciente extends JDialog {
 		spnFechaActual.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
 		JSpinner.DateEditor editorActual = new JSpinner.DateEditor(spnFechaActual, "dd/MM/yyyy");
 		spnFechaActual.setEditor(editorActual);
-		spnFechaActual.setBounds(111, 374, 94, 26);
+		spnFechaActual.setBounds(111, 457, 94, 26);
 		contentPanel.add(spnFechaActual);
 		
 		JLabel lblNewLabel_10 = new JLabel("\u00BFUsted padece de alguna alergia?");
-		lblNewLabel_10.setBounds(15, 330, 263, 20);
+		lblNewLabel_10.setBounds(15, 406, 263, 20);
 		contentPanel.add(lblNewLabel_10);
 		
 		JCheckBox chckbxAlergias = new JCheckBox("Si, padezco de alergias");
-		chckbxAlergias.setBounds(291, 326, 202, 29);
+		chckbxAlergias.setBounds(297, 402, 202, 29);
 		contentPanel.add(chckbxAlergias);
+		
+		JTextArea txtdireccion = new JTextArea();
+		txtdireccion.setBounds(112, 295, 405, 84);
+		contentPanel.add(txtdireccion);
+		
+		JLabel lblNewLabel_11 = new JLabel("Peso(lb)");
+		lblNewLabel_11.setBounds(15, 188, 69, 20);
+		contentPanel.add(lblNewLabel_11);
+		
+		JSpinner spnPeso = new JSpinner();
+		spnPeso.setModel(new SpinnerNumberModel(new Float(1), new Float(1), null, new Float(1)));
+		spnPeso.setBounds(111, 185, 94, 26);
+		contentPanel.add(spnPeso);
+		
+		JLabel lblNewLabel_12 = new JLabel("Estatura(cm)");
+		lblNewLabel_12.setBounds(476, 70, 69, 20);
+		contentPanel.add(lblNewLabel_12);
+		
+		JSpinner spnEstatura = new JSpinner();
+		spnEstatura.setModel(new SpinnerNumberModel(new Float(1), new Float(1), null, new Float(1)));
+		spnEstatura.setBounds(451, 93, 94, 26);
+		contentPanel.add(spnEstatura);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -193,13 +212,16 @@ public class regPaciente extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						char sexo;
 						
-						if (txtApellido.getText()=="" || txtCedula.getText()=="" || txtDireccion.getText()==""|| txtNombre.getText()==""|| txtTelefono.getText()==""|| cbxTipoSangre.getSelectedIndex()==0) {
+						if (txtApellido.getText()=="" || txtCedula.getText()=="" || txtdireccion.getText()==""|| txtNombre.getText()==""|| txtTelefono.getText()==""|| cbxTipoSangre.getSelectedIndex()==0) {
 				            JOptionPane.showMessageDialog(null, "Complete todos los campos correctamente", "Error", JOptionPane.ERROR_MESSAGE);
 				            return;
 						}
 						if (!txtTelefono.getText().matches("\\d+")|| !txtCedula.getText().matches("\\d+")) {
 				            JOptionPane.showMessageDialog(null, "El telefono y la cédula solo pueden contener valores numéricos", "Error", JOptionPane.ERROR_MESSAGE);
 						    return;
+						}
+						if (Clinica.getInstance().verificarSiEsPaciente(txtCedula.getText())) {
+				            JOptionPane.showMessageDialog(null, "Esta cédula ya se encuentra registrada en un paciente", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 						if (rdbtnHombre.isSelected()) {
 							sexo = 'M';
@@ -218,7 +240,7 @@ public class regPaciente extends JDialog {
 						Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
 						LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 						Date hoyDate = new Date();
-						Paciente elqueva = new Paciente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), txtTelefono.getText(), txtDireccion.getText(), fechaNac, sexo, txtCodigo.getText(), cbxTipoSangre.getSelectedItem().toString(), fechaActual);
+						Paciente elqueva = new Paciente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), txtTelefono.getText(), txtdireccion.getText(), fechaNac, sexo, txtCodigo.getText(), cbxTipoSangre.getSelectedItem().toString(), fechaActual, (float)spnPeso.getValue(), (float)spnEstatura.getValue());
 						elqueva.setAlergias(alegecitas);
 						Clinica.getInstance().registrarPaciente(elqueva);
 			            JOptionPane.showMessageDialog(null, "Registro Satisfactorio", "Información", JOptionPane.INFORMATION_MESSAGE);
@@ -226,7 +248,7 @@ public class regPaciente extends JDialog {
 			            txtApellido.setText("");
 			            txtCedula.setText("");
 			            txtCodigo.setText(Clinica.getInstance().generarCodigoPaciente());
-			            txtDireccion.setText("");
+			            txtdireccion.setText("");
 			            txtTelefono.setText("");
 			            rdbtnHombre.setSelected(true);
 			            rdbtnMujer.setSelected(false);
@@ -234,6 +256,8 @@ public class regPaciente extends JDialog {
 			            spnFechaActual.setValue(hoyDate);
 			            spnFechaNacimiento.setValue(hoyDate);
 			            cbxTipoSangre.setSelectedIndex(0);
+			            spnEstatura.setValue(1);
+			            spnPeso.setValue(1);
 			            
 					}
 				});
@@ -253,5 +277,4 @@ public class regPaciente extends JDialog {
 			}
 		}
 	}
-
 }

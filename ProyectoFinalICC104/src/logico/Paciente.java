@@ -12,9 +12,11 @@ public class Paciente extends Persona {
 	private HistoriaClinica historiaClinica;
 	private ArrayList<RegistroVacuna> registrosVacunas;
 	private boolean activo;
+	private float peso;
+	private float estatura;
 
 	public Paciente(String cedula, String nombre, String apellido, String telefono, String direccion,
-			LocalDate fechaNacimiento, char sexo, String codigoPaciente, String tipoSangre, LocalDate fechaRegistro) {
+			LocalDate fechaNacimiento, char sexo, String codigoPaciente, String tipoSangre, LocalDate fechaRegistro, float peso, float estatura) {
 		super(cedula, nombre, apellido, telefono, direccion, fechaNacimiento, sexo);
 		this.codigoPaciente = codigoPaciente;
 		this.tipoSangre = tipoSangre;
@@ -23,6 +25,8 @@ public class Paciente extends Persona {
 		this.historiaClinica = new HistoriaClinica(this, fechaRegistro);
 		this.registrosVacunas = new ArrayList<>();
 		this.activo = true;
+		this.peso = peso;
+		this.estatura = estatura;
 	}
 
 	public String getTipoSangre() {
@@ -129,6 +133,22 @@ public class Paciente extends Persona {
 
 	public void setAlergias(ArrayList<String> alergias) {
 		this.alergias = alergias;
+	}
+
+	public float getPeso() {
+		return peso;
+	}
+
+	public void setPeso(float peso) {
+		this.peso = peso;
+	}
+
+	public float getEstatura() {
+		return estatura;
+	}
+
+	public void setEstatura(float estatura) {
+		this.estatura = estatura;
 	}
 
 }
