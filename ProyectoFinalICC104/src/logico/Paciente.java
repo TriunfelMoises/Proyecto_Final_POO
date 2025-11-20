@@ -7,7 +7,7 @@ public class Paciente extends Persona {
 
 	private String codigoPaciente;
 	private String tipoSangre;
-	private ArrayList<String> alergias;
+	private ArrayList<Alergia> alergias;
 	private LocalDate fechaRegistro;
 	private HistoriaClinica historiaClinica;
 	private ArrayList<RegistroVacuna> registrosVacunas;
@@ -49,7 +49,7 @@ public class Paciente extends Persona {
 		return codigoPaciente;
 	}
 
-	public ArrayList<String> getAlergias() {
+	public ArrayList<Alergia> getAlergias() {
 		return alergias;
 	}
 
@@ -65,13 +65,13 @@ public class Paciente extends Persona {
 		return registrosVacunas;
 	}
 
-	public void agregarAlergia(String alergia) {
+	public void agregarAlergia(Alergia alergia) {
 
 		alergias.add(alergia);
 
 	}
 
-	public boolean eliminarAlergia(String alergia) {
+	public boolean eliminarAlergia(Alergia alergia) {
 
 		if (alergia != null && alergias.contains(alergia)) {
 
@@ -131,7 +131,7 @@ public class Paciente extends Persona {
 
 	}
 
-	public void setAlergias(ArrayList<String> alergias) {
+	public void setAlergias(ArrayList<Alergia> alergias) {
 		this.alergias = alergias;
 	}
 

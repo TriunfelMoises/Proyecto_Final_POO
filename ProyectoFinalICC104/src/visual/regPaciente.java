@@ -8,6 +8,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import logico.Alergia;
 import logico.Clinica;
 import logico.Paciente;
 
@@ -38,7 +39,7 @@ public class regPaciente extends JDialog {
 	private JTextField txtApellido;
 	private JTextField txtCedula;
 	private JTextField txtTelefono;
-	private ArrayList<String> alegecitas;
+	private ArrayList<Alergia> alegecitas;
 
 	/**
 	 * Launch the application.
@@ -66,7 +67,7 @@ public class regPaciente extends JDialog {
 		setLocationRelativeTo(null);
 		{
 			JLabel lblNewLabel = new JLabel("C\u00F3digo");
-			lblNewLabel.setBounds(476, 4, 69, 20);
+			lblNewLabel.setBounds(466, 0, 69, 34);
 			contentPanel.add(lblNewLabel);
 		}
 		
@@ -195,7 +196,7 @@ public class regPaciente extends JDialog {
 		contentPanel.add(spnPeso);
 		
 		JLabel lblNewLabel_12 = new JLabel("Estatura(cm)");
-		lblNewLabel_12.setBounds(476, 70, 69, 20);
+		lblNewLabel_12.setBounds(451, 72, 99, 20);
 		contentPanel.add(lblNewLabel_12);
 		
 		JSpinner spnEstatura = new JSpinner();
@@ -230,17 +231,20 @@ public class regPaciente extends JDialog {
 							sexo = 'F';
 						}
 						if (chckbxAlergias.isSelected()) {
-							selecAlergias alergenoS = new selecAlergias();
+							TomaAlergias alergenoS = new TomaAlergias();
 							alergenoS.setModal(true);
 							alergenoS.setVisible(true);
-							alegecitas = alergenoS.mandarAlergias();
+							alegecitas=alergenoS.AlergiasSeleccionadas();
+							if (alegecitas.isEmpty()) {
+								return;
+							}
 						}
 						Date fechaActDate = (Date) spnFechaActual.getValue();
 						LocalDate fechaActual = fechaActDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 						Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
 						LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 						Date hoyDate = new Date();
-						Paciente elqueva = new Paciente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), txtTelefono.getText(), txtdireccion.getText(), fechaNac, sexo, txtCodigo.getText(), cbxTipoSangre.getSelectedItem().toString(), fechaActual, (float)spnPeso.getValue(), (float)spnEstatura.getValue());
+						Paciente elqueva = new Paciente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), txtTelefono.getText(), txtdireccion.getText(), fechaNac, sexo, txtCodigo.getText(), cbxTipoSangre.getSelectedItem().toString(), fechaActual, ((Number) spnPeso.getValue()).floatValue(), ((Number) spnEstatura.getValue()).floatValue());
 						elqueva.setAlergias(alegecitas);
 						Clinica.getInstance().registrarPaciente(elqueva);
 			            JOptionPane.showMessageDialog(null, "Registro Satisfactorio", "Información", JOptionPane.INFORMATION_MESSAGE);
@@ -258,7 +262,6 @@ public class regPaciente extends JDialog {
 			            cbxTipoSangre.setSelectedIndex(0);
 			            spnEstatura.setValue(1);
 			            spnPeso.setValue(1);
-			            
 					}
 				});
 				okButton.setActionCommand("OK");

@@ -20,6 +20,7 @@ public class Clinica implements Serializable {
 	private ArrayList<Vacuna> vacunas;
 	private ArrayList<Tratamiento> tratamientosPredefinidos;
 	private ArrayList<Cita> citas;
+	private ArrayList<Alergia> alergias;
 	private boolean primerIngresp = false;
 
 	private int contadorPacientes;
@@ -41,6 +42,7 @@ public class Clinica implements Serializable {
 		this.vacunas = new ArrayList<>();
 		this.tratamientosPredefinidos = new ArrayList<>();
 		this.citas = new ArrayList<>();
+		this.alergias = new ArrayList<>();
 
 		this.contadorPacientes = 1;
 		this.contadorDoctores = 1;
@@ -99,6 +101,7 @@ public class Clinica implements Serializable {
 	}
 
 	// metodos para generar codigo
+
 
 	public String generarCodigoPaciente() {
 		String codigo = String.format("PAC-%04d", contadorPacientes);
@@ -871,6 +874,27 @@ public class Clinica implements Serializable {
 
 	public void setPrimerIngresp(boolean primerIngresp) {
 		this.primerIngresp = primerIngresp;
+	}
+	
+	//Alergias
+	
+	public ArrayList<Alergia> getAlergias() {
+		return alergias;
+	}
+
+	public void setAlergias(ArrayList<Alergia> alergias) {
+		this.alergias = alergias;
+	}
+	public void registrarAlergias (Alergia alergia) {
+		alergias.add(alergia);
+	}
+	public boolean validarExistenciaAlergia (String alergiarev) {
+		for (Alergia revisando : alergias) {
+			if (revisando.getNombre().equalsIgnoreCase(alergiarev)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }
