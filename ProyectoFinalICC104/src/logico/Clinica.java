@@ -31,6 +31,8 @@ public class Clinica implements Serializable {
 	private int contadorEnfermedades;
 	private int contadorVacunas;
 
+	private static final int DURACION_CITA_MINUTOS = 45;
+
 	private Clinica() {
 		super();
 		this.nombreClinica = "Clinica Los tres mosqueteros";
@@ -58,6 +60,10 @@ public class Clinica implements Serializable {
 			instance = new Clinica();
 		}
 		return instance;
+	}
+
+	public static int getDuracionCitaMinutos() {
+		return DURACION_CITA_MINUTOS;
 	}
 
 	public static void setInstance(Clinica instance) {
@@ -101,7 +107,6 @@ public class Clinica implements Serializable {
 	}
 
 	// metodos para generar codigo
-
 
 	public String generarCodigoPaciente() {
 		String codigo = String.format("PAC-%04d", contadorPacientes);
@@ -508,6 +513,12 @@ public class Clinica implements Serializable {
 	public Cita agendarCita(String cedulaPaciente, String cedulaDoctor, LocalDate fecha, LocalTime hora,
 			String motivo) {
 
+		if (fecha.isBefore(LocalDate.now())) {
+
+			return null;
+
+		}
+
 		Paciente paciente = buscarPacientePorCedula(cedulaPaciente);
 		if (paciente == null) {
 			return null; // Paciente no existe
@@ -545,21 +556,76 @@ public class Clinica implements Serializable {
 			return false;
 		}
 
-		for (Cita cita : citas) {
-			boolean mismoDoctorFechaHora = cita.getDoctor().getCedula().equals(cedulaDoctor)
-					&& cita.getFechaCita().equals(fecha) && cita.getHoraCita().equals(hora);
-			boolean citaValida = !cita.getEstadoCita().equals("Cancelada");
-
-			if (mismoDoctorFechaHora && citaValida) {
-				return false;
-			}
-		}
-
+		// Verificar que la hora esté dentro del horario del doctor
 		if (!doctor.puedeAtenderEnHorario(hora)) {
 			return false;
 		}
 
+		// Calcular hora de fin de la nueva cita
+		LocalTime horaFinNuevaCita = hora.plusMinutes(DURACION_CITA_MINUTOS);
+
+		// Verificar que no haya conflictos con otras citas
+		for (Cita cita : citas) {
+			boolean mismoDoctorFecha = cita.getDoctor().getCedula().equals(cedulaDoctor)
+					&& cita.getFechaCita().equals(fecha);
+			boolean citaValida = !cita.getEstadoCita().equals("Cancelada");
+
+			if (mismoDoctorFecha && citaValida) {
+				LocalTime horaInicioCitaExistente = cita.getHoraCita();
+				LocalTime horaFinCitaExistente = horaInicioCitaExistente.plusMinutes(DURACION_CITA_MINUTOS);
+
+				// Verificar solapamiento de horarios
+				boolean haySolapamiento = (hora.isBefore(horaFinCitaExistente)
+						&& horaFinNuevaCita.isAfter(horaInicioCitaExistente));
+
+				if (haySolapamiento) {
+					return false;
+				}
+			}
+		}
+
 		return true;
+	}
+
+	// Obtiene una lista de horarios disponibles para un doctor en una fecha
+	// específica
+
+	public ArrayList<LocalTime> obtenerHorariosDisponibles(String cedulaDoctor, LocalDate fecha) {
+		ArrayList<LocalTime> horariosDisponibles = new ArrayList<>();
+
+		Doctor doctor = buscarDoctorPorCedula(cedulaDoctor);
+		if (doctor == null || !doctor.isActivo()) {
+			return horariosDisponibles;
+		}
+
+		// Verificar que el doctor no haya alcanzado el límite de citas
+		int citasDelDia = contarCitasDelDia(cedulaDoctor, fecha);
+		if (citasDelDia >= doctor.getCitasPorDia()) {
+			return horariosDisponibles; // Ya no hay cupos
+		}
+
+		// Generar intervalos de tiempo desde horarioInicio hasta horarioFin
+		LocalTime horaActual = doctor.getHorarioInicio();
+		LocalTime horarioFin = doctor.getHorarioFin();
+
+		while (horaActual.plusMinutes(DURACION_CITA_MINUTOS).isBefore(horarioFin)
+				|| horaActual.plusMinutes(DURACION_CITA_MINUTOS).equals(horarioFin)) {
+
+			if (verificarDisponibilidadDoctor(cedulaDoctor, fecha, horaActual)) {
+				horariosDisponibles.add(horaActual);
+			}
+
+			// Avanzar al siguiente intervalo de 45 minutos
+			horaActual = horaActual.plusMinutes(DURACION_CITA_MINUTOS);
+		}
+
+		return horariosDisponibles;
+	}
+
+	// Obtiene una representación en texto del doctor para mostrar en ComboBox
+
+	public String obtenerInfoDoctorParaCombo(Doctor doctor) {
+		return doctor.getNombre() + " " + doctor.getApellido() + " - " + doctor.getEspecialidad();
 	}
 
 	public int contarCitasDelDia(String cedulaDoctor, LocalDate fecha) {
@@ -576,6 +642,20 @@ public class Clinica implements Serializable {
 		}
 
 		return contador;
+	}
+
+	// Obtiene cuántas citas le quedan disponibles a un doctor en una fecha
+
+	public String obtenerCitasDisponiblesTexto(String cedulaDoctor, LocalDate fecha) {
+		Doctor doctor = buscarDoctorPorCedula(cedulaDoctor);
+		if (doctor == null) {
+			return "Doctor no encontrado";
+		}
+
+		int citasUsadas = contarCitasDelDia(cedulaDoctor, fecha);
+		int citasDisponibles = doctor.getCitasPorDia() - citasUsadas;
+
+		return citasDisponibles + " de " + doctor.getCitasPorDia() + " citas disponibles";
 	}
 
 	public Cita buscarCita(String codigoCita) {
@@ -875,9 +955,9 @@ public class Clinica implements Serializable {
 	public void setPrimerIngresp(boolean primerIngresp) {
 		this.primerIngresp = primerIngresp;
 	}
-	
-	//Alergias
-	
+
+	// Alergias
+
 	public ArrayList<Alergia> getAlergias() {
 		return alergias;
 	}
@@ -885,10 +965,12 @@ public class Clinica implements Serializable {
 	public void setAlergias(ArrayList<Alergia> alergias) {
 		this.alergias = alergias;
 	}
-	public void registrarAlergias (Alergia alergia) {
+
+	public void registrarAlergias(Alergia alergia) {
 		alergias.add(alergia);
 	}
-	public boolean validarExistenciaAlergia (String alergiarev) {
+
+	public boolean validarExistenciaAlergia(String alergiarev) {
 		for (Alergia revisando : alergias) {
 			if (revisando.getNombre().equalsIgnoreCase(alergiarev)) {
 				return false;

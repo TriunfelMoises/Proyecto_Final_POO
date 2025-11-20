@@ -75,18 +75,9 @@ public class Doctor extends Persona {
 	}
 
 	public boolean puedeAtenderEnHorario(LocalTime hora) {
-
-		if (hora.equals(horarioInicio) || hora.isAfter(horarioInicio) && hora.equals(horarioFin)
-				|| hora.isBefore(horarioFin)) {
-
-			return true;
-
-		}
-
-		else {
-			return false;
-		}
-
+		// La hora debe estar entre horarioInicio y horarioFin
+		return (hora.equals(horarioInicio) || hora.isAfter(horarioInicio))
+				&& (hora.equals(horarioFin) || hora.isBefore(horarioFin));
 	}
 
 }

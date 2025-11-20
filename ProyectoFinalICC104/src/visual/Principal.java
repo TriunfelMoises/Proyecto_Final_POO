@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import logico.Clinica;
 import logico.Control;
+import javax.swing.JToolBar;
 
 public class Principal extends JFrame {
 
@@ -86,6 +87,26 @@ public class Principal extends JFrame {
 		// ------------------ MENÚ VACUNAS ------------------
 		JMenu mnVacunas = new JMenu("Vacunas");
 		menuBar.add(mnVacunas);
+
+		// ------------------ MENÚ CITAS ------------------
+		JMenu mnCitas = new JMenu("Citas");
+		menuBar.add(mnCitas);
+
+		JMenuItem mntmAgendarCita = new JMenuItem("Agendar Cita");
+		mntmAgendarCita.addActionListener(e -> {
+			AgendarCita dialog = new AgendarCita();
+			dialog.setModal(true);
+			dialog.setVisible(true);
+		});
+		mnCitas.add(mntmAgendarCita);
+
+		JMenuItem mntmListaCitas = new JMenuItem("Lista de Citas");
+		mntmListaCitas.addActionListener(e -> {
+			ListaCitas dialog = new ListaCitas();
+			dialog.setModal(true);
+			dialog.setVisible(true);
+		});
+		mnCitas.add(mntmListaCitas);
 
 		// ------------------ MENÚ ADMINISTRACIÓN ------------------
 		JMenu mnAdministracion = new JMenu("Administración");
