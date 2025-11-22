@@ -40,7 +40,7 @@ public class Principal extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 
-		// ------------------ MENÚ PACIENTES ------------------
+		// ------------------ MENÚ PACIENTES ------------------'
 		JMenu mnPacientes = new JMenu("Pacientes");
 		menuBar.add(mnPacientes);
 
