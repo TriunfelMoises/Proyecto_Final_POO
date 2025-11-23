@@ -27,7 +27,7 @@ public class regEnfermedades extends JDialog {
         contentPanel.setLayout(null);
 
         // Etiquetas
-        JLabel lblCodigo = new JLabel("Código:");
+        JLabel lblCodigo = new JLabel("CÃ³digo:");
         lblCodigo.setBounds(20, 20, 80, 20);
         contentPanel.add(lblCodigo);
 
@@ -35,7 +35,7 @@ public class regEnfermedades extends JDialog {
         lblNombre.setBounds(20, 55, 80, 20);
         contentPanel.add(lblNombre);
 
-        JLabel lblDescripcion = new JLabel("Descripción:");
+        JLabel lblDescripcion = new JLabel("DescripciÃ³n:");
         lblDescripcion.setBounds(20, 90, 80, 20);
         contentPanel.add(lblDescripcion);
 
@@ -54,7 +54,7 @@ public class regEnfermedades extends JDialog {
         txtNombre.setBounds(130, 55, 220, 22);
         contentPanel.add(txtNombre);
 
-        // Descripción como JTextArea grande (para párrafos)
+        // DescripciÃ³n como JTextArea grande (para pÃ¡rrafos)
         txtDescripcion = new JTextArea();
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
@@ -113,7 +113,7 @@ public class regEnfermedades extends JDialog {
             txtNombre.requestFocus();
         } else {
             JOptionPane.showMessageDialog(this,
-                    "Ya existe una enfermedad con ese código.",
+                    "Ya existe una enfermedad con ese cÃ³digo.",
                     "Error al registrar",
                     JOptionPane.ERROR_MESSAGE);
         }

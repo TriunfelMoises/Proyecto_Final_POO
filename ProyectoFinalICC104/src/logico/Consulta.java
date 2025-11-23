@@ -94,10 +94,12 @@ public class Consulta implements Serializable {
 	}
 
 	public boolean isEsEnfermedadVigilancia() {
-		return esEnfermedadVigilancia;
+	    return esEnfermedadVigilancia;
 	}
 
-	public void marcarParaResumen() {
+	public void setEsEnfermedadVigilancia(boolean esEnfermedadVigilancia) {
+	    this.esEnfermedadVigilancia = esEnfermedadVigilancia;
+	} void marcarParaResumen() {
 		this.incluidaEnResumen = true;
 	}
 
