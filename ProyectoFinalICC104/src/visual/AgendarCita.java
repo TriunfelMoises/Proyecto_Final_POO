@@ -77,7 +77,7 @@ public class AgendarCita extends JDialog {
 
 		btnCrearPaciente = new JButton("Crear Paciente");
 		btnCrearPaciente.addActionListener(e -> {
-			regPaciente ventana = new regPaciente();
+			regPaciente ventana = new regPaciente(null);
 			ventana.setModal(true);
 			ventana.setVisible(true);
 			buscarPaciente();

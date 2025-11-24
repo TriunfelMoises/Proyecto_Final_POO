@@ -55,7 +55,7 @@ public class Principal extends JFrame {
 
 		JMenuItem mntmRegPac = new JMenuItem("Registrar");
 		mntmRegPac.addActionListener(e -> {
-			regPaciente dialog = new regPaciente();
+			regPaciente dialog = new regPaciente(null);
 			dialog.setModal(true);
 			dialog.setVisible(true);
 		});
