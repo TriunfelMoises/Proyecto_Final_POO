@@ -41,7 +41,7 @@ public class Principal extends JFrame {
 	}
 
 	public Principal() {
-		setTitle("Clínica - Principal");
+		setTitle("Clinica - Principal");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 820, 520);
 		setLocationRelativeTo(null);
@@ -49,7 +49,7 @@ public class Principal extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 
-		// ------------------ MENÚ PACIENTES ------------------
+		// ------------------ MENU PACIENTES ------------------
 		JMenu mnPacientes = new JMenu("Pacientes");
 		menuBar.add(mnPacientes);
 
@@ -69,7 +69,7 @@ public class Principal extends JFrame {
 		});
 		mnPacientes.add(mntmListPac);
 
-		// ------------------ MENÚ DOCTORES ------------------
+		// ------------------ MENU DOCTORES ------------------
 		JMenu mnDoctores = new JMenu("Doctores");
 		menuBar.add(mnDoctores);
 
@@ -89,7 +89,7 @@ public class Principal extends JFrame {
 		});
 		mnDoctores.add(mntmListDoc);
 
-        // ------------------ MENÚ ENFERMEDADES ------------------
+        // ------------------ MENU ENFERMEDADES ------------------
         JMenu mnEnfermedades = new JMenu("Enfermedades");
         menuBar.add(mnEnfermedades);
 
@@ -112,11 +112,11 @@ public class Principal extends JFrame {
         mnEnfermedades.add(mntmListEnf);
 
 
-		// ------------------ MENÚ VACUNAS ------------------
+		// ------------------ MENU VACUNAS ------------------
 		JMenu mnVacunas = new JMenu("Vacunas");
 		menuBar.add(mnVacunas);
 
-		// ------------------ MENÚ CITAS ------------------
+		// ------------------ MENU CITAS ------------------
 		JMenu mnCitas = new JMenu("Citas");
 		menuBar.add(mnCitas);
 
@@ -136,7 +136,7 @@ public class Principal extends JFrame {
 		});
 		mnCitas.add(mntmListaCitas);
 		
-		// ------------------ MENÚ CONSULTAS ------------------
+		// ------------------ MENU CONSULTAS ------------------
 		JMenu mnConsultas = new JMenu("Consultas");
 		menuBar.add(mnConsultas);
 
@@ -148,7 +148,7 @@ public class Principal extends JFrame {
 
 		        Clinica clinica = Clinica.getInstance();
 
-		        // Bucle para que la ventana de licencia "no se cierre" hasta que todo esté bien
+		        // Bucle para que la ventana de licencia "no se cierre" hasta que todo este bien
 		        while (true) {
 		            // ====== CAMPO FORMATEADO COMO EN regDoctor (UUUU-##### con '-') ======
 		            JFormattedTextField txtLicencia;
@@ -161,7 +161,7 @@ public class Principal extends JFrame {
 		            }
 
 		            JPanel panel = new JPanel(new BorderLayout(5, 5));
-		            panel.add(new JLabel("Ingrese el número de licencia del doctor:"), BorderLayout.NORTH);
+		            panel.add(new JLabel("Ingrese el numero de licencia del doctor:"), BorderLayout.NORTH);
 		            panel.add(txtLicencia, BorderLayout.CENTER);
 
 		            int opcion = JOptionPane.showConfirmDialog(
@@ -169,7 +169,7 @@ public class Principal extends JFrame {
 		                    panel,
 		                    "Registrar consulta",
 		                    JOptionPane.OK_CANCEL_OPTION,
-		                    JOptionPane.PLAIN_MESSAGE   // sin signo de interrogación
+		                    JOptionPane.PLAIN_MESSAGE   // sin signo de interrogacion
 		            );
 
 		            // Si cancela o cierra el cuadro, salimos del flujo
@@ -179,27 +179,27 @@ public class Principal extends JFrame {
 
 		            String numLicencia = txtLicencia.getText().trim();
 
-		            // Validar que rellenó bien la máscara (sin '_')
+		            // Validar que relleno bien la mascara (sin '_')
 		            if (numLicencia.isEmpty() || numLicencia.contains("_")) {
 		                JOptionPane.showMessageDialog(
 		                        Principal.this,
-		                        "Debe ingresar un número de licencia válido (formato: AAAA-12345).",
-		                        "Dato inválido",
+		                        "Debe ingresar un numero de licencia valido (formato: AAAA-12345).",
+		                        "Dato invalido",
 		                        JOptionPane.WARNING_MESSAGE
 		                );
 		                // Volvemos arriba del while y mostramos de nuevo la ventanita
 		                continue;
 		            }
 
-		            // Buscar doctor por NÚMERO DE LICENCIA real
+		            // Buscar doctor por NUMERO DE LICENCIA real
 		            Doctor doctor = clinica.buscarDoctorPorNumeroLicencia(numLicencia);
 
 		            if (doctor == null) {
-		                // ====== DOCTOR NO EXISTE – PREGUNTAR SI DESEA REGISTRAR UNO NUEVO ======
+		                // ====== DOCTOR NO EXISTE - PREGUNTAR SI DESEA REGISTRAR UNO NUEVO ======
 		                int resp = JOptionPane.showConfirmDialog(
 		                        Principal.this,
-		                        "No se encontró un doctor con el número de licencia:\n"
-		                                + numLicencia + "\n\n¿Desea registrar un nuevo doctor?",
+		                        "No se encontro un doctor con el numero de licencia:\n"
+		                                + numLicencia + "\n\nDesea registrar un nuevo doctor?",
 		                        "Doctor no encontrado",
 		                        JOptionPane.YES_NO_OPTION,
 		                        JOptionPane.QUESTION_MESSAGE
@@ -213,7 +213,7 @@ public class Principal extends JFrame {
 		                    ventana.setLocationRelativeTo(Principal.this);
 		                    ventana.setVisible(true);
 
-		                    // Ajustamos el contador de códigos según la cantidad real de doctores
+		                    // Ajustamos el contador de codigos segun la cantidad real de doctores
 		                    clinica.recalcularContadorDoctores();
 
 		                    int cantDespues = clinica.getDoctores().size();
@@ -221,22 +221,22 @@ public class Principal extends JFrame {
 		                        JOptionPane.showMessageDialog(
 		                                Principal.this,
 		                                "Doctor registrado correctamente.\n" +
-		                                "Ahora ingrese nuevamente su número de licencia para continuar.",
+		                                "Ahora ingrese nuevamente su numero de licencia para continuar.",
 		                                "Doctor registrado",
 		                                JOptionPane.INFORMATION_MESSAGE
 		                        );
 		                    }
 		                }
 
-		                // En cualquier caso (Sí o No), volvemos al while para pedir licencia de nuevo
+		                // En cualquier caso (Si o No), volvemos al while para pedir licencia de nuevo
 		                continue;
 		            }
 
-		            // Validar que el doctor esté ACTIVO
+		            // Validar que el doctor este ACTIVO
 		            if (!doctor.isActivo()) {
 		                JOptionPane.showMessageDialog(
 		                        Principal.this,
-		                        "El doctor con ese número de licencia se encuentra INACTIVO y no puede atender consultas.",
+		                        "El doctor con ese numero de licencia se encuentra INACTIVO y no puede atender consultas.",
 		                        "Doctor inactivo",
 		                        JOptionPane.ERROR_MESSAGE
 		                );
@@ -244,12 +244,12 @@ public class Principal extends JFrame {
 		                continue;
 		            }
 
-		            // Si llegó aquí, el doctor existe y está activo – ahora sí abrimos regConsulta
+		            // Si llego aqui, el doctor existe y esta activo - ahora si abrimos regConsulta
 		            regConsulta dialog = new regConsulta(numLicencia);
 		            dialog.setLocationRelativeTo(Principal.this);
 		            dialog.setVisible(true);
 
-		            // Salimos del bucle; ya se abrió regConsulta correctamente
+		            // Salimos del bucle; ya se abrio regConsulta correctamente
 		            break;
 		        }
 		    }
@@ -266,7 +266,7 @@ public class Principal extends JFrame {
 
 		        while (true) {
 
-		            // ====== MISMA MÁSCARA QUE EN regDoctor Y EN Registrar Consulta ======
+		            // ====== MISMA MASCARA QUE EN regDoctor Y EN Registrar Consulta ======
 		            JFormattedTextField txtLicencia;
 		            try {
 		                MaskFormatter licenciaMask = new MaskFormatter("UUUU-#####");
@@ -277,7 +277,7 @@ public class Principal extends JFrame {
 		            }
 
 		            JPanel panel = new JPanel(new BorderLayout(5, 5));
-		            panel.add(new JLabel("Ingrese el número de licencia del doctor:"), BorderLayout.NORTH);
+		            panel.add(new JLabel("Ingrese el numero de licencia del doctor:"), BorderLayout.NORTH);
 		            panel.add(txtLicencia, BorderLayout.CENTER);
 
 		            int opcion = JOptionPane.showConfirmDialog(
@@ -288,19 +288,19 @@ public class Principal extends JFrame {
 		                    JOptionPane.PLAIN_MESSAGE
 		            );
 
-		            // Canceló
+		            // Cancelo
 		            if (opcion != JOptionPane.OK_OPTION) {
 		                return;
 		            }
 
 		            String numLicencia = txtLicencia.getText().trim();
 
-		            // ===== Validación exacta: no permitir '_' ======
+		            // ===== Validacion exacta: no permitir '_' ======
 		            if (numLicencia.isEmpty() || numLicencia.contains("_")) {
 		                JOptionPane.showMessageDialog(
 		                        Principal.this,
-		                        "Debe ingresar un número de licencia válido (formato: AAAA-12345).",
-		                        "Dato inválido",
+		                        "Debe ingresar un numero de licencia valido (formato: AAAA-12345).",
+		                        "Dato invalido",
 		                        JOptionPane.WARNING_MESSAGE
 		                );
 		                continue; // volver a pedirlo
@@ -312,25 +312,25 @@ public class Principal extends JFrame {
 		            if (doctor == null) {
 		                JOptionPane.showMessageDialog(
 		                        Principal.this,
-		                        "No existe un doctor con ese número de licencia.",
+		                        "No existe un doctor con ese numero de licencia.",
 		                        "Doctor no encontrado",
 		                        JOptionPane.ERROR_MESSAGE
 		                );
 		                continue; // volver a pedir licencia
 		            }
 
-		            // Validar que esté ACTIVO
+		            // Validar que este ACTIVO
 		            if (!doctor.isActivo()) {
 		                JOptionPane.showMessageDialog(
 		                        Principal.this,
-		                        "El doctor con ese número de licencia está INACTIVO y no puede visualizar consultas.",
+		                        "El doctor con ese numero de licencia esta INACTIVO y no puede visualizar consultas.",
 		                        "Doctor inactivo",
 		                        JOptionPane.ERROR_MESSAGE
 		                );
 		                continue;
 		            }
 
-		            // Si todo está bien => abrir listConsulta
+		            // Si todo esta bien => abrir listConsulta
 		            listConsulta dialog = new listConsulta(numLicencia);
 		            dialog.setLocationRelativeTo(Principal.this);
 		            dialog.setVisible(true);
@@ -340,23 +340,45 @@ public class Principal extends JFrame {
 		    }
 		});
 		mnConsultas.add(mntmListarConsultas);
+		
+		// ------------------ MENU TRATAMIENTOS ------------------
+		JMenu mnTratamiento = new JMenu("Tratamientos");
+		menuBar.add(mnTratamiento);
+		
+		JMenuItem mntmregTratamiento = new JMenuItem("Registrar Tratamiento");
+		mntmregTratamiento.addActionListener(e -> {
+			regTratamientos dialog = new regTratamientos();
+			dialog.setModal(true);
+			dialog.setLocationRelativeTo(Principal.this);
+			dialog.setVisible(true);
+		});
+		mnTratamiento.add(mntmregTratamiento);
+		
+		JMenuItem mntmGestiontratamiento = new JMenuItem("Gestion tratamientos");
+		mntmGestiontratamiento.addActionListener(e -> {
+			GestionTratamientos dialog = new GestionTratamientos();
+			dialog.setModal(true);
+			dialog.setLocationRelativeTo(Principal.this);
+			dialog.setVisible(true);
+		});
+		mnTratamiento.add(mntmGestiontratamiento);
 
 
 
-		// ------------------ MENÚ ADMINISTRACIÓN ------------------
-		JMenu mnAdministracion = new JMenu("Administración");
+		// ------------------ MENU ADMINISTRACION ------------------
+		JMenu mnAdministracion = new JMenu("Administracion");
 		menuBar.add(mnAdministracion);
 
 		JMenuItem mntmRegistrarUsuarios = new JMenuItem("Registrar usuarios");
 		mntmRegistrarUsuarios.addActionListener(e -> {
-			// Como el menú solo es visible para admins, abrir directamente
+			// Como el menu solo es visible para admins, abrir directamente
 			regUser dialog = new regUser();
 			dialog.setModal(true);
 			dialog.setVisible(true);
 		});
 		mnAdministracion.add(mntmRegistrarUsuarios);
 
-		// Ocultar menú si no es admin
+		// Ocultar menu si no es admin
 		if (Control.getLoginUser() != null && !"Administrador".equalsIgnoreCase(Control.getLoginUser().getTipo())) {
 			mnAdministracion.setVisible(false);
 		}
@@ -367,17 +389,17 @@ public class Principal extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
 
-		// ------------------ GUARDADO AUTOMÁTICO ------------------
+		// ------------------ GUARDADO AUTOMATICO ------------------
 		addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent e) {
 				guardarTodo();
-				System.out.println("Datos guardados automáticamente al cerrar.");
+				System.out.println("Datos guardados automaticamente al cerrar.");
 			}
 		});
 	}
 
-	// ------------------ MÉTODO DE GUARDADO AUTOMÁTICO ------------------
+	// ------------------ METODO DE GUARDADO AUTOMATICO ------------------
 	private void guardarTodo() {
 		try {
 			FileOutputStream fileOut = new FileOutputStream("control.dat");

@@ -27,13 +27,11 @@ public class regConsulta extends JDialog {
     private JTextArea txtNotas;
 
     private JButton btnAgendarCita;
-    private JButton btnAsignarTratamiento;
 
     private ArrayList<Cita> citasPendientes;
     private ArrayList<Tratamiento> tratamientos;
     private ArrayList<Enfermedad> enfermedades;
 
-    // Número de licencia con el que se entró (para filtrar citas)
     private String numLicenciaActual;
 
     public regConsulta() {
@@ -58,11 +56,11 @@ public class regConsulta extends JDialog {
         lblLicencia.setBounds(20, 55, 140, 20);
         contentPanel.add(lblLicencia);
 
-        JLabel lblSintomas = new JLabel("Síntomas:");
+        JLabel lblSintomas = new JLabel("Sintomas:");
         lblSintomas.setBounds(20, 90, 100, 20);
         contentPanel.add(lblSintomas);
 
-        JLabel lblDiagnostico = new JLabel("Diagnóstico:");
+        JLabel lblDiagnostico = new JLabel("Diagnostico:");
         lblDiagnostico.setBounds(20, 190, 100, 20);
         contentPanel.add(lblDiagnostico);
 
@@ -109,17 +107,12 @@ public class regConsulta extends JDialog {
         contentPanel.add(spDiagnostico);
 
         cbEnfermedades = new JComboBox<>();
-        cbEnfermedades.setBounds(160, 280, 260, 24);
+        cbEnfermedades.setBounds(160, 280, 500, 24);
         contentPanel.add(cbEnfermedades);
 
         cbTratamientos = new JComboBox<>();
-        cbTratamientos.setBounds(160, 315, 260, 24);
+        cbTratamientos.setBounds(160, 315, 500, 24);
         contentPanel.add(cbTratamientos);
-
-        btnAsignarTratamiento = new JButton("Asignar tratamiento");
-        btnAsignarTratamiento.setBounds(430, 315, 160, 24);
-        btnAsignarTratamiento.addActionListener(e -> abrirVentanaAsignarTratamiento());
-        contentPanel.add(btnAsignarTratamiento);
 
         txtNotas = new JTextArea();
         txtNotas.setLineWrap(true);
@@ -141,29 +134,19 @@ public class regConsulta extends JDialog {
         btnCancelar.addActionListener(e -> dispose());
         buttonPane.add(btnCancelar);
 
-        // Cargar datos iniciales (sin filtrar por doctor)
         cargarCitasPendientes();
         cargarEnfermedades();
-        inicializarComboTratamientosVacio();
+        cargarTratamientos();
     }
 
-    /**
-     * Constructor que recibe el número de licencia del doctor.
-     * Aquí SÍ filtramos las citas solo para ese doctor.
-     */
     public regConsulta(String numLicenciaDoctor) {
         this();
         this.numLicenciaActual = numLicenciaDoctor;
         txtNumLicenciaDoctor.setText(numLicenciaDoctor);
         txtNumLicenciaDoctor.setEditable(false);
-
-        // Volvemos a cargar las citas, pero ahora filtradas por este doctor
         cargarCitasPendientesPorDoctor();
     }
 
-    /**
-     * Carga TODAS las citas pendientes (se usa cuando no se entra con licencia).
-     */
     private void cargarCitasPendientes() {
         Clinica clinica = Clinica.getInstance();
         citasPendientes = clinica.listarCitasPendientes();
@@ -196,16 +179,12 @@ public class regConsulta extends JDialog {
         }
     }
 
-    /**
-     * Carga solo las citas pendientes del doctor indicado por numLicenciaActual.
-     */
     private void cargarCitasPendientesPorDoctor() {
         Clinica clinica = Clinica.getInstance();
 
         ArrayList<Cita> todas = clinica.listarCitasPendientes();
         citasPendientes = new ArrayList<>();
 
-        // Filtrar por número de licencia del doctor
         if (todas != null) {
             for (Cita c : todas) {
                 if (c.getDoctor() != null &&
@@ -242,10 +221,6 @@ public class regConsulta extends JDialog {
         }
     }
 
-    /**
-     * Abre la ventana de agendar cita y recarga las citas pendientes.
-     * Si hay doctor logueado, recarga solo sus citas.
-     */
     private void abrirRegCitasYRefrescar() {
         AgendarCita dialog = new AgendarCita();
         dialog.setModal(true);
@@ -259,13 +234,9 @@ public class regConsulta extends JDialog {
         }
     }
 
-    /**
-     * Carga las enfermedades registradas en la clínica.
-     * Primer ítem: "No especificar".
-     */
     private void cargarEnfermedades() {
         cbEnfermedades.removeAllItems();
-        enfermedades = Clinica.getInstance().listarEnfermedades(); // ajusta el nombre si es distinto
+        enfermedades = Clinica.getInstance().listarEnfermedades();
 
         cbEnfermedades.addItem("No especificar");
         if (enfermedades != null && !enfermedades.isEmpty()) {
@@ -280,29 +251,15 @@ public class regConsulta extends JDialog {
         }
     }
 
-    /**
-     * Deja el combo de tratamientos "vacío" como si no existieran
-     * tratamientos registrados aún para esta consulta.
-     */
-    private void inicializarComboTratamientosVacio() {
-        tratamientos = new ArrayList<>();
-        cbTratamientos.removeAllItems();
-        cbTratamientos.addItem("No hay tratamientos registrados");
-        cbTratamientos.setEnabled(false);
-    }
-
-    /**
-     * Carga los tratamientos disponibles desde la clínica.
-     * Se usa principalmente luego de cerrar regTratamientos.
-     */
     private void cargarTratamientos() {
         tratamientos = Clinica.getInstance().listarTratamientos();
         cbTratamientos.removeAllItems();
 
         if (tratamientos == null || tratamientos.isEmpty()) {
-            cbTratamientos.addItem("No hay tratamientos registrados");
+            cbTratamientos.addItem("No hay tratamientos registrados - Registre uno desde el menu Tratamientos");
             cbTratamientos.setEnabled(false);
         } else {
+            cbTratamientos.addItem("<Seleccione>");
             for (Tratamiento t : tratamientos) {
                 String texto = t.getCodigoTratamiento() + " - " + t.getNombreTratamiento();
                 cbTratamientos.addItem(texto);
@@ -312,60 +269,7 @@ public class regConsulta extends JDialog {
         }
     }
 
-    /**
-     * Abre la ventana de registrar tratamiento y refresca la lista
-     * cuando se guarde uno nuevo. Pasa el paciente de la cita seleccionada
-     * para mostrar sus alergias en regTratamientos.
-     */
-    private void abrirVentanaAsignarTratamiento() {
-        if (citasPendientes == null || citasPendientes.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Debe existir al menos una cita pendiente para asignar un tratamiento.",
-                    "Sin citas",
-                    JOptionPane.WARNING_MESSAGE
-            );
-            return;
-        }
-
-        int indiceComboCita = cbCitas.getSelectedIndex();
-        if (indiceComboCita <= 0) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Debe seleccionar una cita para asignar un tratamiento.",
-                    "Cita requerida",
-                    JOptionPane.WARNING_MESSAGE
-            );
-            return;
-        }
-
-        int indiceCita = indiceComboCita - 1;
-        if (indiceCita < 0 || indiceCita >= citasPendientes.size()) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "La cita seleccionada no es válida.",
-                    "Cita inválida",
-                    JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-
-        Cita citaSeleccionada = citasPendientes.get(indiceCita);
-
-        regTratamientos dialog = new regTratamientos(citaSeleccionada.getPaciente());
-        dialog.setModal(true);
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-
-        // Al volver, recargamos los tratamientos
-        cargarTratamientos();
-    }
-
-    /**
-     * Lógica para registrar la consulta.
-     */
     private void registrarConsulta() {
-        // Validar cita seleccionada
         if (citasPendientes == null || citasPendientes.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
@@ -391,8 +295,8 @@ public class regConsulta extends JDialog {
         if (indiceCita < 0 || indiceCita >= citasPendientes.size()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "La cita seleccionada no es válida.",
-                    "Cita inválida",
+                    "La cita seleccionada no es valida.",
+                    "Cita invalida",
                     JOptionPane.ERROR_MESSAGE
             );
             return;
@@ -400,11 +304,10 @@ public class regConsulta extends JDialog {
 
         Cita citaSeleccionada = citasPendientes.get(indiceCita);
 
-        // Validar número de licencia (aunque ya esté fijo, validamos por seguridad)
         String numLicencia = txtNumLicenciaDoctor.getText().trim();
         if (numLicencia.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Debe indicar el número de licencia del doctor que atiende la consulta.",
+                    "Debe indicar el numero de licencia del doctor que atiende la consulta.",
                     "Licencia requerida",
                     JOptionPane.WARNING_MESSAGE);
             return;
@@ -415,7 +318,7 @@ public class regConsulta extends JDialog {
         Doctor doctorAtiende = clinica.buscarDoctorPorNumeroLicencia(numLicencia);
         if (doctorAtiende == null) {
             JOptionPane.showMessageDialog(this,
-                    "No se encontró un doctor con ese número de licencia.",
+                    "No se encontro un doctor con ese numero de licencia.",
                     "Doctor no encontrado",
                     JOptionPane.ERROR_MESSAGE);
             return;
@@ -423,7 +326,7 @@ public class regConsulta extends JDialog {
 
         if (!doctorAtiende.isActivo()) {
             JOptionPane.showMessageDialog(this,
-                    "El doctor con ese número de licencia se encuentra INACTIVO y no puede atender consultas.",
+                    "El doctor con ese numero de licencia se encuentra INACTIVO y no puede atender consultas.",
                     "Doctor inactivo",
                     JOptionPane.ERROR_MESSAGE);
             return;
@@ -453,17 +356,18 @@ public class regConsulta extends JDialog {
 
         if (sintomas.isEmpty() || diagnostico.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Los campos de síntomas y diagnóstico son obligatorios.",
+                    "Los campos de sintomas y diagnostico son obligatorios.",
                     "Datos incompletos",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Validar tratamientos
         if (tratamientos == null || tratamientos.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "No hay tratamientos registrados. Debe asignar un tratamiento a la consulta.",
+                    "No hay tratamientos registrados en el sistema.\n" +
+                    "Por favor, registre al menos un tratamiento desde:\n" +
+                    "Menu > Tratamientos > Registrar Tratamiento",
                     "Tratamiento requerido",
                     JOptionPane.WARNING_MESSAGE
             );
@@ -471,21 +375,29 @@ public class regConsulta extends JDialog {
         }
 
         int indiceTrat = cbTratamientos.getSelectedIndex();
-        if (indiceTrat < 0 || indiceTrat >= tratamientos.size()) {
+        if (indiceTrat <= 0) {
             JOptionPane.showMessageDialog(this,
-                    "Seleccione un tratamiento válido.",
-                    "Tratamiento inválido",
+                    "Debe seleccionar un tratamiento.",
+                    "Tratamiento requerido",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        Tratamiento tratSeleccionado = tratamientos.get(indiceTrat);
+        
+        int indiceRealTrat = indiceTrat - 1;
+        if (indiceRealTrat < 0 || indiceRealTrat >= tratamientos.size()) {
+            JOptionPane.showMessageDialog(this,
+                    "El tratamiento seleccionado no es valido.",
+                    "Tratamiento invalido",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Tratamiento tratSeleccionado = tratamientos.get(indiceRealTrat);
 
-        // Enfermedad seleccionada (opcional)
         String codigoEnfermedad = null;
         if (enfermedades != null && !enfermedades.isEmpty()
                 && cbEnfermedades.isEnabled()
                 && cbEnfermedades.getSelectedIndex() > 0) {
-            int idxEnf = cbEnfermedades.getSelectedIndex() - 1; // 0 es "No especificar"
+            int idxEnf = cbEnfermedades.getSelectedIndex() - 1;
             if (idxEnf >= 0 && idxEnf < enfermedades.size()) {
                 Enfermedad enf = enfermedades.get(idxEnf);
                 codigoEnfermedad = enf.getCodigoEnfermedad();
@@ -500,22 +412,20 @@ public class regConsulta extends JDialog {
 
             JOptionPane.showMessageDialog(this,
                     "Consulta registrada correctamente.",
-                    "Éxito",
+                    "Exito",
                     JOptionPane.INFORMATION_MESSAGE);
 
             txtSintomas.setText("");
             txtDiagnostico.setText("");
             txtNotas.setText("");
 
-            // Volver a cargar citas: filtradas si hay licencia fija
             if (numLicenciaActual != null && !numLicenciaActual.isEmpty()) {
                 cargarCitasPendientesPorDoctor();
             } else {
                 cargarCitasPendientes();
             }
 
-            // Dejar combo de tratamiento vacío obligando a crear uno nuevo
-            inicializarComboTratamientosVacio();
+            cargarTratamientos();
         } else {
             JOptionPane.showMessageDialog(this,
                     "No se pudo registrar la consulta. Verifique los datos.",
