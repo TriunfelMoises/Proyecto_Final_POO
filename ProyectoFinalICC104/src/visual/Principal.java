@@ -1,8 +1,9 @@
 package visual;
 
 import java.awt.BorderLayout;
-
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -44,7 +45,12 @@ public class Principal extends JFrame {
 		setTitle("Clinica - Principal");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 820, 520);
-		setLocationRelativeTo(null);
+		
+		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        setSize(screen);
+        setLocationRelativeTo(null); 
+        setResizable(true);
 
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);

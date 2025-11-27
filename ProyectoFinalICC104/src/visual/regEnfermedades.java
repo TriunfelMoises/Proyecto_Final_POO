@@ -1,23 +1,48 @@
 package visual;
+//cambios
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import javax.swing.JOptionPane;
 
 import logico.Clinica;
 import logico.Enfermedad;
 
 public class regEnfermedades extends JDialog {
 
+    private static final long serialVersionUID = 1L;
+
     private final JPanel contentPanel = new JPanel();
+
     private JTextField txtCodigo;
     private JTextField txtNombre;
-    private JTextArea txtDescripcion;
     private JCheckBox chkBajoVigilancia;
+    private JTextArea txtSintomasYSignos;
+    private JSpinner spnNivelGravedad;
+    private JComboBox<String> cbPotencialPropagacion;
+    private JComboBox<String> cbTipo;
+
+    private JButton btnGuardar;
+
+    private Enfermedad enfermedadEditando = null;
+    private boolean soloCambiarVigilancia = false;
 
     public regEnfermedades() {
-        setTitle("Registrar Enfermedad");
-        setBounds(100, 100, 550, 320);
+        setTitle("Registrar enfermedad");
+        setBounds(100, 100, 650, 500);
         setLocationRelativeTo(null);
         setModal(true);
 
@@ -26,96 +51,246 @@ public class regEnfermedades extends JDialog {
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
 
-        // Etiquetas
-        JLabel lblCodigo = new JLabel("CÃ³digo:");
-        lblCodigo.setBounds(20, 20, 80, 20);
+        Font labelFont = new Font("Tahoma", Font.PLAIN, 12);
+
+        JLabel lblCodigo = new JLabel("Código:");
+        lblCodigo.setFont(labelFont);
+        lblCodigo.setBounds(20, 20, 80, 22);
         contentPanel.add(lblCodigo);
 
-        JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setBounds(20, 55, 80, 20);
-        contentPanel.add(lblNombre);
-
-        JLabel lblDescripcion = new JLabel("DescripciÃ³n:");
-        lblDescripcion.setBounds(20, 90, 80, 20);
-        contentPanel.add(lblDescripcion);
-
-        JLabel lblBajoVigilancia = new JLabel("Bajo vigilancia:");
-        lblBajoVigilancia.setBounds(20, 210, 100, 20);
-        contentPanel.add(lblBajoVigilancia);
-
-        // Campos
         txtCodigo = new JTextField();
         txtCodigo.setEditable(false);
-        txtCodigo.setBounds(130, 20, 140, 22);
-        txtCodigo.setText(Clinica.getInstance().generarCodigoEnfermedad());
+        txtCodigo.setBounds(120, 20, 150, 22);
         contentPanel.add(txtCodigo);
 
+        JLabel lblNombre = new JLabel("Nombre:");
+        lblNombre.setFont(labelFont);
+        lblNombre.setBounds(20, 55, 80, 22);
+        contentPanel.add(lblNombre);
+
         txtNombre = new JTextField();
-        txtNombre.setBounds(130, 55, 220, 22);
+        txtNombre.setBounds(120, 55, 480, 22);
         contentPanel.add(txtNombre);
 
-        // DescripciÃ³n como JTextArea grande (para pÃ¡rrafos)
-        txtDescripcion = new JTextArea();
-        txtDescripcion.setLineWrap(true);
-        txtDescripcion.setWrapStyleWord(true);
-
-        JScrollPane scrollDescripcion = new JScrollPane(txtDescripcion);
-        scrollDescripcion.setBounds(130, 90, 360, 100);
-        contentPanel.add(scrollDescripcion);
-
-        chkBajoVigilancia = new JCheckBox();
-        chkBajoVigilancia.setBounds(130, 210, 20, 20);
+        chkBajoVigilancia = new JCheckBox("Enfermedad bajo vigilancia");
+        chkBajoVigilancia.setFont(labelFont);
+        chkBajoVigilancia.setBounds(120, 85, 250, 22);
         contentPanel.add(chkBajoVigilancia);
 
-        // Botones
+        JLabel lblSintomas = new JLabel("Síntomas y signos:");
+        lblSintomas.setFont(labelFont);
+        lblSintomas.setBounds(20, 120, 120, 22);
+        contentPanel.add(lblSintomas);
+
+        txtSintomasYSignos = new JTextArea();
+        txtSintomasYSignos.setLineWrap(true);
+        txtSintomasYSignos.setWrapStyleWord(true);
+        JScrollPane spSintomas = new JScrollPane(txtSintomasYSignos);
+        spSintomas.setBounds(120, 145, 480, 90);
+        contentPanel.add(spSintomas);
+
+        JLabel lblNivelGravedad = new JLabel("Nivel de gravedad (1-4):");
+        lblNivelGravedad.setFont(labelFont);
+        lblNivelGravedad.setBounds(20, 245, 160, 22);
+        contentPanel.add(lblNivelGravedad);
+
+        spnNivelGravedad = new JSpinner(new SpinnerNumberModel(1, 1, 4, 1));
+        spnNivelGravedad.setBounds(190, 245, 60, 22);
+        contentPanel.add(spnNivelGravedad);
+
+        JLabel lblPotencial = new JLabel("Potencial de propagación:");
+        lblPotencial.setFont(labelFont);
+        lblPotencial.setBounds(20, 280, 160, 22);
+        contentPanel.add(lblPotencial);
+
+        cbPotencialPropagacion = new JComboBox<>();
+        cbPotencialPropagacion.addItem("Bajo");
+        cbPotencialPropagacion.addItem("Leve");
+        cbPotencialPropagacion.addItem("Medio");
+        cbPotencialPropagacion.addItem("Elevado");
+        cbPotencialPropagacion.addItem("Alto");
+        cbPotencialPropagacion.setBounds(190, 280, 150, 22);
+        contentPanel.add(cbPotencialPropagacion);
+
+        JLabel lblTipo = new JLabel("Tipo de enfermedad:");
+        lblTipo.setFont(labelFont);
+        lblTipo.setBounds(20, 315, 160, 22);
+        contentPanel.add(lblTipo);
+
+        cbTipo = new JComboBox<>();
+        cbTipo.addItem("Seleccione...");
+        cbTipo.addItem("Autoinmune");
+        cbTipo.addItem("Cardiovascular");
+        cbTipo.addItem("Congénita");
+        cbTipo.addItem("Dermatológica");
+        cbTipo.addItem("Endocrina");
+        cbTipo.addItem("Gastrointestinal");
+        cbTipo.addItem("Genética");
+        cbTipo.addItem("Hematológica");
+        cbTipo.addItem("Iatrogénica");
+        cbTipo.addItem("Inmunológica");
+        cbTipo.addItem("Metabólica");
+        cbTipo.addItem("Musculoesquelética");
+        cbTipo.addItem("Neoplasia o cáncer");
+        cbTipo.addItem("Neurológica");
+        cbTipo.addItem("Nutricional");
+        cbTipo.addItem("Oftalmológica");
+        cbTipo.addItem("Otorrinolaringológica");
+        cbTipo.addItem("Profesional");
+        cbTipo.addItem("Psiquiátrica");
+        cbTipo.addItem("Rara");
+        cbTipo.addItem("Renal o urinaria");
+        cbTipo.addItem("Respiratoria");
+        cbTipo.addItem("Reumatológica");
+        cbTipo.addItem("Toxicológica");
+        cbTipo.addItem("Traumática");
+        cbTipo.addItem("Infecciosa");
+        cbTipo.setBounds(190, 315, 250, 22);
+        contentPanel.add(cbTipo);
+
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-        JButton btnRegistrar = new JButton("Registrar");
-        btnRegistrar.addActionListener(e -> registrarEnfermedad());
-        buttonPane.add(btnRegistrar);
+        btnGuardar = new JButton("Registrar");
+        btnGuardar.addActionListener(e -> guardarEnfermedad());
+        buttonPane.add(btnGuardar);
 
         JButton btnCancelar = new JButton("Cancelar");
         btnCancelar.addActionListener(e -> dispose());
         buttonPane.add(btnCancelar);
+
+        inicializarCodigo();
     }
 
-    private void registrarEnfermedad() {
-        String codigo = txtCodigo.getText().trim();
-        String nombre = txtNombre.getText().trim();
-        String descripcion = txtDescripcion.getText().trim();
-        boolean bajoVigilancia = chkBajoVigilancia.isSelected();
+    public regEnfermedades(Enfermedad enfermedad, boolean soloCambiarVigilancia) {
+        this(); 
 
-        if (codigo.isEmpty() || nombre.isEmpty() || descripcion.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Complete todos los campos obligatorios.",
-                    "Datos incompletos",
-                    JOptionPane.WARNING_MESSAGE);
+        this.enfermedadEditando = enfermedad;
+        this.soloCambiarVigilancia = soloCambiarVigilancia;
+
+        if (enfermedad != null) {
+            txtCodigo.setText(enfermedad.getCodigoEnfermedad());
+            txtNombre.setText(enfermedad.getNombre());
+            chkBajoVigilancia.setSelected(enfermedad.isBajoVigilancia());
+            txtSintomasYSignos.setText(enfermedad.getSintomasYSignos());
+            spnNivelGravedad.setValue(enfermedad.getNivelGravedad());
+            cbPotencialPropagacion.setSelectedItem(enfermedad.getPotencialPropagacion());
+            cbTipo.setSelectedItem(enfermedad.getTipo());
+        }
+
+        if (soloCambiarVigilancia) {
+            setTitle("Modificar vigilancia de enfermedad");
+
+            txtCodigo.setEnabled(false);
+            txtNombre.setEnabled(false);
+            txtSintomasYSignos.setEnabled(false);
+            spnNivelGravedad.setEnabled(false);
+            cbPotencialPropagacion.setEnabled(false);
+            cbTipo.setEnabled(false);
+
+            btnGuardar.setText("Guardar");
+        } else {
+            setTitle("Editar enfermedad");
+            btnGuardar.setText("Guardar");
+        }
+    }
+
+    private void inicializarCodigo() {
+        String codigo = Clinica.getInstance().generarCodigoEnfermedad();
+        txtCodigo.setText(codigo);
+    }
+
+    private void guardarEnfermedad() {
+
+        if (enfermedadEditando != null && soloCambiarVigilancia) {
+            boolean nuevoEstado = chkBajoVigilancia.isSelected();
+            enfermedadEditando.setBajoVigilancia(nuevoEstado);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Estado de vigilancia actualizado correctamente.",
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            dispose();
             return;
         }
 
-        Enfermedad nueva = new Enfermedad(codigo, nombre, descripcion, bajoVigilancia);
+        String codigo = txtCodigo.getText().trim();
+        String nombre = txtNombre.getText().trim();
+        boolean bajoVigilancia = chkBajoVigilancia.isSelected();
+        String sintomas = txtSintomasYSignos.getText().trim();
+        int nivelGravedad = (int) spnNivelGravedad.getValue();
+        String potencial = (String) cbPotencialPropagacion.getSelectedItem();
+        String tipo = (String) cbTipo.getSelectedItem();
+
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El nombre de la enfermedad es obligatorio.",
+                    "Dato incompleto",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        if (sintomas.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Debe especificar los síntomas y signos de la enfermedad.",
+                    "Dato incompleto",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        if (cbTipo.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Debe seleccionar el tipo de enfermedad.",
+                    "Dato incompleto",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        Enfermedad nueva = new Enfermedad(
+                codigo,
+                nombre,
+                bajoVigilancia,
+                sintomas,
+                nivelGravedad,
+                potencial,
+                tipo
+        );
+
         boolean agregado = Clinica.getInstance().registrarEnfermedad(nueva);
 
         if (agregado) {
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(
+                    this,
                     "Enfermedad registrada correctamente.",
-                    "Registro exitoso",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
 
-            // No cerramos: dejamos registrar varias seguidas
+            inicializarCodigo();
             txtNombre.setText("");
-            txtDescripcion.setText("");
             chkBajoVigilancia.setSelected(false);
-
-            txtCodigo.setText(Clinica.getInstance().generarCodigoEnfermedad());
+            txtSintomasYSignos.setText("");
+            spnNivelGravedad.setValue(1);
+            cbPotencialPropagacion.setSelectedIndex(0);
+            cbTipo.setSelectedIndex(0);
             txtNombre.requestFocus();
+
         } else {
-            JOptionPane.showMessageDialog(this,
-                    "Ya existe una enfermedad con ese cÃ³digo.",
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ya existe una enfermedad con ese código o nombre.",
                     "Error al registrar",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 }
