@@ -83,9 +83,7 @@ public class Paciente extends Persona {
 
 	}
 
-	public void registrarVacuna(Vacuna vacuna, LocalDate fecha, String lote, String aplicadaPor, int numeroDosis) {
-
-		RegistroVacuna registroVacuna = new RegistroVacuna(vacuna, fecha, lote, aplicadaPor, numeroDosis);
+	public void registrarVacuna(RegistroVacuna registroVacuna) {
 
 		registrosVacunas.add(registroVacuna);
 	}

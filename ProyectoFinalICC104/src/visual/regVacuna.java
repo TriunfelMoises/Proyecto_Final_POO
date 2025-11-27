@@ -18,11 +18,12 @@ public class regVacuna extends JDialog {
     private JTextField txtNombre;
     private JSpinner spnCantidad;
     private JSpinner spnFechaCaducidad;
-    private JCheckBox chkActiva;
+    private JTextField txtlaboratorio;
+    private JTextField txtEnfermedad;
 
     public regVacuna() {
         setTitle("Registrar Vacuna");
-        setBounds(100, 100, 520, 248);
+        setBounds(100, 100, 520, 271);
         setLocationRelativeTo(null);
         setModal(true);
 
@@ -32,58 +33,66 @@ public class regVacuna extends JDialog {
         contentPanel.setLayout(null);
 
         JLabel lblCodigo = new JLabel("Código:");
-        lblCodigo.setBounds(20, 20, 80, 20);
+        lblCodigo.setBounds(390, 16, 80, 20);
         contentPanel.add(lblCodigo);
 
-        JLabel lblActiva = new JLabel("Activa:");
-        lblActiva.setBounds(394, 20, 60, 20);
-        contentPanel.add(lblActiva);
-
         JLabel lblNumeroLote = new JLabel("Número de lote:");
-        lblNumeroLote.setBounds(20, 55, 110, 20);
+        lblNumeroLote.setBounds(20, 68, 130, 20);
         contentPanel.add(lblNumeroLote);
 
         JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setBounds(20, 90, 80, 20);
+        lblNombre.setBounds(20, 31, 80, 20);
         contentPanel.add(lblNombre);
 
         JLabel lblCantidad = new JLabel("Cantidad:");
-        lblCantidad.setBounds(20, 125, 80, 20);
+        lblCantidad.setBounds(344, 78, 80, 20);
         contentPanel.add(lblCantidad);
 
         JLabel lblFechaCad = new JLabel("Fecha de caducidad:");
-        lblFechaCad.setBounds(233, 125, 130, 20);
+        lblFechaCad.setBounds(353, 114, 130, 20);
         contentPanel.add(lblFechaCad);
 
         // Campos
         txtCodigo = new JTextField();
         txtCodigo.setEditable(false);
-        txtCodigo.setBounds(150, 20, 180, 22);
+        txtCodigo.setBounds(372, 40, 91, 22);
         txtCodigo.setText(Clinica.getInstance().generarCodigoVacuna());
         contentPanel.add(txtCodigo);
 
-        chkActiva = new JCheckBox();
-        chkActiva.setBounds(454, 20, 20, 20);
-        contentPanel.add(chkActiva);
-
         txtNumeroLote = new JTextField();
-        txtNumeroLote.setBounds(150, 55, 180, 22);
+        txtNumeroLote.setBounds(150, 67, 180, 22);
         contentPanel.add(txtNumeroLote);
 
         txtNombre = new JTextField();
-        txtNombre.setBounds(110, 90, 220, 22);
+        txtNombre.setBounds(110, 30, 220, 22);
         contentPanel.add(txtNombre);
 
         spnCantidad = new JSpinner(new SpinnerNumberModel(1, 1, 100000, 1));
-        spnCantidad.setBounds(110, 124, 80, 22);
+        spnCantidad.setBounds(421, 77, 62, 22);
         contentPanel.add(spnCantidad);
 
         spnFechaCaducidad = new JSpinner();
         spnFechaCaducidad.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
         JSpinner.DateEditor editorFecha = new JSpinner.DateEditor(spnFechaCaducidad, "dd/MM/yyyy");
         spnFechaCaducidad.setEditor(editorFecha);
-        spnFechaCaducidad.setBounds(360, 122, 130, 26);
+        spnFechaCaducidad.setBounds(353, 137, 130, 26);
         contentPanel.add(spnFechaCaducidad);
+        
+        JLabel lblNewLabel = new JLabel("Laboratorio:");
+        lblNewLabel.setBounds(20, 104, 99, 20);
+        contentPanel.add(lblNewLabel);
+        
+        JLabel lblNewLabel_1 = new JLabel("Enfermedad:");
+        lblNewLabel_1.setBounds(20, 140, 91, 20);
+        contentPanel.add(lblNewLabel_1);
+        
+        txtlaboratorio = new JTextField();
+        txtlaboratorio.setBounds(110, 101, 220, 22);
+        contentPanel.add(txtlaboratorio);
+        
+        txtEnfermedad = new JTextField();
+        txtEnfermedad.setBounds(110, 140, 220, 22);
+        contentPanel.add(txtEnfermedad);
 
         // Botones
         JPanel buttonPane = new JPanel();
@@ -105,16 +114,23 @@ public class regVacuna extends JDialog {
         String nombre = txtNombre.getText();
         int cantidad = (int) spnCantidad.getValue();
         Date fechaCad = (Date) spnFechaCaducidad.getValue();
-        boolean activa = chkActiva.isSelected();
+        String enfermedad = txtEnfermedad.getText();
+        String laboratio = txtlaboratorio.getText();
 
         Vacuna nueva = new Vacuna();
         nueva.setCodigoVacuna(codigo);
         nueva.setNumeroLote(numeroLote);
         nueva.setNombre(nombre);
         nueva.setCantidad(cantidad);
-        nueva.setFechaCaducidad(fechaCad);  // <<< CORRECTO
-        nueva.setActiva(activa);
-
+        nueva.setFechaCaducidad(fechaCad); 
+        nueva.setActiva(true);
+        nueva.setLaboratio(laboratio);
+        nueva.setEnfermedad(enfermedad);
+        
+        if (txtCodigo.getText().isEmpty()|| txtNumeroLote.getText().isEmpty()|| txtNombre.getText().isEmpty()||txtEnfermedad.getText().isEmpty()||txtlaboratorio.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Complete todos los campos correctamente", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         boolean registrado = Clinica.getInstance().agregarVacuna(nueva);
 
         if (registrado) {
@@ -123,7 +139,8 @@ public class regVacuna extends JDialog {
             txtNumeroLote.setText("");
             txtNombre.setText("");
             spnCantidad.setValue(1);
-            chkActiva.setSelected(false);
+            txtEnfermedad.setText("");
+            txtlaboratorio.setText("");
         } else {
             JOptionPane.showMessageDialog(this, "Error: ya existe una vacuna con este código.");
         }

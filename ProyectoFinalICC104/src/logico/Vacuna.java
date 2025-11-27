@@ -12,6 +12,8 @@ public class Vacuna implements Serializable {
     private String nombre;
     private int cantidad;
     private Date fechaCaducidad;
+    private String laboratio;
+    private String enfermedad;
     private boolean activa;
 
     public Vacuna() {
@@ -19,7 +21,7 @@ public class Vacuna implements Serializable {
     }
 
     public Vacuna(String codigoVacuna, String numeroLote, String nombre, int cantidad,
-                  Date fechaCaducidad, boolean activa) {
+                  Date fechaCaducidad, boolean activa, String laboratorio, String enfermedad) {
         super();
         this.codigoVacuna = codigoVacuna;
         this.numeroLote = numeroLote;
@@ -27,6 +29,8 @@ public class Vacuna implements Serializable {
         this.cantidad = cantidad;
         this.fechaCaducidad = fechaCaducidad;
         this.activa = activa;
+        this.laboratio = laboratorio;
+        this.enfermedad = enfermedad;
     }
 
     public String getCodigoVacuna() {
@@ -84,4 +88,20 @@ public class Vacuna implements Serializable {
     public void desactivar() {
         this.activa = false;
     }
+
+	public String getLaboratio() {
+		return laboratio;
+	}
+
+	public void setLaboratio(String laboratio) {
+		this.laboratio = laboratio;
+	}
+
+	public String getEnfermedad() {
+		return enfermedad;
+	}
+
+	public void setEnfermedad(String enfermedad) {
+		this.enfermedad = enfermedad;
+	}
 }

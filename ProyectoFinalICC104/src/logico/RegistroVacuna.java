@@ -11,18 +11,14 @@ public class RegistroVacuna implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Vacuna vacuna;
 	private LocalDate fechaAplicacion;
-	private String numeroLote;
 	private String aplicadaPor;
-	private int numeroDosis;
 
-	public RegistroVacuna(Vacuna vacuna, LocalDate fechaAplicacion, String numeroLote, String aplicadaPor,
-			int numeroDosis) {
+	public RegistroVacuna(Vacuna vacuna, LocalDate fechaAplicacion, String numeroLote, String aplicadaPor
+			) {
 		super();
 		this.vacuna = vacuna;
 		this.fechaAplicacion = fechaAplicacion;
-		this.numeroLote = numeroLote;
 		this.aplicadaPor = aplicadaPor;
-		this.numeroDosis = numeroDosis;
 	}
 
 	public Vacuna getVacuna() {
@@ -41,14 +37,6 @@ public class RegistroVacuna implements Serializable {
 		this.fechaAplicacion = fechaAplicacion;
 	}
 
-	public String getNumeroLote() {
-		return numeroLote;
-	}
-
-	public void setNumeroLote(String numeroLote) {
-		this.numeroLote = numeroLote;
-	}
-
 	public String getAplicadaPor() {
 		return aplicadaPor;
 	}
@@ -57,12 +45,5 @@ public class RegistroVacuna implements Serializable {
 		this.aplicadaPor = aplicadaPor;
 	}
 
-	public int getNumeroDosis() {
-		return numeroDosis;
-	}
-
-	public void setNumeroDosis(int numeroDosis) {
-		this.numeroDosis = numeroDosis;
-	}
 
 }

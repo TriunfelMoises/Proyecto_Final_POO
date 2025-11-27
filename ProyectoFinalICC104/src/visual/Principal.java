@@ -115,6 +115,36 @@ public class Principal extends JFrame {
 		// ------------------ MENU VACUNAS ------------------
 		JMenu mnVacunas = new JMenu("Vacunas");
 		menuBar.add(mnVacunas);
+		
+		JMenuItem mntmNewMenuItem = new JMenuItem("Registrar");
+		mntmNewMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				regVacuna vacunacion = new regVacuna();
+				vacunacion.setModal(true);
+				vacunacion.setVisible(true);
+			}
+		});
+		mnVacunas.add(mntmNewMenuItem);
+		
+		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Listar");
+		mntmNewMenuItem_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				listVacuna verVacuna = new listVacuna();
+				verVacuna.setModal(true);
+				verVacuna.setVisible(true);
+			}
+		});
+		mnVacunas.add(mntmNewMenuItem_1);
+		
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Administar a paciente");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				adminVacuna vacu = new adminVacuna();
+				vacu.setModal(true);
+				vacu.setVisible(true);
+			}
+		});
+		mnVacunas.add(mntmNewMenuItem_2);
 
 		// ------------------ MENU CITAS ------------------
 		JMenu mnCitas = new JMenu("Citas");

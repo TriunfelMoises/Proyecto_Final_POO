@@ -86,6 +86,7 @@ public class regAlergia extends JDialog {
 					          JOptionPane.showMessageDialog(null, "Registro satisfactorio", "Información", JOptionPane.INFORMATION_MESSAGE);
 					          txtNombre.setText("");
 					          cbxTipo.setSelectedIndex(0);
+					          dispose();
 
 						}
 					}
