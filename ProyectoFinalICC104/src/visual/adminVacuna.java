@@ -84,7 +84,9 @@ public class adminVacuna extends JDialog {
 		JComboBox<String> cbxVacuna = new JComboBox<String>();
 		cbxVacuna.setModel(new DefaultComboBoxModel(new String[] {"<Seleccione>"}));
 	    for (Vacuna recorriendo : Clinica.getInstance().getVacunas()) {
-	    	cbxVacuna.addItem(recorriendo.getCodigoVacuna() + ": " +recorriendo.getNombre());
+	    	if (recorriendo.getCantidad()>=1) {
+		    	cbxVacuna.addItem(recorriendo.getCodigoVacuna() + ": " +recorriendo.getNombre());
+	    	}
 	    }
 		cbxVacuna.setBounds(15, 192, 219, 26);
 		contentPanel.add(cbxVacuna);
@@ -271,7 +273,6 @@ public class adminVacuna extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						if (cbxPaciente.getSelectedIndex()==0||cbxVacuna.getSelectedIndex()==0||txtEnfermera.getText().isEmpty()) {
 				            JOptionPane.showMessageDialog(null, "Complete todos los campos correctamente", "Error", JOptionPane.ERROR_MESSAGE);
-				            return;
 						}
 						Date fechaSeleccionada = (Date) spnFecha.getValue();
 						LocalDate fecha = fechaSeleccionada.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();						
@@ -288,6 +289,7 @@ public class adminVacuna extends JDialog {
 			            txtEnfermera.setText("");
 			            txtLote.setText("");
 			            txtSangre.setText("");
+			            refrescarComboVacunas(cbxVacuna);
 					}
 				});
 				okButton.setActionCommand("OK");
@@ -319,7 +321,9 @@ public class adminVacuna extends JDialog {
 		cbxVacuna.removeAllItems(); 
 		cbxVacuna.addItem("<Seleccione>");
 	    for (Vacuna recorriendo : Clinica.getInstance().getVacunas()) {
-	    	cbxVacuna.addItem(recorriendo.getCodigoVacuna() + ": " +recorriendo.getNombre());
+	    	if (recorriendo.getCantidad()>=1) {
+		    	cbxVacuna.addItem(recorriendo.getCodigoVacuna() + ": " +recorriendo.getNombre());
+	    	}
 	    }
 	}
 }

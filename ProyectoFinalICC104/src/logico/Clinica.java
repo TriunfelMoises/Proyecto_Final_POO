@@ -338,6 +338,7 @@ public class Clinica implements Serializable {
 				paciente.setSexo(pacienteActualizado.getSexo());
 				paciente.setTipoSangre(pacienteActualizado.getTipoSangre());
 				paciente.setActivo(pacienteActualizado.isActivo());
+				paciente.setAlergias(pacienteActualizado.getAlergias());
 				return true;
 			}
 		}
@@ -1033,6 +1034,8 @@ public class Clinica implements Serializable {
 
 	public boolean registrarVacunaPaciente(Paciente elqueva, RegistroVacuna regi) {
 		elqueva.getRegistrosVacunas().add(regi);
+		modificarPaciente(elqueva);
+		modificarCantVacuna(regi.getVacuna());
 		return true;
 	}
 
@@ -1049,6 +1052,21 @@ public class Clinica implements Serializable {
 		}
 
 		return paciente.tieneVacuna(vacuna);
+	}
+	
+	public boolean modificarCantVacuna(Vacuna vacunacion) {
+		if (vacunacion==null) {
+			return false;
+		}
+		else {
+			for (Vacuna buscando: vacunas) {
+				if (buscando.getCodigoVacuna().equalsIgnoreCase(vacunacion.getCodigoVacuna())) {
+					buscando.setCantidad(buscando.getCantidad()-1);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public Vacuna buscarVacunaPorNombre(String nombre) {
