@@ -74,6 +74,15 @@ public class Principal extends JFrame {
 			dialog.setVisible(true);
 		});
 		mnPacientes.add(mntmListPac);
+		
+		JMenuItem mntmVerHistorial = new JMenuItem("Ver Historial Clinico");
+		mntmVerHistorial.addActionListener(e -> {
+			VerHistorialClinico dialog = new VerHistorialClinico();
+			dialog.setModal(true);
+			dialog.setLocationRelativeTo(Principal.this);
+			dialog.setVisible(true);
+		});
+		mnPacientes.add(mntmVerHistorial);
 
 		// ------------------ MENU DOCTORES ------------------
 		JMenu mnDoctores = new JMenu("Doctores");
