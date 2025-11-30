@@ -334,6 +334,9 @@ public class regPaciente extends JDialog {
 						elqueva.setPeso(((Number) spnPeso.getValue()).floatValue());
 						elqueva.setEstatura(((Number) spnEstatura.getValue()).floatValue());
 						elqueva.setAlergias(alegecitas);
+						selecVacunas viejitas = new selecVacunas(elqueva);
+						viejitas.setModal(true);
+						viejitas.setVisible(true);
 						Clinica.getInstance().registrarPaciente(elqueva);
 			            JOptionPane.showMessageDialog(null, "Registro Satisfactorio", "Información", JOptionPane.INFORMATION_MESSAGE);
 			            dispose();

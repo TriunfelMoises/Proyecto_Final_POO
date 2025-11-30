@@ -49,6 +49,7 @@ public class regAlergia extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+		setLocationRelativeTo(null);
 		
 		JComboBox<String> cbxTipo = new JComboBox();
 		cbxTipo.setModel(new DefaultComboBoxModel(new String[] {"<Seleccione>", "Alimento", "Medicamento", "Ambiental", "Animal", "Contacto"}));

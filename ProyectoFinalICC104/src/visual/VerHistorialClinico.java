@@ -21,6 +21,7 @@ import logico.Control;
 import logico.Paciente;
 import logico.Consulta;
 import logico.Vacuna;
+import logico.VacunaVieja;
 import logico.RegistroVacuna;
 import logico.Alergia;
 import logico.Doctor;
@@ -398,6 +399,15 @@ public class VerHistorialClinico extends JDialog {
                 };
                 modeloVacunasAplicadas.addRow(fila);
             }
+        }
+        for (VacunaVieja viejita : pacienteActual.getVacunasViejas()) {
+            Object[] fila = {
+                    viejita.getEnfermedad(),
+                    viejita.getFecha(),
+                    ("DESCONOCIDO"),
+                    ("DESCONOCIDO")
+                };
+            modeloVacunasAplicadas.addRow(fila);
         }
 
         // Vacunas Faltantes

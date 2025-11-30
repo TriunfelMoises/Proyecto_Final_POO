@@ -11,6 +11,7 @@ public class Paciente extends Persona {
 	private LocalDate fechaRegistro;
 	private HistoriaClinica historiaClinica;
 	private ArrayList<RegistroVacuna> registrosVacunas;
+	private ArrayList<VacunaVieja> vacunasViejas;
 	private boolean activo;
 	private float peso;
 	private float estatura;
@@ -23,6 +24,7 @@ public class Paciente extends Persona {
 	    this.fechaRegistro = LocalDate.now();
 	    this.historiaClinica = new HistoriaClinica(this, this.fechaRegistro);
 	    this.registrosVacunas = new ArrayList<>();
+	    this.vacunasViejas = new ArrayList<>();
 	    this.activo = true;
 	    this.peso = 0f;
 	    this.estatura = 0f;
@@ -150,6 +152,18 @@ public class Paciente extends Persona {
 
 	public void setCodigoPaciente(String codigoPaciente) {
 		this.codigoPaciente = codigoPaciente;
+	}
+
+	public ArrayList<VacunaVieja> getVacunasViejas() {
+		return vacunasViejas;
+	}
+
+	public void setVacunasViejas(ArrayList<VacunaVieja> vacunasViejas) {
+		this.vacunasViejas = vacunasViejas;
+	}
+	
+	public void crearVacunaVieja(VacunaVieja vacu) {
+		vacunasViejas.add(vacu);
 	}
 
 }
