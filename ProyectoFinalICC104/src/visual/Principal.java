@@ -5,8 +5,15 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFormattedTextField;
@@ -28,6 +35,9 @@ import javax.swing.JOptionPane;
 public class Principal extends JFrame {
 
     private JPanel contentPane;
+    static Socket sfd;
+    static DataInputStream entradaSocket;
+    static DataOutputStream salidaSocket;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -178,7 +188,6 @@ public class Principal extends JFrame {
         JMenuItem mntmRegConsulta = new JMenuItem("Registrar consulta");
         mntmRegConsulta.addActionListener(e -> {
 
-            // ‚Üê SIN FILTRO, SIN LICENCIA, SIN VALIDACIONES
         	regConsulta dialog = new regConsulta();
             dialog.setLocationRelativeTo(Principal.this);
             dialog.setVisible(true);
@@ -208,6 +217,38 @@ public class Principal extends JFrame {
             dialog.setVisible(true);
         });
         mnAdministracion.add(mntmRegistrarUsuarios);
+        
+        JMenu mnNewMenu = new JMenu("Respaldo");
+        menuBar.add(mnNewMenu);
+        
+        JMenuItem mntmNewMenuItem = new JMenuItem("Respaldar datos");
+        mntmNewMenuItem.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		try {
+        			sfd = new Socket("127.0.0.1", 7000);
+        			DataInputStream aux =  new DataInputStream(new FileInputStream(new File("control.dat")));
+        			salidaSocket = new DataOutputStream(sfd.getOutputStream());
+        			int unByte;
+        			try {
+        				while ((unByte = aux.read()) != -1) {
+        					salidaSocket.write(unByte);
+        					salidaSocket.flush();
+        				}
+        			}
+        				catch (IOException ioe) {
+        					System.out.println("Error: " + ioe);
+						}
+        			}catch (UnknownHostException uhe) {
+        				System.out.println("No se puede acceder al servidor");
+        				System.exit(1);
+					}
+        		catch (IOException ioe) {
+    				System.out.println("ComunicaciÛn rechazada");
+    				System.exit(1);				
+    				}
+        		}
+        });
+        mnNewMenu.add(mntmNewMenuItem);
 
         if (Control.getLoginUser() != null &&
                 !"Administrador".equalsIgnoreCase(Control.getLoginUser().getTipo())) {
