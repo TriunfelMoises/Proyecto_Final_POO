@@ -38,7 +38,7 @@ public class Servidor extends Thread
         	escritor.close();
         }
         catch (SocketException se) {
-            System.out.println("Usuario desconectado: " + se.getMessage());
+            System.out.println("Cliente desconectado: " + se.getMessage());
         }
         catch (IOException e) {
         	e.printStackTrace();

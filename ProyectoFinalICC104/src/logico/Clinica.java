@@ -47,6 +47,7 @@ public class Clinica implements Serializable {
 		this.citas = new ArrayList<>();
 		this.alergias = new ArrayList<>();
 		this.interesados = new ArrayList<>();
+		setarContadores();
 	}
 
 	public static Clinica getInstance() {
@@ -1115,6 +1116,16 @@ public class Clinica implements Serializable {
 
 	public String generarCodigoConsulta() {
 	    return "CON-" + contadorConsultas++;
+	}
+	
+	public void setarContadores() {
+		Clinica.contadorCitas = citas.size()+1;
+		Clinica.contadorVacunas = vacunas.size()+1;
+		Clinica.contadorTratamientos = tratamientos.size()+1;
+		Clinica.contadorEnfermedades = enfermedades.size()+1;
+		Clinica.contadorPacientes = pacientes.size()+1;
+		Clinica.contadorDoctores = doctores.size()+1;
+
 	}
 
 }

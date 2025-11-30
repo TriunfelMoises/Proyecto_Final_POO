@@ -108,6 +108,7 @@ public class login extends JFrame {
 
 			// AGREGAR ESTAS LÍNEAS para restaurar Clinica
 			Clinica.setInstance(temp.getClinica());
+			Clinica.getInstance().setarContadores();
 
 			empresaRead.close();
 			empresa.close();
