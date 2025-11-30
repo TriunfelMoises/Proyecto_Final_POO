@@ -14,6 +14,7 @@ public class regConsulta extends JDialog {
     private final JPanel contentPanel = new JPanel();
 
     private JComboBox<String> cbCitas;
+    private JComboBox<String> cbTratamientos;
     private JComboBox<String> cbEnfermedades;
 
     private JTextArea txtSintomas;
@@ -21,17 +22,13 @@ public class regConsulta extends JDialog {
     private JTextArea txtNotas;
     private JTextArea txtAlergias;
 
-    private JLabel lblTratamientoAsignado;
-
-    private JButton btnAsignarTratamiento;
-    private JButton btnModificarTratamiento;
     private JButton btnVerAlergias;
-
-    // ⭐️ NUEVO BOTÓN
     private JButton btnRegistrarPaciente;
+    private JButton btnGestionarTratamientos;
 
     private ArrayList<Cita> citasPendientes;
-    private Tratamiento tratamientoAsignado = null;
+    private ArrayList<Tratamiento> tratamientos;
+    private ArrayList<Enfermedad> enfermedades;
 
     public regConsulta() {
         super((Frame) null, "Registrar consulta", true);
@@ -55,9 +52,7 @@ public class regConsulta extends JDialog {
         lblTitulo.setBounds(20, 10, 300, 30);
         contentPanel.add(lblTitulo);
 
-        // =============================
-        //            CITA
-        // =============================
+        // CITA
         JLabel lblCita = new JLabel("Cita pendiente:");
         lblCita.setBounds(20, 60, 120, 25);
         contentPanel.add(lblCita);
@@ -69,9 +64,7 @@ public class regConsulta extends JDialog {
         cargarCitasPendientes();
         cbCitas.addActionListener(e -> actualizarDatosCita());
 
-        // =============================
-        //         ALERGIAS
-        // =============================
+        // ALERGIAS
         JLabel lblAler = new JLabel("Alergias:");
         lblAler.setBounds(20, 100, 120, 25);
         contentPanel.add(lblAler);
@@ -87,17 +80,14 @@ public class regConsulta extends JDialog {
         btnVerAlergias.addActionListener(e -> verDetallesAlergias());
         contentPanel.add(btnVerAlergias);
 
-        // ⭐️ BOTÓN REGISTRAR PACIENTE
         btnRegistrarPaciente = new JButton("Registrar este paciente");
         btnRegistrarPaciente.setBounds(510, 135, 200, 28);
         btnRegistrarPaciente.setVisible(false);
         btnRegistrarPaciente.addActionListener(e -> registrarNuevoPaciente());
         contentPanel.add(btnRegistrarPaciente);
 
-        // =============================
-        //        SÍNTOMAS
-        // =============================
-        JLabel lblSint = new JLabel("Síntomas:");
+        // SINTOMAS
+        JLabel lblSint = new JLabel("Sintomas:");
         lblSint.setBounds(20, 180, 120, 25);
         contentPanel.add(lblSint);
 
@@ -106,10 +96,8 @@ public class regConsulta extends JDialog {
         spSint.setBounds(150, 180, 620, 70);
         contentPanel.add(spSint);
 
-        // =============================
-        //       DIAGNÓSTICO
-        // =============================
-        JLabel lblDiag = new JLabel("Diagnóstico:");
+        // DIAGNOSTICO
+        JLabel lblDiag = new JLabel("Diagnostico:");
         lblDiag.setBounds(20, 265, 120, 25);
         contentPanel.add(lblDiag);
 
@@ -118,9 +106,7 @@ public class regConsulta extends JDialog {
         spDiag.setBounds(150, 265, 620, 70);
         contentPanel.add(spDiag);
 
-        // =============================
-        //        ENFERMEDAD
-        // =============================
+        // ENFERMEDAD
         JLabel lblEnf = new JLabel("Enfermedad:");
         lblEnf.setBounds(20, 350, 120, 25);
         contentPanel.add(lblEnf);
@@ -136,32 +122,23 @@ public class regConsulta extends JDialog {
 
         cargarEnfermedades();
 
-        // =============================
-        //       TRATAMIENTO
-        // =============================
+        // TRATAMIENTO
         JLabel lblTrat = new JLabel("Tratamiento:");
         lblTrat.setBounds(20, 390, 120, 25);
         contentPanel.add(lblTrat);
 
-        lblTratamientoAsignado = new JLabel("Ninguno");
-        lblTratamientoAsignado.setFont(new Font("Tahoma", Font.BOLD, 13));
-        lblTratamientoAsignado.setBounds(150, 390, 200, 25);
-        contentPanel.add(lblTratamientoAsignado);
+        cbTratamientos = new JComboBox<>();
+        cbTratamientos.setBounds(150, 390, 400, 25);
+        contentPanel.add(cbTratamientos);
 
-        btnAsignarTratamiento = new JButton("Asignar");
-        btnAsignarTratamiento.setBounds(360, 388, 90, 28);
-        btnAsignarTratamiento.addActionListener(e -> abrirRegTratamientos());
-        contentPanel.add(btnAsignarTratamiento);
+        btnGestionarTratamientos = new JButton("Gestionar");
+        btnGestionarTratamientos.setBounds(560, 388, 110, 28);
+        btnGestionarTratamientos.addActionListener(e -> abrirGestionTratamientos());
+        contentPanel.add(btnGestionarTratamientos);
 
-        btnModificarTratamiento = new JButton("Modificar");
-        btnModificarTratamiento.setBounds(460, 388, 100, 28);
-        btnModificarTratamiento.setEnabled(false);
-        btnModificarTratamiento.addActionListener(e -> modificarTratamiento());
-        contentPanel.add(btnModificarTratamiento);
+        cargarTratamientos();
 
-        // =============================
-        //           NOTAS
-        // =============================
+        // NOTAS
         JLabel lblNotas = new JLabel("Notas:");
         lblNotas.setBounds(20, 430, 120, 25);
         contentPanel.add(lblNotas);
@@ -171,9 +148,7 @@ public class regConsulta extends JDialog {
         spNotas.setBounds(150, 430, 620, 70);
         contentPanel.add(spNotas);
 
-        // =============================
-        //        BOTONES FINALES
-        // =============================
+        // BOTONES FINALES
         JButton btnCancelar = new JButton("Cancelar");
         btnCancelar.setBounds(520, 510, 100, 30);
         btnCancelar.addActionListener(e -> dispose());
@@ -185,37 +160,32 @@ public class regConsulta extends JDialog {
         contentPanel.add(btnRegistrar);
     }
 
-    // =============================
-    //       MÉTODOS AUXILIARES
-    // =============================
     private void cargarCitasPendientes() {
         cbCitas.removeAllItems();
         citasPendientes = Clinica.getInstance().listarCitasPendientes();
 
+        cbCitas.addItem("<Seleccione>");
         for (Cita c : citasPendientes) {
-            cbCitas.addItem(c.getCodigoCita());
+            cbCitas.addItem(c.getCodigoCita() + " - " + c.getPaciente().getNombre());
         }
     }
 
     private Cita getCitaSeleccionada() {
         int i = cbCitas.getSelectedIndex();
-        if (i < 0) return null;
-        return citasPendientes.get(i);
+        if (i <= 0) return null;
+        return citasPendientes.get(i - 1);
     }
 
     private void actualizarDatosCita() {
-
         Cita c = getCitaSeleccionada();
         if (c == null) return;
 
         Paciente p = c.getPaciente();
         if (p == null) return;
 
-        // ⭐ DETECCIÓN REAL DE PREPACIENTE
         boolean esPre = p.getCodigoPaciente().equals("XX");
         btnRegistrarPaciente.setVisible(esPre);
 
-        // Alergias
         if (p.getAlergias() == null || p.getAlergias().isEmpty()) {
             txtAlergias.setText("No tiene alergias.");
         } else {
@@ -226,7 +196,6 @@ public class regConsulta extends JDialog {
             txtAlergias.setText(sb.substring(0, sb.length() - 2));
         }
     }
-
 
     private void verDetallesAlergias() {
         Cita c = getCitaSeleccionada();
@@ -250,9 +219,26 @@ public class regConsulta extends JDialog {
 
     private void cargarEnfermedades() {
         cbEnfermedades.removeAllItems();
-        ArrayList<Enfermedad> lista = Clinica.getInstance().listarEnfermedades();
-        for (Enfermedad e : lista) {
+        cbEnfermedades.addItem("No especificar");
+        enfermedades = Clinica.getInstance().listarEnfermedades();
+        for (Enfermedad e : enfermedades) {
             cbEnfermedades.addItem(e.getNombre());
+        }
+    }
+
+    private void cargarTratamientos() {
+        cbTratamientos.removeAllItems();
+        tratamientos = Clinica.getInstance().listarTratamientos();
+        
+        if (tratamientos == null || tratamientos.isEmpty()) {
+            cbTratamientos.addItem("No hay tratamientos - Gestione uno primero");
+            cbTratamientos.setEnabled(false);
+        } else {
+            cbTratamientos.addItem("<Seleccione>");
+            for (Tratamiento t : tratamientos) {
+                cbTratamientos.addItem(t.getCodigoTratamiento() + " - " + t.getNombreTratamiento());
+            }
+            cbTratamientos.setEnabled(true);
         }
     }
 
@@ -262,41 +248,15 @@ public class regConsulta extends JDialog {
         cargarEnfermedades();
     }
 
-    private void abrirRegTratamientos() {
-        Cita c = getCitaSeleccionada();
-        if (c == null) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una cita.");
-            return;
-        }
-
-        regTratamiento rt = new regTratamiento(c);
-        rt.setVisible(true);
-
-        tratamientoAsignado = rt.getTratamientoTemporal();
-
-        if (tratamientoAsignado != null) {
-            Clinica.getInstance().agregarTratamiento(tratamientoAsignado);
-            lblTratamientoAsignado.setText(tratamientoAsignado.getCodigoTratamiento());
-            btnAsignarTratamiento.setEnabled(false);
-            btnModificarTratamiento.setEnabled(true);
-        }
-    }
-
-    private void modificarTratamiento() {
-        if (tratamientoAsignado == null) return;
-
-        regTratamiento rt = new regTratamiento(tratamientoAsignado);
-        rt.setVisible(true);
-
-        tratamientoAsignado = rt.getTratamientoTemporal();
-
-        if (tratamientoAsignado != null) {
-            lblTratamientoAsignado.setText(tratamientoAsignado.getCodigoTratamiento());
-        }
+    private void abrirGestionTratamientos() {
+        GestionTratamientos dialogo = new GestionTratamientos();
+        dialogo.setModal(true);
+        dialogo.setLocationRelativeTo(this);
+        dialogo.setVisible(true);
+        cargarTratamientos();
     }
 
     private void registrarNuevoPaciente() {
-
         Cita c = getCitaSeleccionada();
         if (c == null) return;
 
@@ -306,34 +266,37 @@ public class regConsulta extends JDialog {
         win.setModal(true);
         win.setVisible(true);
 
-        // ➜ Buscar ya el paciente REAL
         Paciente real = Clinica.getInstance().buscarPacientePorCedula(pre.getCedula());
 
         if (real != null) {
-            c.setPaciente(real);      // reemplazar prepaciente
+            c.setPaciente(real);
         }
 
-        actualizarDatosCita(); // refresca alergias y oculta el botón correctamente
+        actualizarDatosCita();
     }
 
-
     private void registrarConsulta() {
-
         Cita c = getCitaSeleccionada();
         if (c == null) {
             JOptionPane.showMessageDialog(this, "Debe seleccionar una cita.");
             return;
         }
 
-        // Prepaciente sin registrar → NO PERMITIR
         if (Clinica.getInstance().buscarPacientePorCedula(c.getPaciente().getCedula()) == null) {
             JOptionPane.showMessageDialog(this, 
                     "Debe registrar este paciente antes de registrar la consulta.");
             return;
         }
 
-        if (tratamientoAsignado == null) {
-            JOptionPane.showMessageDialog(this, "Debe asignar un tratamiento.");
+        if (tratamientos == null || tratamientos.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                    "No hay tratamientos disponibles.\nPor favor, registre uno primero desde el boton Gestionar.");
+            return;
+        }
+
+        int indiceTrat = cbTratamientos.getSelectedIndex();
+        if (indiceTrat <= 0) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un tratamiento.");
             return;
         }
 
@@ -341,19 +304,32 @@ public class regConsulta extends JDialog {
         String diagnostico = txtDiagnostico.getText().trim();
         String notas = txtNotas.getText().trim();
 
-        String enfNombre = (String) cbEnfermedades.getSelectedItem();
-        Enfermedad enf = Clinica.getInstance().buscarEnfermedadPorNombre(enfNombre);
+        if (sintomas.isEmpty() || diagnostico.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Sintomas y diagnostico son obligatorios.");
+            return;
+        }
+
+        Tratamiento tratSeleccionado = tratamientos.get(indiceTrat - 1);
+
+        String codigoEnfermedad = null;
+        if (cbEnfermedades.getSelectedIndex() > 0) {
+            String enfNombre = (String) cbEnfermedades.getSelectedItem();
+            Enfermedad enf = Clinica.getInstance().buscarEnfermedadPorNombre(enfNombre);
+            if (enf != null) {
+                codigoEnfermedad = enf.getCodigoEnfermedad();
+            }
+        }
 
         Clinica.getInstance().registrarConsulta(
                 c.getCodigoCita(),
                 sintomas,
                 diagnostico,
-                tratamientoAsignado.getCodigoTratamiento(),
+                tratSeleccionado.getCodigoTratamiento(),
                 notas,
-                enf != null ? enf.getCodigoEnfermedad() : null
+                codigoEnfermedad
         );
 
         JOptionPane.showMessageDialog(this, "Consulta registrada exitosamente.");
+        dispose();
     }
-
 }

@@ -15,6 +15,7 @@ import javax.swing.ListSelectionModel;
 
 import logico.Clinica;
 import logico.Tratamiento;
+import logico.Medicamento;
 
 public class GestionTratamientos extends JDialog {
 
@@ -66,10 +67,6 @@ public class GestionTratamientos extends JDialog {
         btnModificar.addActionListener(e -> modificarTratamiento());
         buttonPane.add(btnModificar);
 
-        JButton btnEliminar = new JButton("Eliminar");
-        btnEliminar.addActionListener(e -> eliminarTratamiento());
-        buttonPane.add(btnEliminar);
-
         JButton btnVerDetalles = new JButton("Ver Detalles");
         btnVerDetalles.addActionListener(e -> verDetalles());
         buttonPane.add(btnVerDetalles);
@@ -84,14 +81,21 @@ public class GestionTratamientos extends JDialog {
     private void cargarTratamientos() {
         modeloTabla.setRowCount(0);
 
-        for (Tratamiento t : Clinica.getInstance().getTratamientosPredefinidos()) {
-            String medicamentos = String.join(", ", t.getMedicamentos());
+        for (Tratamiento t : Clinica.getInstance().listarTratamientos()) {
+            String medicamentos = "";
+            for (Medicamento m : t.getMedicamentos()) {
+                medicamentos = medicamentos + m.getNombre() + ", ";
+            }
+            if (!medicamentos.isEmpty()) {
+                medicamentos = medicamentos.substring(0, medicamentos.length() - 2);
+            }
+            
             if (medicamentos.length() > 50) {
                 medicamentos = medicamentos.substring(0, 47) + "...";
             }
 
             String descripcion = t.getDescripcion();
-            if (descripcion.length() > 40) {
+            if (descripcion != null && descripcion.length() > 40) {
                 descripcion = descripcion.substring(0, 37) + "...";
             }
 
@@ -107,7 +111,7 @@ public class GestionTratamientos extends JDialog {
     }
 
     private void agregarTratamiento() {
-        regTratamientos dialogo = new regTratamientos();
+        regTratamiento dialogo = new regTratamiento();
         dialogo.setVisible(true);
         cargarTratamientos();
     }
@@ -130,35 +134,11 @@ public class GestionTratamientos extends JDialog {
     }
 
     private void modificarTratamientoDialogo(Tratamiento tratamiento) {
-        regTratamientos dialogo = new regTratamientos(tratamiento);
+        regTratamiento dialogo = new regTratamiento(tratamiento);
         dialogo.setTitle("Modificar Tratamiento");
         dialogo.setVisible(true);
     }
 
-    private void eliminarTratamiento() {
-        int filaSeleccionada = tablaTratamientos.getSelectedRow();
-
-        if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione un tratamiento de la tabla", "Sin seleccion", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int confirmacion = JOptionPane.showConfirmDialog(this, 
-            "Esta seguro que desea eliminar este tratamiento?", 
-            "Confirmar eliminacion", 
-            JOptionPane.YES_NO_OPTION);
-
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            String codigo = (String) modeloTabla.getValueAt(filaSeleccionada, 0);
-            Tratamiento tratamiento = Clinica.getInstance().buscarTratamientoPorCodigo(codigo);
-
-            if (tratamiento != null) {
-                Clinica.getInstance().eliminarTratamiento(tratamiento);
-                JOptionPane.showMessageDialog(this, "Tratamiento eliminado correctamente", "Exito", JOptionPane.INFORMATION_MESSAGE);
-                cargarTratamientos();
-            }
-        }
-    }
 
     private void verDetalles() {
         int filaSeleccionada = tablaTratamientos.getSelectedRow();
@@ -177,8 +157,12 @@ public class GestionTratamientos extends JDialog {
                             "DESCRIPCION:\n" + t.getDescripcion() + "\n\n" +
                             "MEDICAMENTOS:\n";
 
-            for (String med : t.getMedicamentos()) {
-                detalles = detalles + "- " + med + "\n";
+            for (Medicamento med : t.getMedicamentos()) {
+                detalles = detalles + "- " + med.getNombre() + 
+                          " (" + med.getDosisMg() + "mg cada " + 
+                          med.getFrecuenciaHoras() + " horas por " + 
+                          med.getDuracionDias() + " dias - " + 
+                          med.getVia() + ")\n";
             }
 
             detalles = detalles + "\nINDICACIONES:\n" + t.getIndicaciones() + "\n\n" +
