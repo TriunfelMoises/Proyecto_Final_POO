@@ -15,18 +15,17 @@ public class Paciente extends Persona {
 	private float peso;
 	private float estatura;
 
-	public Paciente(String cedula, String nombre, String apellido, String telefono, String direccion,
-			LocalDate fechaNacimiento, char sexo, String codigoPaciente, String tipoSangre, LocalDate fechaRegistro, float peso, float estatura) {
-		super(cedula, nombre, apellido, telefono, direccion, fechaNacimiento, sexo);
-		this.codigoPaciente = codigoPaciente;
-		this.tipoSangre = tipoSangre;
-		this.alergias = new ArrayList<>();
-		this.fechaRegistro = fechaRegistro;
-		this.historiaClinica = new HistoriaClinica(this, fechaRegistro);
-		this.registrosVacunas = new ArrayList<>();
-		this.activo = true;
-		this.peso = peso;
-		this.estatura = estatura;
+	public Paciente(String cedula, String nombre, String apellido, String telefono, String codigoPaciente) {
+	    super(cedula, nombre, apellido, telefono, "", LocalDate.now(), 'M'); 
+	    this.codigoPaciente = codigoPaciente;
+	    this.tipoSangre = "";
+	    this.alergias = new ArrayList<>();
+	    this.fechaRegistro = LocalDate.now();
+	    this.historiaClinica = new HistoriaClinica(this, this.fechaRegistro);
+	    this.registrosVacunas = new ArrayList<>();
+	    this.activo = true;
+	    this.peso = 0f;
+	    this.estatura = 0f;
 	}
 
 	public String getTipoSangre() {
@@ -147,6 +146,10 @@ public class Paciente extends Persona {
 
 	public void setEstatura(float estatura) {
 		this.estatura = estatura;
+	}
+
+	public void setCodigoPaciente(String codigoPaciente) {
+		this.codigoPaciente = codigoPaciente;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
@@ -15,6 +16,11 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.MaskFormatter;
+
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+import com.sun.org.apache.xml.internal.serializer.ElemDesc;
+
 import logico.Clinica;
 import logico.Doctor;
 import logico.Paciente;
@@ -33,17 +39,21 @@ public class AgendarCita extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtCedula;
-	private JLabel lblNombrePaciente;
 	private JComboBox<String> cbxDoctor;
 	private JSpinner spnFecha;
 	private JComboBox<String> cbxHora;
 	private JTextArea txtMotivo;
 	private JLabel lblCitasDisponibles;
 	private JLabel lblMensajeDisponibilidad;
-	private JButton btnCrearPaciente;
+	private JLabel lbltelefono;
+	private JTextField txtTelefonio ;
+	private JTextField txtPaciente ;
+	private Paciente nuevoPax;
+
 
 	private Paciente pacienteSeleccionado = null;
 	private ArrayList<Doctor> doctoresActivos = new ArrayList<>();
+	private JTextField txtApellido;
 
 	public AgendarCita() {
 		setTitle("Agendar Cita");
@@ -67,33 +77,60 @@ public class AgendarCita extends JDialog {
 		panelPaciente.add(lblCedula);
 
 		txtCedula = new JTextField();
+		try {
+			MaskFormatter cedulaMask = new MaskFormatter("###-#######-#");
+			cedulaMask.setPlaceholderCharacter('_');
+			txtCedula = new JFormattedTextField(cedulaMask);
+		} catch (Exception e) {
+			txtCedula = new JFormattedTextField();
+		}
 		txtCedula.setBounds(100, 25, 150, 20);
 		panelPaciente.add(txtCedula);
+	
 
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(e -> buscarPaciente());
 		btnBuscar.setBounds(260, 24, 90, 23);
 		panelPaciente.add(btnBuscar);
 
-		btnCrearPaciente = new JButton("Crear Paciente");
-		btnCrearPaciente.addActionListener(e -> {
-			regPaciente ventana = new regPaciente(null);
-			ventana.setModal(true);
-			ventana.setVisible(true);
-			buscarPaciente();
-		});
-		btnCrearPaciente.setBounds(360, 24, 130, 23);
-		btnCrearPaciente.setVisible(false);
-		panelPaciente.add(btnCrearPaciente);
-
-		JLabel lblNombre = new JLabel("Paciente:");
+		JLabel lblNombre = new JLabel("Nombre");
 		lblNombre.setBounds(10, 60, 80, 20);
 		panelPaciente.add(lblNombre);
-
-		lblNombrePaciente = new JLabel("---");
-		lblNombrePaciente.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblNombrePaciente.setBounds(100, 60, 454, 20);
-		panelPaciente.add(lblNombrePaciente);
+		
+		lbltelefono = new JLabel("Tel\u00E9fono");
+		lbltelefono.setBounds(365, 25, 69, 20);
+		panelPaciente.add(lbltelefono);
+		
+		txtTelefonio = new JTextField();
+		try {
+			MaskFormatter telefonoMask = new MaskFormatter("(###) ###-####");
+			telefonoMask.setPlaceholderCharacter('_');
+			txtTelefonio = new JFormattedTextField(telefonoMask);
+		} catch (Exception e) {
+			txtTelefonio = new JFormattedTextField();
+		}
+		txtTelefonio.setBounds(432, 22, 122, 26);
+		panelPaciente.add(txtTelefonio);
+		txtTelefonio.setColumns(10);
+		txtTelefonio.setText("");
+		txtTelefonio.setEnabled(false);
+		
+		txtPaciente = new JTextField();
+		txtPaciente.setEnabled(false);
+		txtPaciente.setBounds(100, 57, 163, 26);
+		panelPaciente.add(txtPaciente);
+		txtPaciente.setColumns(10);
+		txtPaciente.setText("");
+		
+		JLabel lblNewLabel = new JLabel("Apellido");
+		lblNewLabel.setBounds(270, 60, 69, 20);
+		panelPaciente.add(lblNewLabel);
+		
+		txtApellido = new JTextField();
+		txtApellido.setEnabled(false);
+		txtApellido.setBounds(337, 57, 217, 26);
+		panelPaciente.add(txtApellido);
+		txtApellido.setColumns(10);
 
 		// ========== PANEL CITA ==========
 		JPanel panelCita = new JPanel();
@@ -189,19 +226,20 @@ public class AgendarCita extends JDialog {
 		String cedula = txtCedula.getText().trim();
 
 		if (cedula.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Ingrese una cédula", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Ingrese una identificación", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
 		pacienteSeleccionado = Clinica.getInstance().buscarPacientePorCedula(cedula);
 
 		if (pacienteSeleccionado != null) {
-			lblNombrePaciente.setText(pacienteSeleccionado.getNombre() + " " + pacienteSeleccionado.getApellido());
-			btnCrearPaciente.setVisible(false);
+			txtPaciente.setText(pacienteSeleccionado.getNombre());
+			txtApellido.setText(pacienteSeleccionado.getApellido());
+			txtTelefonio.setText(pacienteSeleccionado.getTelefono());
 		} else {
-			lblNombrePaciente.setText("Paciente no encontrado");
-			lblNombrePaciente.setForeground(Color.RED);
-			btnCrearPaciente.setVisible(true);
+			txtApellido.setEnabled(true);
+			txtPaciente.setEnabled(true);
+			txtTelefonio.setEnabled(true);
 		}
 	}
 
@@ -244,8 +282,8 @@ public class AgendarCita extends JDialog {
 
 	private void agendarCita() {
 		// Validar paciente
-		if (pacienteSeleccionado == null) {
-			JOptionPane.showMessageDialog(this, "Debe buscar un paciente", "Error", JOptionPane.ERROR_MESSAGE);
+		if (pacienteSeleccionado == null && txtPaciente.getText().isEmpty() && txtTelefonio.getText().isEmpty() && txtApellido.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Debe colocar un paciente", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
@@ -275,14 +313,24 @@ public class AgendarCita extends JDialog {
 		LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		String horaTexto = (String) cbxHora.getSelectedItem();
 		LocalTime hora = LocalTime.parse(horaTexto);
+		Cita nuevaCita;
+		
+		if (pacienteSeleccionado == null) {
+			nuevoPax = new Paciente(txtCedula.getText(), txtPaciente.getText(), txtApellido.getText(), txtTelefonio.getText(), "XX");
+			Clinica.getInstance().registarInteresados(nuevoPax);
+			nuevaCita = Clinica.getInstance().agendarCita(nuevoPax, doctor.getCedula(), fecha,
+			        hora, motivo);
+		}
+		
+		else {
+			nuevaCita = Clinica.getInstance().agendarCita(pacienteSeleccionado, doctor.getCedula(), fecha, hora, motivo);
+		}
 
-		// Agendar cita
-		Cita nuevaCita = Clinica.getInstance().agendarCita(pacienteSeleccionado.getCedula(), doctor.getCedula(), fecha,
-				hora, motivo);
+		// Agendar cita}
+		
 
 		if (nuevaCita != null) {
-			JOptionPane.showMessageDialog(this,
-					"Cita agendada exitosamente\n" + "Código: " + nuevaCita.getCodigoCita() + "\n" + "Fecha: "
+			JOptionPane.showMessageDialog(this,"Cita agendada exitosamente\n" + "Código: " + nuevaCita.getCodigoCita() + "\n" + "Fecha: "
 							+ nuevaCita.getFechaCita() + "\n" + "Hora: " + nuevaCita.getHoraCita(),
 					"Éxito", JOptionPane.INFORMATION_MESSAGE);
 			dispose();

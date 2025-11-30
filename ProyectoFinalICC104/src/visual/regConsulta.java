@@ -10,6 +10,8 @@ import logico.Clinica;
 import logico.Doctor;
 import logico.Tratamiento;
 import logico.Enfermedad;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class regConsulta extends JDialog {
 
@@ -27,6 +29,7 @@ public class regConsulta extends JDialog {
     private JTextArea txtNotas;
 
     private JButton btnAgendarCita;
+    private JButton regPacButton;
 
     private ArrayList<Cita> citasPendientes;
     private ArrayList<Tratamiento> tratamientos;
@@ -120,8 +123,40 @@ public class regConsulta extends JDialog {
         JScrollPane spNotas = new JScrollPane(txtNotas);
         spNotas.setBounds(160, 360, 500, 80);
         contentPanel.add(spNotas);
+        
+        regPacButton = new JButton("Registrar este paciente");
+        regPacButton.setBounds(413, 51, 247, 29);
+        contentPanel.add(regPacButton);
+        regPacButton.setVisible(false);
+        regPacButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Cita c = getCitaSeleccionadaActual(); 
+                if (c != null && c.getPaciente() != null) {
+                    regPaciente dialog = new regPaciente(c.getPaciente());
+                    dialog.setModal(true);
+                    dialog.setLocationRelativeTo(regConsulta.this);
+                    dialog.setVisible(true);
 
-        // ===== Botones inferiores =====
+                    if (numLicenciaActual != null && !numLicenciaActual.isEmpty()) {
+                        cargarCitasPendientesPorDoctor();
+                    } else {
+                        cargarCitasPendientes();
+                    }
+                    actualizarRegPacButton();
+                } else {
+                    JOptionPane.showMessageDialog(regConsulta.this, "No hay paciente válido seleccionado.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+ 
+        cbCitas.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actualizarRegPacButton(); 
+            }
+        });
+  
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
@@ -167,16 +202,20 @@ public class regConsulta extends JDialog {
             }
 
             for (Cita c : citasPendientes) {
-                String texto = c.getCodigoCita() + " - " +
-                        c.getPaciente().getNombre() + " " +
-                        c.getPaciente().getApellido() + " / Dr. " +
-                        c.getDoctor().getNombre() + " " + c.getDoctor().getApellido() +
-                        " (" + c.getFechaCita() + " " + c.getHoraCita() + ")";
-                cbCitas.addItem(texto);
+                if (c.getPaciente() != null) {
+                    String texto = c.getCodigoCita() + " - " +
+                            c.getPaciente().getNombre() + " " +
+                            c.getPaciente().getApellido() + " / Dr. " +
+                            c.getDoctor().getNombre() + " " + c.getDoctor().getApellido() +
+                            " (" + c.getFechaCita() + " " + c.getHoraCita() + ")";
+                    cbCitas.addItem(texto);
+                }
             }
             cbCitas.setEnabled(true);
             cbCitas.setSelectedIndex(0);
         }
+
+        actualizarRegPacButton();
     }
 
     private void cargarCitasPendientesPorDoctor() {
@@ -210,15 +249,19 @@ public class regConsulta extends JDialog {
             }
 
             for (Cita c : citasPendientes) {
-                String texto = c.getCodigoCita() + " - " +
-                        c.getPaciente().getNombre() + " " +
-                        c.getPaciente().getApellido() +
-                        " / Fecha: " + c.getFechaCita() + " " + c.getHoraCita();
-                cbCitas.addItem(texto);
+                if (c.getPaciente() != null) {
+                    String texto = c.getCodigoCita() + " - " +
+                            c.getPaciente().getNombre() + " " +
+                            c.getPaciente().getApellido() +
+                            " / Fecha: " + c.getFechaCita() + " " + c.getHoraCita();
+                    cbCitas.addItem(texto);
+                }
             }
             cbCitas.setEnabled(true);
             cbCitas.setSelectedIndex(0);
         }
+
+        actualizarRegPacButton();
     }
 
     private void abrirRegCitasYRefrescar() {
@@ -303,6 +346,8 @@ public class regConsulta extends JDialog {
         }
 
         Cita citaSeleccionada = citasPendientes.get(indiceCita);
+        
+
 
         String numLicencia = txtNumLicenciaDoctor.getText().trim();
         if (numLicencia.isEmpty()) {
@@ -328,6 +373,14 @@ public class regConsulta extends JDialog {
             JOptionPane.showMessageDialog(this,
                     "El doctor con ese numero de licencia se encuentra INACTIVO y no puede atender consultas.",
                     "Doctor inactivo",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (regPacButton.isVisible()) {
+            JOptionPane.showMessageDialog(this,
+                    "Complete los datos de este paciente",
+                    "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -432,5 +485,25 @@ public class regConsulta extends JDialog {
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private Cita getCitaSeleccionadaActual() {
+        int sel = cbCitas.getSelectedIndex();
+        if (sel <= 0) return null;
+        int idx = sel - 1;
+        if (citasPendientes == null || idx < 0 || idx >= citasPendientes.size()) return null;
+        return citasPendientes.get(idx);
+    }
+   
+    private void actualizarRegPacButton() {
+        Cita actual = getCitaSeleccionadaActual();
+        boolean mostrar = false;
+        if (actual != null && actual.getPaciente() != null) {
+            String codigo = actual.getPaciente().getCodigoPaciente();
+            if (codigo != null && codigo.equals("XX")) {
+                mostrar = true;
+            }
+        }
+        regPacButton.setVisible(mostrar);
     }
 }

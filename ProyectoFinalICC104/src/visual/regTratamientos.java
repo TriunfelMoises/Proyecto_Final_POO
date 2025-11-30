@@ -204,7 +204,7 @@ public class regTratamientos extends JDialog {
     }
 
     private void inicializarCodigo() {
-        String codigo = Clinica.getInstance().generarCodigoTratamiento();
+        String codigo = ("TRA-"+Clinica.getInstance().contadorTratamientos);
         txtCodigo.setText(codigo);
     }
 

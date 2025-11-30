@@ -56,7 +56,7 @@ public class regVacuna extends JDialog {
         txtCodigo = new JTextField();
         txtCodigo.setEditable(false);
         txtCodigo.setBounds(372, 40, 91, 22);
-        txtCodigo.setText(Clinica.getInstance().generarCodigoVacuna());
+        txtCodigo.setText("VAC-"+Clinica.getInstance().contadorVacunas);
         contentPanel.add(txtCodigo);
 
         txtNumeroLote = new JTextField();
@@ -135,7 +135,7 @@ public class regVacuna extends JDialog {
 
         if (registrado) {
             JOptionPane.showMessageDialog(this, "Vacuna registrada exitosamente.");
-            txtCodigo.setText(Clinica.getInstance().generarCodigoVacuna());
+            txtCodigo.setText("VAC-"+Clinica.getInstance().contadorVacunas);
             txtNumeroLote.setText("");
             txtNombre.setText("");
             spnCantidad.setValue(1);

@@ -197,7 +197,7 @@ public class regEnfermedades extends JDialog {
     }
 
     private void inicializarCodigo() {
-        String codigo = Clinica.getInstance().generarCodigoEnfermedad();
+        String codigo = ("ENF-" + Clinica.getInstance().contadorEnfermedades);
         txtCodigo.setText(codigo);
     }
 

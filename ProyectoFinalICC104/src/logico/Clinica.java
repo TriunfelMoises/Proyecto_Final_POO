@@ -21,15 +21,16 @@ public class Clinica implements Serializable {
 	private ArrayList<Tratamiento> tratamientosPredefinidos;
 	private ArrayList<Cita> citas;
 	private ArrayList<Alergia> alergias;
+	private ArrayList<Paciente> interesados;
 	private boolean primerIngresp = false;
 
-	private int contadorPacientes;
-	private int contadorDoctores;
-	private int contadorCitas;
-	private int contadorConsultas;
-	private int contadorTratamientos;
-	private int contadorEnfermedades;
-	private int contadorVacunas;
+	public static int contadorPacientes = 1;
+	public static int contadorDoctores = 1;
+	public static int contadorCitas = 1;
+	public static int contadorConsultas = 1;
+	public static int contadorTratamientos = 1;
+	public static int contadorEnfermedades = 1;
+	public static int contadorVacunas = 1;
 
 	private static final int DURACION_CITA_MINUTOS = 45;
 
@@ -45,14 +46,7 @@ public class Clinica implements Serializable {
 		this.tratamientosPredefinidos = new ArrayList<>();
 		this.citas = new ArrayList<>();
 		this.alergias = new ArrayList<>();
-
-		this.contadorPacientes = 1;
-		this.contadorDoctores = 1;
-		this.contadorCitas = 1;
-		this.contadorConsultas = 1;
-		this.contadorTratamientos = 1;
-		this.contadorEnfermedades = 1;
-		this.contadorVacunas = 1;
+		this.interesados = new ArrayList<>();
 	}
 
 	public static Clinica getInstance() {
@@ -106,37 +100,6 @@ public class Clinica implements Serializable {
 		return citas;
 	}
 
-	// metodos para generar codigo
-
-	public String generarCodigoPaciente() {
-		String codigo = String.format("PAC-%04d", contadorPacientes);
-		contadorPacientes++;
-		return codigo;
-	}
-
-	public String generarCodigoDoctor() {
-		String codigo = String.format("DOC-%04d", contadorDoctores);
-		contadorDoctores++;
-		return codigo;
-	}
-
-	public String generarCodigoCita() {
-		String codigo = String.format("CIT-%04d", contadorCitas);
-		contadorCitas++;
-		return codigo;
-	}
-
-	public String generarCodigoConsulta() {
-		String codigo = String.format("CON-%04d", contadorConsultas);
-		contadorConsultas++;
-		return codigo;
-	}
-
-	public String generarCodigoTratamiento() {
-		String codigo = String.format("TRA-%04d", contadorTratamientos);
-		contadorTratamientos++;
-		return codigo;
-	}
 	/**
 	 * Recalcula el contador de cÃ³digos de tratamientos en base a la cantidad actual
 	 * de tratamientos predefinidos.
@@ -147,17 +110,6 @@ public class Clinica implements Serializable {
 		this.contadorTratamientos = tratamientosPredefinidos.size() + 1; 
 		}
 
-	public String generarCodigoEnfermedad() {
-		String codigo = String.format("ENF-%04d", contadorEnfermedades);
-		contadorEnfermedades++;
-		return codigo;
-	}
-
-	public String generarCodigoVacuna() {
-		String codigo = String.format("VAC-%04d", contadorVacunas);
-		contadorVacunas++;
-		return codigo;
-	}
 
 	// doctores
 
@@ -173,6 +125,7 @@ public class Clinica implements Serializable {
 		}
 
 		doctores.add(doctor);
+		contadorDoctores++;
 		return true;
 	}
 
@@ -290,8 +243,8 @@ public class Clinica implements Serializable {
 				return false;
 			}
 		}
-
 		pacientes.add(paciente);
+		contadorPacientes++;
 		return true;
 	}
 
@@ -374,8 +327,8 @@ public class Clinica implements Serializable {
 				return false;
 			}
 		}
-
 		enfermedades.add(enfermedad);
+		contadorEnfermedades++;
 		return true;
 	}
 
@@ -459,6 +412,7 @@ public class Clinica implements Serializable {
 		}
 
 		vacunas.add(vacuna);
+		contadorVacunas++;
 		return true;
 	}
 
@@ -525,6 +479,7 @@ public class Clinica implements Serializable {
         }
 
         tratamientosPredefinidos.add(tratamiento);
+        contadorTratamientos++;
         return true;
     }
 
@@ -562,7 +517,7 @@ public class Clinica implements Serializable {
 
 	// cistas
 
-	public Cita agendarCita(String cedulaPaciente, String cedulaDoctor, LocalDate fecha, LocalTime hora,
+	public Cita agendarCita(Paciente paciente, String cedulaDoctor, LocalDate fecha, LocalTime hora,
 			String motivo) {
 
 		if (fecha.isBefore(LocalDate.now())) {
@@ -571,7 +526,6 @@ public class Clinica implements Serializable {
 
 		}
 
-		Paciente paciente = buscarPacientePorCedula(cedulaPaciente);
 		if (paciente == null) {
 			return null; // Paciente no existe
 		}
@@ -595,10 +549,11 @@ public class Clinica implements Serializable {
 		}
 
 		// Todo OK, crear la cita
-		String codigoCita = generarCodigoCita();
+		String codigoCita = ("CIT-" + contadorCitas);
 		Cita nuevaCita = new Cita(codigoCita, paciente, doctor, fecha, hora, motivo);
 
 		citas.add(nuevaCita);
+		contadorCitas++;
 		return nuevaCita;
 	}
 
@@ -819,7 +774,7 @@ public class Clinica implements Serializable {
 		}
 
 		// Crear cÃ³digo de consulta
-		String codigoConsulta = generarCodigoConsulta();
+		String codigoConsulta = ("CON-"+ contadorConsultas);
 
 		Consulta nuevaConsulta = new Consulta(
 				codigoConsulta,
@@ -925,7 +880,7 @@ public class Clinica implements Serializable {
 	                continue;
 	            }
 
-	            // ðŸ”¹ CONSULTA VISIBLE SI:
+	            // CONSULTA VISIBLE SI:
 	            //  - la enfermedad estÃ¡ bajo vigilancia (pÃºblica)
 	            //  - O el doctor que la hizo tiene ese nÃºmero de licencia
 	            if (c.isEsEnfermedadVigilancia() ||
@@ -1130,6 +1085,18 @@ public class Clinica implements Serializable {
 			}
 		}
 		return true;
+	}
+
+	public ArrayList<Paciente> getInteresados() {
+		return interesados;
+	}
+
+	public void setInteresados(ArrayList<Paciente> interesados) {
+		this.interesados = interesados;
+	}
+	
+	public void registarInteresados(Paciente elpaci) {
+		interesados.add(elpaci);
 	}
 
 

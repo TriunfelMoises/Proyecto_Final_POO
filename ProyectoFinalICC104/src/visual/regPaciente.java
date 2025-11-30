@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
 import logico.Alergia;
 import logico.Clinica;
 import logico.Paciente;
@@ -92,7 +94,7 @@ public class regPaciente extends JDialog {
 		txtCodigo.setBounds(451, 28, 94, 26);
 		contentPanel.add(txtCodigo);
 		txtCodigo.setColumns(10);
-		txtCodigo.setText(Clinica.getInstance().generarCodigoPaciente());
+		txtCodigo.setText("PAC-"+Clinica.getInstance().contadorPacientes);
 		
 		JLabel lblNewLabel_1 = new JLabel("Nombre(s)");
 		lblNewLabel_1.setBounds(15, 43, 94, 20);
@@ -231,16 +233,27 @@ public class regPaciente extends JDialog {
 		spnEstatura.setModel(new SpinnerNumberModel(new Float(1), new Float(1), null, new Float(1)));
 		spnEstatura.setBounds(451, 93, 94, 26);
 		contentPanel.add(spnEstatura);
-		if (pacienteCar!=null){
-			spnFechaNacimiento.setEnabled(false);
-			txtApellido.setEnabled(false);
-			txtCedula.setEnabled(false);
-			txtNombre.setEnabled(false);
-			rdbtnHombre.setEnabled(false);
-			rdbtnMujer.setEnabled(false);
-			chckbxAlergias.setVisible(false);
-			lblNewLabel_10.setVisible(false);
-			cbxTipoSangre.setEnabled(false);
+
+		if (pacienteCar != null) {
+		    if (pacienteCar.getCodigoPaciente().equals("XX")) {
+		        JOptionPane.showMessageDialog(this, "Complete los datos de este paciente", "Información", JOptionPane.INFORMATION_MESSAGE);
+		        txtCedula.setEnabled(false);
+		        txtNombre.setEnabled(false);
+		        txtApellido.setEnabled(false);
+		        txtTelefono.setEnabled(false);
+		        cargarPaciente();
+		    } else {
+		        spnFechaNacimiento.setEnabled(false);
+		        txtApellido.setEnabled(false);
+		        txtCedula.setEnabled(false);
+		        txtNombre.setEnabled(false);
+		        rdbtnHombre.setEnabled(false);
+		        rdbtnMujer.setEnabled(false);
+		        chckbxAlergias.setVisible(false);
+		        lblNewLabel_10.setVisible(false);
+		        cbxTipoSangre.setEnabled(false);
+		        cargarPaciente();
+		    }
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -249,6 +262,9 @@ public class regPaciente extends JDialog {
 			{
 				JButton okButton = new JButton("Continuar");
 				if (pacienteCar != null) {
+					if (pacienteCar.getDireccion().equals(null)) {
+						okButton.setText("Registrar");
+					}
 					okButton.setText("Modificar");
 				}
 				okButton.addActionListener(new ActionListener() {
@@ -279,37 +295,48 @@ public class regPaciente extends JDialog {
 							}
 						}
 						if (pacienteCar !=null) {
+							if (Clinica.getInstance().buscarPacientePorCodigo(pacienteCar.getCodigoPaciente())!=null) {
 								pacienteCar.setDireccion(txtApellido.getText());
 								pacienteCar.setTelefono(txtTelefono.getText());
 								pacienteCar.setEstatura((float)spnEstatura.getValue());
 								pacienteCar.setPeso((float)spnPeso.getValue());
 								Clinica.getInstance().modificarPaciente(pacienteCar);
 								dispose();
+							}
+							else {
+								Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
+								LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+								Paciente elqueva = new Paciente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), txtTelefono.getText(), txtCodigo.getText());
+								elqueva.setDireccion(txtdireccion.getText());
+								elqueva.setFechaNacimiento(fechaNac);
+								elqueva.setSexo(sexo);
+								elqueva.setTipoSangre(cbxTipoSangre.getSelectedItem().toString());
+								elqueva.setPeso(((Number) spnPeso.getValue()).floatValue());
+								elqueva.setEstatura(((Number) spnEstatura.getValue()).floatValue());
+								elqueva.setAlergias(alegecitas);
+								if (pacienteCar.getCodigoPaciente().equals("XX")) {
+								    pacienteCar.setCodigoPaciente(txtCodigo.getText());
+								}
+								Clinica.getInstance().registrarPaciente(elqueva);
+					            JOptionPane.showMessageDialog(null, "Registro Satisfactorio", "Información", JOptionPane.INFORMATION_MESSAGE);
+					            dispose();
+							}
+	
 						}
 						else {
-						Date fechaActDate = (Date) spnFechaActual.getValue();
-						LocalDate fechaActual = fechaActDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 						Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
 						LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-						Date hoyDate = new Date();
-						Paciente elqueva = new Paciente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), txtTelefono.getText(), txtdireccion.getText(), fechaNac, sexo, txtCodigo.getText(), cbxTipoSangre.getSelectedItem().toString(), fechaActual, ((Number) spnPeso.getValue()).floatValue(), ((Number) spnEstatura.getValue()).floatValue());
+						Paciente elqueva = new Paciente(txtCedula.getText(), txtNombre.getText(), txtApellido.getText(), txtTelefono.getText(), txtCodigo.getText());
+						elqueva.setDireccion(txtdireccion.getText());
+						elqueva.setFechaNacimiento(fechaNac);
+						elqueva.setSexo(sexo);
+						elqueva.setTipoSangre(cbxTipoSangre.getSelectedItem().toString());
+						elqueva.setPeso(((Number) spnPeso.getValue()).floatValue());
+						elqueva.setEstatura(((Number) spnEstatura.getValue()).floatValue());
 						elqueva.setAlergias(alegecitas);
 						Clinica.getInstance().registrarPaciente(elqueva);
 			            JOptionPane.showMessageDialog(null, "Registro Satisfactorio", "Información", JOptionPane.INFORMATION_MESSAGE);
-			            txtNombre.setText("");
-			            txtApellido.setText("");
-			            txtCedula.setText("");
-			            txtCodigo.setText(Clinica.getInstance().generarCodigoPaciente());
-			            txtdireccion.setText("");
-			            txtTelefono.setText("");
-			            rdbtnHombre.setSelected(true);
-			            rdbtnMujer.setSelected(false);
-			            chckbxAlergias.setSelected(false);
-			            spnFechaActual.setValue(hoyDate);
-			            spnFechaNacimiento.setValue(hoyDate);
-			            cbxTipoSangre.setSelectedIndex(0);
-			            spnEstatura.setValue(1);
-			            spnPeso.setValue(1);
+			            dispose();
 						}
 					}
 				});
@@ -337,6 +364,12 @@ public class regPaciente extends JDialog {
 		txtApellido.setText(pacienteCar.getApellido());
 		txtCedula.setText(pacienteCar.getCedula());
 		txtCodigo.setText(pacienteCar.getCodigoPaciente());
+		if (pacienteCar.getCodigoPaciente().equals("XX")) {
+			txtCodigo.setText("PAC-"+Clinica.getInstance().contadorPacientes);
+		}
+		else {
+			txtCodigo.setText(pacienteCar.getCodigoPaciente());
+		}
 		txtNombre.setText(pacienteCar.getNombre());
 		txtTelefono.setText(pacienteCar.getTelefono());
 		spnEstatura.setValue(pacienteCar.getEstatura());

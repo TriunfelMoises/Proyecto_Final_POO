@@ -80,7 +80,7 @@ public class regDoctor extends JDialog {
 		txtCodigo.setBounds(540, 38, 100, 26);
 		contentPanel.add(txtCodigo);
 		txtCodigo.setColumns(10);
-		txtCodigo.setText(Clinica.getInstance().generarCodigoDoctor());
+		txtCodigo.setText("DOC-" + Clinica.getInstance().contadorDoctores);
 
 		// ========== FILA 1: NOMBRE Y APELLIDO ==========
 		JLabel lblNombre = new JLabel("Nombre(s):");
@@ -406,7 +406,7 @@ public class regDoctor extends JDialog {
 		txtNumeroLicencia.setText("");
 		txtHorarioInicio.setText("08:00");
 		txtHorarioFin.setText("17:00");
-		txtCodigo.setText(Clinica.getInstance().generarCodigoDoctor());
+		txtCodigo.setText("DOC-" + Clinica.getInstance().contadorDoctores);
 		rdbtnHombre.setSelected(true);
 		chckbxActivo.setSelected(true);
 		cbxEspecialidad.setSelectedIndex(0);

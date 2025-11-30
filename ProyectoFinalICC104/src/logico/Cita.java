@@ -19,7 +19,7 @@ public class Cita implements Serializable {
 	private String estadoCita;
 	private String motivoCita;
 
-	public Cita(String codigoCita, Paciente paciente, Doctor doctor, LocalDate fechaCita, LocalTime horaCita,
+	public Cita(String codigoCita, Paciente paciente , Doctor doctor, LocalDate fechaCita, LocalTime horaCita,
 			String motivoCita) {
 		super();
 		this.codigoCita = codigoCita;
@@ -75,9 +75,6 @@ public class Cita implements Serializable {
 		return codigoCita;
 	}
 
-	public Paciente getPaciente() {
-		return paciente;
-	}
 
 	public void cambiarEstado(String nuevoEstado) {
 		if (nuevoEstado.equals("Pendiente") || nuevoEstado.equals("Completada") || nuevoEstado.equals("Cancelada")) {
@@ -91,6 +88,14 @@ public class Cita implements Serializable {
 
 	public boolean estaPendiente() {
 		return this.estadoCita.equals("Pendiente");
+	}
+
+	public Paciente getPaciente() {
+		return paciente;
+	}
+
+	public void setPaciente(Paciente paciente) {
+		this.paciente = paciente;
 	}
 
 }
