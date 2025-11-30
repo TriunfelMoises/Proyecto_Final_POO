@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 public class Paciente extends Persona {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String codigoPaciente;
 	private String tipoSangre;
 	private ArrayList<Alergia> alergias;

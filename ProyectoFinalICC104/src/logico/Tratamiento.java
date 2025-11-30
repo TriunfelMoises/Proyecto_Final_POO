@@ -5,88 +5,102 @@ import java.util.ArrayList;
 
 public class Tratamiento implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private String codigoTratamiento;
-	private String nombreTratamiento;
-	private String descripcion;
-	private ArrayList<String> medicamentos;
-	private String indicaciones;
-	private String duracion;
+    private static final long serialVersionUID = 1L;
 
-	public Tratamiento(String codigoTratamiento, String nombreTratamiento, String descripcion, String indicaciones,
-			String duracion) {
-		super();
-		this.codigoTratamiento = codigoTratamiento;
-		this.nombreTratamiento = nombreTratamiento;
-		this.descripcion = descripcion;
-		this.medicamentos = new ArrayList<>();
-		this.indicaciones = indicaciones;
-		this.duracion = duracion;
-	}
+    private static int contador = 1;
 
-	public String getNombreTratamiento() {
-		return nombreTratamiento;
-	}
+    private String codigoTratamiento;
 
-	public void setNombreTratamiento(String nombreTratamiento) {
-		this.nombreTratamiento = nombreTratamiento;
-	}
+    // Información del paciente
+    private String nombrePaciente;
+    private int edadPaciente;
+    private boolean alergico;
+    private String detalleAlergia;
 
-	public String getDescripcion() {
-		return descripcion;
-	}
+    // Información de la consulta
+    private String codigoConsulta;
+    private String especialidad;
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+    // Medicamentos asociados
+    private ArrayList<Medicamento> medicamentos;
 
-	public ArrayList<String> getMedicamentos() {
-		return medicamentos;
-	}
+    // ============================================================
+    //                 GENERACIÓN DE CÓDIGO
+    // ============================================================
+    public static String generarCodigo() {
+        return String.format("TRA-%05d", contador++);
+    }
 
-	public void setMedicamentos(ArrayList<String> medicamentos) {
-		this.medicamentos = medicamentos;
-	}
+    // ============================================================
+    //              CONSTRUCTOR OFICIAL (EL QUE USA REGTRATAMIENTO)
+    // ============================================================
+    public Tratamiento(String codigoTratamiento,
+                       String nombrePaciente,
+                       int edadPaciente,
+                       boolean alergico,
+                       String detalleAlergia,
+                       String codigoConsulta,
+                       String especialidad) {
 
-	public String getIndicaciones() {
-		return indicaciones;
-	}
+        this.codigoTratamiento = codigoTratamiento;
+        this.nombrePaciente = nombrePaciente;
+        this.edadPaciente = edadPaciente;
+        this.alergico = alergico;
+        this.detalleAlergia = detalleAlergia;
+        this.codigoConsulta = codigoConsulta;
+        this.especialidad = especialidad;
+        this.medicamentos = new ArrayList<>();
+    }
 
-	public void setIndicaciones(String indicaciones) {
-		this.indicaciones = indicaciones;
-	}
+    // ============================================================
+    //                       GETTERS / SETTERS
+    // ============================================================
+    public String getCodigoTratamiento() {
+        return codigoTratamiento;
+    }
 
-	public String getDuracion() {
-		return duracion;
-	}
+    public String getNombrePaciente() {
+        return nombrePaciente;
+    }
 
-	public void setDuracion(String duracion) {
-		this.duracion = duracion;
-	}
+    public int getEdadPaciente() {
+        return edadPaciente;
+    }
 
-	public String getCodigoTratamiento() {
-		return codigoTratamiento;
-	}
+    public boolean isAlergico() {
+        return alergico;
+    }
 
-	public void agregarMedicamentos(String medicamento) {
+    public String getDetalleAlergia() {
+        return detalleAlergia;
+    }
 
-		medicamentos.add(medicamento);
+    public String getCodigoConsulta() {
+        return codigoConsulta;
+    }
 
-	}
+    public String getEspecialidad() {
+        return especialidad;
+    }
 
-	public boolean eliminarMedicamento(String medicamento) {
+    public ArrayList<Medicamento> getMedicamentos() {
+        return medicamentos;
+    }
 
-		if (medicamento != null && medicamentos.contains(medicamento)) {
+    public void setMedicamentos(ArrayList<Medicamento> medicamentos) {
+        this.medicamentos = medicamentos;
+    }
 
-			medicamentos.remove(medicamento);
-			return true;
-		}
+    // ============================================================
+    //                       MÉTODOS ÚTILES
+    // ============================================================
+    public void agregarMedicamento(Medicamento m) {
+        medicamentos.add(m);
+    }
 
-		return false;
-
-	}
-
+    public void eliminarMedicamento(int index) {
+        if (index >= 0 && index < medicamentos.size()) {
+            medicamentos.remove(index);
+        }
+    }
 }

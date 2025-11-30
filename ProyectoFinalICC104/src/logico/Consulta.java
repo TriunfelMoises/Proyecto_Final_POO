@@ -5,10 +5,8 @@ import java.time.LocalDate;
 
 public class Consulta implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private String codigoConsulta;
 	private Paciente paciente;
 	private Doctor doctor;
@@ -21,12 +19,17 @@ public class Consulta implements Serializable {
 	private boolean incluidaEnResumen;
 	private boolean esEnfermedadVigilancia;
 
-	public Consulta(String codigoConsulta, Paciente paciente, Doctor doctor, Cita cita, LocalDate fechaConsulta,
-			String sintomas, String diagnostico, Tratamiento tratamiento, String notasMedicas) {
+	// ============================================================
+	//                      CONSTRUCTOR
+	// ============================================================
+	public Consulta(String codigoConsulta, Paciente paciente, Doctor doctor, 
+	                Cita cita, LocalDate fechaConsulta,
+	                String sintomas, String diagnostico, 
+	                Tratamiento tratamiento, String notasMedicas) {
 		super();
 		this.codigoConsulta = codigoConsulta;
 		this.paciente = paciente;
-		this.doctor = doctor;
+        this.doctor = doctor;
 		this.cita = cita;
 		this.fechaConsulta = fechaConsulta;
 		this.sintomas = sintomas;
@@ -35,6 +38,29 @@ public class Consulta implements Serializable {
 		this.notasMedicas = notasMedicas;
 		this.incluidaEnResumen = false;
 		this.esEnfermedadVigilancia = false;
+	}
+
+	// ============================================================
+	//                      GETTERS & SETTERS
+	// ============================================================
+	public String getCodigoConsulta() {
+		return codigoConsulta;
+	}
+
+	public Paciente getPaciente() {
+		return paciente;
+	}
+
+	public Doctor getDoctor() {
+		return doctor;
+	}
+
+	public Cita getCita() {
+		return cita;
+	}
+
+	public LocalDate getFechaConsulta() {
+		return fechaConsulta;
 	}
 
 	public String getSintomas() {
@@ -69,37 +95,22 @@ public class Consulta implements Serializable {
 		this.notasMedicas = notasMedicas;
 	}
 
-	public String getCodigoConsulta() {
-		return codigoConsulta;
-	}
-
-	public Paciente getPaciente() {
-		return paciente;
-	}
-
-	public Doctor getDoctor() {
-		return doctor;
-	}
-
-	public Cita getCita() {
-		return cita;
-	}
-
-	public LocalDate getFechaConsulta() {
-		return fechaConsulta;
-	}
-
 	public boolean isIncluidaEnResumen() {
 		return incluidaEnResumen;
 	}
 
 	public boolean isEsEnfermedadVigilancia() {
-	    return esEnfermedadVigilancia;
+		return esEnfermedadVigilancia;
 	}
 
 	public void setEsEnfermedadVigilancia(boolean esEnfermedadVigilancia) {
-	    this.esEnfermedadVigilancia = esEnfermedadVigilancia;
-	} void marcarParaResumen() {
+		this.esEnfermedadVigilancia = esEnfermedadVigilancia;
+	}
+
+	// ============================================================
+	//                   MÉTODOS DE MARCADO
+	// ============================================================
+	public void marcarParaResumen() {
 		this.incluidaEnResumen = true;
 	}
 
@@ -112,11 +123,6 @@ public class Consulta implements Serializable {
 	}
 
 	public boolean vaAlResumen() {
-		if (incluidaEnResumen == true || esEnfermedadVigilancia == true) {
-			return true;
-		} else {
-			return false;
-		}
+		return incluidaEnResumen || esEnfermedadVigilancia;
 	}
-
 }

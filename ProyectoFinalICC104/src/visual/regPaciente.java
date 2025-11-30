@@ -372,6 +372,7 @@ public class regPaciente extends JDialog {
 		}
 		else {
 			txtCodigo.setText(pacienteCar.getCodigoPaciente());
+			
 		}
 		txtNombre.setText(pacienteCar.getNombre());
 		txtTelefono.setText(pacienteCar.getTelefono());
@@ -416,4 +417,10 @@ public class regPaciente extends JDialog {
 			break;
 		}
 	}
+	
+	public Paciente getPaciente() {
+	    return pacienteCar;
+	}
+	
+	
 }

@@ -373,7 +373,7 @@ public class VerHistorialClinico extends JDialog {
                 c.getFechaConsulta().toString(),
                 c.getDoctor().getNombre() + " " + c.getDoctor().getApellido(),
                 c.getDiagnostico(),
-                c.getTratamiento().getNombreTratamiento(),
+                c.getTratamiento().getCodigoTratamiento(),
                 c.isIncluidaEnResumen() ? "Sí" : "No",
                 c.isEsEnfermedadVigilancia() ? "Sí" : "No"
             };

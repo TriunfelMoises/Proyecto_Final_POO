@@ -53,7 +53,7 @@ public class regEnfermedades extends JDialog {
 
         Font labelFont = new Font("Tahoma", Font.PLAIN, 12);
 
-        JLabel lblCodigo = new JLabel("Código:");
+        JLabel lblCodigo = new JLabel("CÃ³digo:");
         lblCodigo.setFont(labelFont);
         lblCodigo.setBounds(20, 20, 80, 22);
         contentPanel.add(lblCodigo);
@@ -77,7 +77,7 @@ public class regEnfermedades extends JDialog {
         chkBajoVigilancia.setBounds(120, 85, 250, 22);
         contentPanel.add(chkBajoVigilancia);
 
-        JLabel lblSintomas = new JLabel("Síntomas y signos:");
+        JLabel lblSintomas = new JLabel("SÃ­ntomas y signos:");
         lblSintomas.setFont(labelFont);
         lblSintomas.setBounds(20, 120, 120, 22);
         contentPanel.add(lblSintomas);
@@ -98,7 +98,7 @@ public class regEnfermedades extends JDialog {
         spnNivelGravedad.setBounds(190, 245, 60, 22);
         contentPanel.add(spnNivelGravedad);
 
-        JLabel lblPotencial = new JLabel("Potencial de propagación:");
+        JLabel lblPotencial = new JLabel("Potencial de propagaciÃ³n:");
         lblPotencial.setFont(labelFont);
         lblPotencial.setBounds(20, 280, 160, 22);
         contentPanel.add(lblPotencial);
@@ -121,29 +121,29 @@ public class regEnfermedades extends JDialog {
         cbTipo.addItem("Seleccione...");
         cbTipo.addItem("Autoinmune");
         cbTipo.addItem("Cardiovascular");
-        cbTipo.addItem("Congénita");
-        cbTipo.addItem("Dermatológica");
+        cbTipo.addItem("CongÃ©nita");
+        cbTipo.addItem("DermatolÃ³gica");
         cbTipo.addItem("Endocrina");
         cbTipo.addItem("Gastrointestinal");
-        cbTipo.addItem("Genética");
-        cbTipo.addItem("Hematológica");
-        cbTipo.addItem("Iatrogénica");
-        cbTipo.addItem("Inmunológica");
-        cbTipo.addItem("Metabólica");
-        cbTipo.addItem("Musculoesquelética");
-        cbTipo.addItem("Neoplasia o cáncer");
-        cbTipo.addItem("Neurológica");
+        cbTipo.addItem("GenÃ©tica");
+        cbTipo.addItem("HematolÃ³gica");
+        cbTipo.addItem("IatrogÃ©nica");
+        cbTipo.addItem("InmunolÃ³gica");
+        cbTipo.addItem("MetabÃ³lica");
+        cbTipo.addItem("MusculoesquelÃ©tica");
+        cbTipo.addItem("Neoplasia o cÃ¡ncer");
+        cbTipo.addItem("NeurolÃ³gica");
         cbTipo.addItem("Nutricional");
-        cbTipo.addItem("Oftalmológica");
-        cbTipo.addItem("Otorrinolaringológica");
+        cbTipo.addItem("OftalmolÃ³gica");
+        cbTipo.addItem("OtorrinolaringolÃ³gica");
         cbTipo.addItem("Profesional");
-        cbTipo.addItem("Psiquiátrica");
+        cbTipo.addItem("PsiquiÃ¡trica");
         cbTipo.addItem("Rara");
         cbTipo.addItem("Renal o urinaria");
         cbTipo.addItem("Respiratoria");
-        cbTipo.addItem("Reumatológica");
-        cbTipo.addItem("Toxicológica");
-        cbTipo.addItem("Traumática");
+        cbTipo.addItem("ReumatolÃ³gica");
+        cbTipo.addItem("ToxicolÃ³gica");
+        cbTipo.addItem("TraumÃ¡tica");
         cbTipo.addItem("Infecciosa");
         cbTipo.setBounds(190, 315, 250, 22);
         contentPanel.add(cbTipo);
@@ -210,7 +210,7 @@ public class regEnfermedades extends JDialog {
             JOptionPane.showMessageDialog(
                     this,
                     "Estado de vigilancia actualizado correctamente.",
-                    "Éxito",
+                    "Ã‰xito",
                     JOptionPane.INFORMATION_MESSAGE
             );
             dispose();
@@ -238,7 +238,7 @@ public class regEnfermedades extends JDialog {
         if (sintomas.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Debe especificar los síntomas y signos de la enfermedad.",
+                    "Debe especificar los sÃ­ntomas y signos de la enfermedad.",
                     "Dato incompleto",
                     JOptionPane.WARNING_MESSAGE
             );
@@ -271,7 +271,7 @@ public class regEnfermedades extends JDialog {
             JOptionPane.showMessageDialog(
                     this,
                     "Enfermedad registrada correctamente.",
-                    "Éxito",
+                    "Ã‰xito",
                     JOptionPane.INFORMATION_MESSAGE
             );
 
@@ -287,7 +287,7 @@ public class regEnfermedades extends JDialog {
         } else {
             JOptionPane.showMessageDialog(
                     this,
-                    "Ya existe una enfermedad con ese código o nombre.",
+                    "Ya existe una enfermedad con ese cÃ³digo o nombre.",
                     "Error al registrar",
                     JOptionPane.ERROR_MESSAGE
             );

@@ -18,7 +18,7 @@ public class Clinica implements Serializable {
 	private ArrayList<Doctor> doctores;
 	private ArrayList<Enfermedad> enfermedades;
 	private ArrayList<Vacuna> vacunas;
-	private ArrayList<Tratamiento> tratamientosPredefinidos;
+	private ArrayList<Tratamiento> tratamientos;
 	private ArrayList<Cita> citas;
 	private ArrayList<Alergia> alergias;
 	private ArrayList<Paciente> interesados;
@@ -43,7 +43,7 @@ public class Clinica implements Serializable {
 		this.doctores = new ArrayList<>();
 		this.enfermedades = new ArrayList<>();
 		this.vacunas = new ArrayList<>();
-		this.tratamientosPredefinidos = new ArrayList<>();
+		this.tratamientos = new ArrayList<>();
 		this.citas = new ArrayList<>();
 		this.alergias = new ArrayList<>();
 		this.interesados = new ArrayList<>();
@@ -92,8 +92,8 @@ public class Clinica implements Serializable {
 		return vacunas;
 	}
 
-	public ArrayList<Tratamiento> getTratamientosPredefinidos() {
-		return tratamientosPredefinidos;
+	public ArrayList<Tratamiento> getTratamientos() {
+		return tratamientos;
 	}
 
 	public ArrayList<Cita> getCitas() {
@@ -101,14 +101,14 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Recalcula el contador de cÃ³digos de tratamientos en base a la cantidad actual
+	 * Recalcula el contador de cÃƒÂ³digos de tratamientos en base a la cantidad actual
 	 * de tratamientos predefinidos.
-	 * Ãštil cuando se abriÃ³ la ventana de registrar tratamiento pero no se llegÃ³
-	 * a guardar ninguno, para que no se "salte" un cÃ³digo TRA-000X.
+	 * ÃƒÅ¡til cuando se abriÃƒÂ³ la ventana de registrar tratamiento pero no se llegÃƒÂ³
+	 * a guardar ninguno, para que no se "salte" un cÃƒÂ³digo TRA-000X.
 	 */
 	public void recalcularContadorTratamientos() { 
-		this.contadorTratamientos = tratamientosPredefinidos.size() + 1; 
-		}
+		this.contadorTratamientos = tratamientos.size() + 1; 
+	}
 
 
 	// doctores
@@ -146,35 +146,35 @@ public class Clinica implements Serializable {
 		}
 		return null;
 	}
-	
-    /**
-     * Busca un doctor por su nÃºmero de licencia (no por el cÃ³digo interno).
-     * @param numeroLicencia NÃºmero de licencia del doctor (por ejemplo EXQM-12345).
-     * @return El doctor que tiene ese nÃºmero de licencia, o null si no se encuentra.
-     */
-    public Doctor buscarDoctorPorNumeroLicencia(String numeroLicencia) {
-        if (numeroLicencia == null || numeroLicencia.trim().isEmpty()) {
-            return null;
-        }
 
-        String licBuscada = numeroLicencia.trim();
+	/**
+	 * Busca un doctor por su nÃƒÂºmero de licencia (no por el cÃƒÂ³digo interno).
+	 * @param numeroLicencia NÃƒÂºmero de licencia del doctor (por ejemplo EXQM-12345).
+	 * @return El doctor que tiene ese nÃƒÂºmero de licencia, o null si no se encuentra.
+	 */
+	public Doctor buscarDoctorPorNumeroLicencia(String numeroLicencia) {
+		if (numeroLicencia == null || numeroLicencia.trim().isEmpty()) {
+			return null;
+		}
 
-        for (Doctor d : doctores) { // usa el nombre real de tu lista de doctores
-            if (d != null && d.getNumeroLicencia() != null &&
-                d.getNumeroLicencia().equalsIgnoreCase(licBuscada)) {
-                return d;
-            }
-        }
-        return null;
-    }
-    /**
-     * Recalcula el contador de cÃ³digos de doctores en base a la cantidad actual.
-     * Ãštil cuando se abriÃ³ la ventana de registro pero no se llegÃ³ a guardar
-     * ningÃºn doctor, para que no se "salte" un cÃ³digo DOC-000X.
-     */
-    public void recalcularContadorDoctores() {
-        this.contadorDoctores = doctores.size() + 1; // ajusta doctores al nombre real
-    }
+		String licBuscada = numeroLicencia.trim();
+
+		for (Doctor d : doctores) { // usa el nombre real de tu lista de doctores
+			if (d != null && d.getNumeroLicencia() != null &&
+					d.getNumeroLicencia().equalsIgnoreCase(licBuscada)) {
+				return d;
+			}
+		}
+		return null;
+	}
+	/**
+	 * Recalcula el contador de cÃƒÂ³digos de doctores en base a la cantidad actual.
+	 * ÃƒÅ¡til cuando se abriÃƒÂ³ la ventana de registro pero no se llegÃƒÂ³ a guardar
+	 * ningÃƒÂºn doctor, para que no se "salte" un cÃƒÂ³digo DOC-000X.
+	 */
+	public void recalcularContadorDoctores() {
+		this.contadorDoctores = doctores.size() + 1; // ajusta doctores al nombre real
+	}
 
 
 	public boolean modificarDoctor(Doctor doctorActualizado) {
@@ -465,54 +465,38 @@ public class Clinica implements Serializable {
 
 	// tratamientos
 
-    // tratamientos
+	// tratamientos
 
-    public boolean agregarTratamiento(Tratamiento tratamiento) {
-        if (tratamiento == null) {
-            return false;
-        }
+	public boolean agregarTratamiento(Tratamiento tratamiento) {
+		if (tratamiento == null) {
+			return false;
+		}
 
-        for (Tratamiento tratamientoExistente : tratamientosPredefinidos) {
-            if (tratamientoExistente.getCodigoTratamiento().equals(tratamiento.getCodigoTratamiento())) {
-                return false;
-            }
-        }
+		for (Tratamiento tratamientoExistente : tratamientos) {
+			if (tratamientoExistente.getCodigoTratamiento().equals(tratamiento.getCodigoTratamiento())) {
+				return false;
+			}
+		}
 
-        tratamientosPredefinidos.add(tratamiento);
-        contadorTratamientos++;
-        return true;
-    }
+		tratamientos.add(tratamiento);
+		contadorTratamientos++;
+		return true;
+	}
 
-    // <<< NUEVO >>>
-    public void eliminarTratamiento(Tratamiento tratamiento) {
-        if (tratamiento != null) {
-            tratamientosPredefinidos.remove(tratamiento);
-        }
-    }
-
-    public Tratamiento buscarTratamientoPorCodigo(String codigo) {
-        for (Tratamiento tratamiento : tratamientosPredefinidos) {
-            if (tratamiento.getCodigoTratamiento().equals(codigo)) {
-                return tratamiento;
-            }
-        }
-        return null;
-    }
+	public Tratamiento buscarTratamientoPorCodigo(String codigo) {
+		for (Tratamiento tratamiento : tratamientos) {
+			if (tratamiento.getCodigoTratamiento().equals(codigo)) {
+				return tratamiento;
+			}
+		}
+		return null;
+	}
 
 
 	// << NUEVO >>
 
 	public ArrayList<Tratamiento> listarTratamientos() {
-		return tratamientosPredefinidos;
-	}
-
-	public Tratamiento buscarTratamientoPorNombre(String nombre) {
-		for (Tratamiento tratamiento : tratamientosPredefinidos) {
-			if (tratamiento.getNombreTratamiento().equalsIgnoreCase(nombre)) {
-				return tratamiento;
-			}
-		}
-		return null;
+		return tratamientos;
 	}
 
 	// cistas
@@ -541,7 +525,7 @@ public class Clinica implements Serializable {
 
 		int citasDelDia = contarCitasDelDia(cedulaDoctor, fecha);
 		if (citasDelDia >= doctor.getCitasPorDia()) {
-			return null; // Doctor ya llegÃ³ al lÃ­mite de citas
+			return null; // Doctor ya llegÃƒÂ³ al lÃƒÂ­mite de citas
 		}
 
 		if (!doctor.puedeAtenderEnHorario(hora)) {
@@ -563,7 +547,7 @@ public class Clinica implements Serializable {
 			return false;
 		}
 
-		// Verificar que la hora estÃ© dentro del horario del doctor
+		// Verificar que la hora estÃƒÂ© dentro del horario del doctor
 		if (!doctor.puedeAtenderEnHorario(hora)) {
 			return false;
 		}
@@ -595,7 +579,7 @@ public class Clinica implements Serializable {
 	}
 
 	// Obtiene una lista de horarios disponibles para un doctor en una fecha
-	// especÃ­fica
+	// especÃƒÂ­fica
 
 	public ArrayList<LocalTime> obtenerHorariosDisponibles(String cedulaDoctor, LocalDate fecha) {
 		ArrayList<LocalTime> horariosDisponibles = new ArrayList<>();
@@ -605,7 +589,7 @@ public class Clinica implements Serializable {
 			return horariosDisponibles;
 		}
 
-		// Verificar que el doctor no haya alcanzado el lÃ­mite de citas
+		// Verificar que el doctor no haya alcanzado el lÃƒÂ­mite de citas
 		int citasDelDia = contarCitasDelDia(cedulaDoctor, fecha);
 		if (citasDelDia >= doctor.getCitasPorDia()) {
 			return horariosDisponibles; // Ya no hay cupos
@@ -629,7 +613,7 @@ public class Clinica implements Serializable {
 		return horariosDisponibles;
 	}
 
-	// Obtiene una representaciÃ³n en texto del doctor para mostrar en ComboBox
+	// Obtiene una representaciÃƒÂ³n en texto del doctor para mostrar en ComboBox
 
 	public String obtenerInfoDoctorParaCombo(Doctor doctor) {
 		return doctor.getNombre() + " " + doctor.getApellido() + " - " + doctor.getEspecialidad();
@@ -651,7 +635,7 @@ public class Clinica implements Serializable {
 		return contador;
 	}
 
-	// Obtiene cuÃ¡ntas citas le quedan disponibles a un doctor en una fecha
+	// Obtiene cuÃƒÂ¡ntas citas le quedan disponibles a un doctor en una fecha
 
 	public String obtenerCitasDisponiblesTexto(String cedulaDoctor, LocalDate fecha) {
 		Doctor doctor = buscarDoctorPorCedula(cedulaDoctor);
@@ -724,15 +708,23 @@ public class Clinica implements Serializable {
 	}
 
 	public ArrayList<Cita> listarCitasPendientes() {
-		ArrayList<Cita> citasPendientes = new ArrayList<>();
+	    ArrayList<Cita> pendientes = new ArrayList<>();
 
-		for (Cita cita : citas) {
-			if (cita.getEstadoCita().equals("Pendiente")) {
-				citasPendientes.add(cita);
-			}
-		}
+	    for (Cita c : citas) {
+	        if (c == null) continue;
 
-		return citasPendientes;
+	        String estado = c.getEstadoCita();
+	        if (estado == null) continue;
+
+	        // Normalizamos para evitar errores invisibles (espacios, mayúsculas, etc.)
+	        estado = estado.trim().toLowerCase();
+
+	        if (estado.equals("pendiente")) {
+	            pendientes.add(c);
+	        }
+	    }
+
+	    return pendientes;
 	}
 
 	public ArrayList<Cita> listarCitasCompletadas() {
@@ -761,25 +753,31 @@ public class Clinica implements Serializable {
 
 	// consultas
 	public Consulta registrarConsulta(String codigoCita, String sintomas, String diagnostico,
-            String codigoTratamiento, String notas, String codigoEnfermedad) {
+			String codigoTratamiento, String notas, String codigoEnfermedad) {
 
+		// Buscar la cita real
 		Cita cita = buscarCita(codigoCita);
 		if (cita == null) {
 			return null;
 		}
 
+		Paciente paciente = cita.getPaciente();
+		Doctor doctor = cita.getDoctor();
+
+		// Buscar el tratamiento por código
 		Tratamiento tratamiento = buscarTratamientoPorCodigo(codigoTratamiento);
 		if (tratamiento == null) {
 			return null;
 		}
 
-		// Crear cÃ³digo de consulta
-		String codigoConsulta = ("CON-"+ contadorConsultas);
+		// Generar código de consulta
+		String codigoConsulta = generarCodigoConsulta();
 
+		// Crear la consulta
 		Consulta nuevaConsulta = new Consulta(
 				codigoConsulta,
-				cita.getPaciente(),
-				cita.getDoctor(),
+				paciente,
+				doctor,
 				cita,
 				java.time.LocalDate.now(),
 				sintomas,
@@ -788,26 +786,41 @@ public class Clinica implements Serializable {
 				notas
 				);
 
-		// ENFERMEDAD (puede ser null)
-		Enfermedad enfermedad = buscarEnfermedadPorCodigo(codigoEnfermedad);
-
-		if (enfermedad != null && enfermedad.isBajoVigilancia()) {
-			nuevaConsulta.setEsEnfermedadVigilancia(true);
-		} else {
-			nuevaConsulta.setEsEnfermedadVigilancia(false);
+		// Enfermedad bajo vigilancia (si aplica)
+		if (codigoEnfermedad != null) {
+			Enfermedad enf = buscarEnfermedadPorCodigo(codigoEnfermedad);
+			if (enf != null && enf.isBajoVigilancia()) {
+				nuevaConsulta.setEsEnfermedadVigilancia(true);
+			} else {
+				nuevaConsulta.setEsEnfermedadVigilancia(false);
+			}
 		}
 
-		// Guardar en historia clÃ­nica SIEMPRE
-		cita.getPaciente().getHistoriaClinica().agregarConsulta(nuevaConsulta);
+		// Guardar en la historia clínica del paciente
+		paciente.getHistoriaClinica().agregarConsulta(nuevaConsulta);
 
-		// Marcar cita como completada
+		// Marcar la cita como completada
 		cita.cambiarEstado("Completada");
-
-		// Eliminar tratamiento usado
-		eliminarTratamiento(tratamiento);
 
 		return nuevaConsulta;
 	}
+
+
+	public Paciente asegurarPacienteRegistrado(Paciente p) {
+	    if (p == null) return null;
+
+	    Paciente real = buscarPacientePorCedula(p.getCedula());
+
+	    if (real != null) {
+	        return real; // Ya existe → usar el paciente real
+	    }
+
+	    // NO existe → registrarlo como paciente normal
+	    registrarPaciente(p);
+
+	    return p; // ya está agregado a la lista
+	}
+
 
 	public Consulta buscarConsulta(String codigoConsulta) {
 
@@ -858,98 +871,98 @@ public class Clinica implements Serializable {
 	}
 
 	public ArrayList<Consulta> listarConsultasPorDoctor(String numLicenciaDoctor) {
-	    ArrayList<Consulta> resultado = new ArrayList<>();
+		ArrayList<Consulta> resultado = new ArrayList<>();
 
-	    if (numLicenciaDoctor == null || numLicenciaDoctor.trim().isEmpty()) {
-	        return resultado;
-	    }
+		if (numLicenciaDoctor == null || numLicenciaDoctor.trim().isEmpty()) {
+			return resultado;
+		}
 
-	    // Recorremos todos los pacientes del sistema
-	    for (Paciente p : pacientes) { // ajusta "pacientes" si tu lista se llama distinto
-	        if (p.getHistoriaClinica() == null) {
-	            continue;
-	        }
+		// Recorremos todos los pacientes del sistema
+		for (Paciente p : pacientes) { // ajusta "pacientes" si tu lista se llama distinto
+			if (p.getHistoriaClinica() == null) {
+				continue;
+			}
 
-	        ArrayList<Consulta> consultasPaciente = p.getHistoriaClinica().getConsultas();
-	        if (consultasPaciente == null || consultasPaciente.isEmpty()) {
-	            continue;
-	        }
+			ArrayList<Consulta> consultasPaciente = p.getHistoriaClinica().getConsultas();
+			if (consultasPaciente == null || consultasPaciente.isEmpty()) {
+				continue;
+			}
 
-	        for (Consulta c : consultasPaciente) {
-	            if (c == null || c.getDoctor() == null) {
-	                continue;
-	            }
+			for (Consulta c : consultasPaciente) {
+				if (c == null || c.getDoctor() == null) {
+					continue;
+				}
 
-	            // CONSULTA VISIBLE SI:
-	            //  - la enfermedad estÃ¡ bajo vigilancia (pÃºblica)
-	            //  - O el doctor que la hizo tiene ese nÃºmero de licencia
-	            if (c.isEsEnfermedadVigilancia() ||
-	                c.getDoctor().getNumeroLicencia().equalsIgnoreCase(numLicenciaDoctor)) {
+				// CONSULTA VISIBLE SI:
+				//  - la enfermedad estÃƒÂ¡ bajo vigilancia (pÃƒÂºblica)
+				//  - O el doctor que la hizo tiene ese nÃƒÂºmero de licencia
+				if (c.isEsEnfermedadVigilancia() ||
+						c.getDoctor().getNumeroLicencia().equalsIgnoreCase(numLicenciaDoctor)) {
 
-	                resultado.add(c);
-	            }
-	        }
-	    }
+					resultado.add(c);
+				}
+			}
+		}
 
-	    return resultado;
+		return resultado;
 	}
 
-	
-	
+
+
 	public ArrayList<Consulta> listarConsultasVisiblesParaDoctor(String numLicenciaDoctor) {
-	    ArrayList<Consulta> visibles = new ArrayList<>();
+		ArrayList<Consulta> visibles = new ArrayList<>();
 
-	    if (numLicenciaDoctor == null || numLicenciaDoctor.trim().isEmpty()) {
-	        return visibles;
-	    }
+		if (numLicenciaDoctor == null || numLicenciaDoctor.trim().isEmpty()) {
+			return visibles;
+		}
 
-	    // 1) Agregar TODAS las consultas pÃºblicas (enfermedad bajo vigilancia)
-	    for (Paciente p : pacientes) { // <--- ajusta "pacientes" si tiene otro nombre
-	        if (p.getHistoriaClinica() == null) {
-	            continue;
-	        }
+		// 1) Agregar TODAS las consultas pÃƒÂºblicas (enfermedad bajo vigilancia)
+		for (Paciente p : pacientes) { // <--- ajusta "pacientes" si tiene otro nombre
+			if (p.getHistoriaClinica() == null) {
+				continue;
+			}
 
-	        ArrayList<Consulta> consultasPaciente = p.getHistoriaClinica().getConsultas();
-	        if (consultasPaciente == null || consultasPaciente.isEmpty()) {
-	            continue;
-	        }
+			ArrayList<Consulta> consultasPaciente = p.getHistoriaClinica().getConsultas();
+			if (consultasPaciente == null || consultasPaciente.isEmpty()) {
+				continue;
+			}
 
-	        for (Consulta c : consultasPaciente) {
-	            if (c == null) {
-	                continue;
-	            }
+			for (Consulta c : consultasPaciente) {
+				if (c == null) {
+					continue;
+				}
 
-	            if (c.isEsEnfermedadVigilancia()) {
-	                // evitar duplicados por cÃ³digo de consulta
-	                if (!contieneConsultaPorCodigo(visibles, c.getCodigoConsulta())) {
-	                    visibles.add(c);
-	                }
-	            }
-	        }
-	    }
+				if (c.isEsEnfermedadVigilancia()) {
+					// evitar duplicados por cÃƒÂ³digo de consulta
+					if (!contieneConsultaPorCodigo(visibles, c.getCodigoConsulta())) {
+						visibles.add(c);
+					}
+				}
+			}
+		}
 
-	    // 2) Agregar las consultas propias del doctor (aunque no estÃ©n bajo vigilancia)
-	    ArrayList<Consulta> propias = listarConsultasPorDoctor(numLicenciaDoctor);
-	    for (Consulta c : propias) {
-	        if (!contieneConsultaPorCodigo(visibles, c.getCodigoConsulta())) {
-	            visibles.add(c);
-	        }
-	    }
+		// 2) Agregar las consultas propias del doctor (aunque no estÃƒÂ©n bajo vigilancia)
+		ArrayList<Consulta> propias = listarConsultasPorDoctor(numLicenciaDoctor);
+		for (Consulta c : propias) {
+			if (!contieneConsultaPorCodigo(visibles, c.getCodigoConsulta())) {
+				visibles.add(c);
+			}
+		}
 
-	    return visibles;
+		return visibles;
 	}
 
-	
+
 	private boolean contieneConsultaPorCodigo(ArrayList<Consulta> lista, String codigoConsulta) {
-	    if (codigoConsulta == null) {
-	        return false;
-	    }
-	    for (Consulta c : lista) {
-	        if (c != null && codigoConsulta.equalsIgnoreCase(c.getCodigoConsulta())) {
-	            return true;
-	        }
-	    }
-	    return false;
+		if (codigoConsulta == null) {
+			return false;
+		}
+		for (Consulta c : lista) {
+			if (c != null && codigoConsulta.equalsIgnoreCase(c.getCodigoConsulta())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 
@@ -1008,7 +1021,7 @@ public class Clinica implements Serializable {
 
 		return paciente.tieneVacuna(vacuna);
 	}
-	
+
 	public boolean modificarCantVacuna(Vacuna vacunacion) {
 		if (vacunacion==null) {
 			return false;
@@ -1044,6 +1057,7 @@ public class Clinica implements Serializable {
 
 		return paciente.obtenerVacunasFaltantes(vacunasActivas);
 	}
+	
 
 	public ArrayList<RegistroVacuna> obtenerHistorialVacunacion(String cedulaPaciente) {
 
@@ -1094,11 +1108,13 @@ public class Clinica implements Serializable {
 	public void setInteresados(ArrayList<Paciente> interesados) {
 		this.interesados = interesados;
 	}
-	
+
 	public void registarInteresados(Paciente elpaci) {
 		interesados.add(elpaci);
 	}
 
-
+	public String generarCodigoConsulta() {
+	    return "CON-" + contadorConsultas++;
+	}
 
 }

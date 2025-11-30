@@ -1,5 +1,5 @@
 package logico;
-
+//cambios
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -142,7 +142,7 @@ public class HistoriaClinica implements Serializable {
                 resumen.append("    Especialidad: ").append(c.getDoctor().getEspecialidad()).append("\n");
                 resumen.append("    Síntomas: ").append(c.getSintomas()).append("\n");
                 resumen.append("    Diagnóstico: ").append(c.getDiagnostico()).append("\n");
-                resumen.append("    Tratamiento: ").append(c.getTratamiento().getNombreTratamiento()).append("\n");
+                resumen.append("    Tratamiento: ").append(c.getTratamiento().getCodigoTratamiento()).append("\n");
                 
                 if (c.isEsEnfermedadVigilancia()) {
                     resumen.append("    ENFERMEDAD BAJO VIGILANCIA EPIDEMIOLÓGICA\n");

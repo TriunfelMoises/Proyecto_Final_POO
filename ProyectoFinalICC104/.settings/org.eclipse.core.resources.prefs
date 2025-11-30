@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
 encoding//src/logico/Clinica.java=UTF-8
+encoding//src/visual/Principal.java=UTF-8
+encoding//src/visual/regConsulta.java=UTF-8
 encoding//src/visual/regEnfermedades.java=UTF-8
-encoding//src/visual/regTratamientos.java=UTF-8
+encoding//src/visual/regTratamiento.java=UTF-8
