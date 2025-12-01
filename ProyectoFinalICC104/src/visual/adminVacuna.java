@@ -2,23 +2,23 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-
+import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import logico.Clinica;
 import logico.Paciente;
 import logico.RegistroVacuna;
 import logico.Vacuna;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.awt.event.ActionEvent;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
@@ -26,21 +26,34 @@ import java.util.Date;
 import java.util.Calendar;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.Color;
+import javax.swing.JScrollPane;
 
 public class adminVacuna extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtEnfermera;
-	private JButton btnVerAlergias = new JButton("Ver alergias");;
+	private JButton btnVerAlergias;
 	private JTextField txtCedula;
 	private JTextField txtSangre;
 	private JTextField txtLote;
 	private JTextField txtEnfermedad;
-	private Vacuna laQuePuncha = new Vacuna();
-	private Paciente elVacunado = null;
-	/**
-	 * Launch the application.
-	 */
+	private JTextField txtLaboratorio;
+
+	// Variables de instancia para los componentes
+	private JComboBox<String> cbxPaciente;
+	private JComboBox<String> cbxVacuna;
+	private JSpinner spnPeso;
+	private JSpinner spnEstatura;
+	private JSpinner spnCantidad;
+	private JSpinner spnVencimiento;
+	private JSpinner spnFecha;
+
+	private Vacuna vacunaSeleccionada = null;
+	private Paciente pacienteSeleccionado = null;
+	private JLabel lblInfoPaciente;
+	private JLabel lblInfoVacuna;
+
 	public static void main(String[] args) {
 		try {
 			adminVacuna dialog = new adminVacuna();
@@ -51,281 +64,479 @@ public class adminVacuna extends JDialog {
 		}
 	}
 
-	/**
-	 * Create the dialog.
-	 */
 	public adminVacuna() {
-		setTitle("Administrar vacuna");
-		setBounds(100, 100, 648, 499);
+		setTitle("Administrar Vacuna");
+		setBounds(100, 100, 700, 550);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-		btnVerAlergias.setEnabled(false);
 		setLocationRelativeTo(null);
+		setResizable(false);
 
-		JComboBox<String> cbxPaciente = new JComboBox<String>();
-		cbxPaciente.setModel(new DefaultComboBoxModel(new String[] {"<Seleccione>"}));
-		for (Paciente recorriendo : Clinica.getInstance().getPacientes()) {
-			cbxPaciente.addItem(recorriendo.getCodigoPaciente()+": "+recorriendo.getNombre()+" "+ recorriendo.getApellido());
+		Font labelFont = new Font("Tahoma", Font.PLAIN, 12);
+		Font titleFont = new Font("Tahoma", Font.BOLD, 13);
+
+		JLabel lblTitulo = new JLabel("ADMINISTRAR VACUNA");
+		lblTitulo.setFont(titleFont);
+		lblTitulo.setBounds(250, 10, 200, 20);
+		contentPanel.add(lblTitulo);
+
+		// PACIENTE
+		JLabel lblSeccionPaciente = new JLabel("Paciente:");
+		lblSeccionPaciente.setFont(labelFont);
+		lblSeccionPaciente.setBounds(15, 40, 200, 20);
+		contentPanel.add(lblSeccionPaciente);
+
+		cbxPaciente = new JComboBox<String>();
+		cbxPaciente.setModel(new DefaultComboBoxModel(new String[] { "<Seleccione>" }));
+		for (Paciente paciente : Clinica.getInstance().getPacientes()) {
+			if (paciente != null && paciente.isActivo()) {
+				cbxPaciente.addItem(
+						paciente.getCodigoPaciente() + ": " + paciente.getNombre() + " " + paciente.getApellido());
+			}
 		}
-		
-		cbxPaciente.setBounds(15, 53, 219, 26);
+		cbxPaciente.setBounds(15, 65, 250, 26);
 		contentPanel.add(cbxPaciente);
-		
-		JLabel lblNewLabel = new JLabel("Seleccione paciente");
-		lblNewLabel.setBounds(15, 27, 155, 20);
-		contentPanel.add(lblNewLabel);
-		
-		JLabel lblNewLabel_1 = new JLabel("Seleccione vacuna");
-		lblNewLabel_1.setBounds(15, 168, 206, 20);
-		contentPanel.add(lblNewLabel_1);
-		
-		JComboBox<String> cbxVacuna = new JComboBox<String>();
-		cbxVacuna.setModel(new DefaultComboBoxModel(new String[] {"<Seleccione>"}));
-	    for (Vacuna recorriendo : Clinica.getInstance().getVacunas()) {
-	    	if (recorriendo.getCantidad()>=1) {
-		    	cbxVacuna.addItem(recorriendo.getCodigoVacuna() + ": " +recorriendo.getNombre());
-	    	}
-	    }
-		cbxVacuna.setBounds(15, 192, 219, 26);
-		contentPanel.add(cbxVacuna);
-		
-		JLabel lblNewLabel_2 = new JLabel("Indique quien est\u00E1 administrando esta dosis");
-		lblNewLabel_2.setBounds(15, 316, 317, 20);
-		contentPanel.add(lblNewLabel_2);
-		
-		txtEnfermera = new JTextField();
-		txtEnfermera.setBounds(15, 339, 252, 26);
-		contentPanel.add(txtEnfermera);
-		txtEnfermera.setColumns(10);
-		
-		JButton btnNewButton = new JButton("Registrar paciente");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				regPaciente anadiPaciente = new regPaciente(null);
-				anadiPaciente.setModal(true);
-				anadiPaciente.setVisible(true);
-				refrescarComboPacientes(cbxPaciente);
-			}
-		});
-		btnNewButton.setBounds(430, 52, 181, 29);
-		contentPanel.add(btnNewButton);
-		
-		btnVerAlergias.setBounds(245, 52, 181, 29);
+
+		btnVerAlergias = new JButton("Alergias");
+		btnVerAlergias.setEnabled(false);
+		btnVerAlergias.setBounds(280, 65, 100, 26);
 		contentPanel.add(btnVerAlergias);
-		
-		JLabel lblNewLabel_3 = new JLabel("Cedula");
-		lblNewLabel_3.setBounds(15, 95, 69, 20);
-		contentPanel.add(lblNewLabel_3);
-		
+
+		JButton btnRegistrarPaciente = new JButton("Nuevo Paciente");
+		btnRegistrarPaciente.setBounds(395, 65, 150, 26);
+		contentPanel.add(btnRegistrarPaciente);
+
+		lblInfoPaciente = new JLabel("Seleccione un paciente");
+		lblInfoPaciente.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		lblInfoPaciente.setBounds(15, 100, 400, 15);
+		contentPanel.add(lblInfoPaciente);
+
+		JLabel lblCedula = new JLabel("Cédula:");
+		lblCedula.setFont(labelFont);
+		lblCedula.setBounds(15, 125, 80, 20);
+		contentPanel.add(lblCedula);
+
 		txtCedula = new JTextField();
-		txtCedula.setEnabled(false);
-		txtCedula.setBounds(15, 116, 188, 26);
+		txtCedula.setEditable(false);
+		txtCedula.setBounds(15, 145, 150, 25);
 		contentPanel.add(txtCedula);
-		txtCedula.setColumns(10);
-		
-		JLabel lblNewLabel_4 = new JLabel("Sangre");
-		lblNewLabel_4.setBounds(236, 95, 69, 20);
-		contentPanel.add(lblNewLabel_4);
-		
+
+		JLabel lblSangre = new JLabel("Tipo Sangre:");
+		lblSangre.setFont(labelFont);
+		lblSangre.setBounds(180, 125, 80, 20);
+		contentPanel.add(lblSangre);
+
 		txtSangre = new JTextField();
-		txtSangre.setEnabled(false);
-		txtSangre.setBounds(236, 116, 51, 26);
+		txtSangre.setEditable(false);
+		txtSangre.setBounds(180, 145, 80, 25);
 		contentPanel.add(txtSangre);
-		txtSangre.setColumns(10);
-		
-		JLabel lblNewLabel_5 = new JLabel("Peso(lb)");
-		lblNewLabel_5.setBounds(333, 95, 69, 20);
-		contentPanel.add(lblNewLabel_5);
-		
-		JLabel lblNewLabel_6 = new JLabel("Estatura(cm)");
-		lblNewLabel_6.setBounds(451, 97, 90, 20);
-		contentPanel.add(lblNewLabel_6);
-		
-		JButton btnNewButton_1 = new JButton("Registrar vacuna");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				regVacuna vacun = new regVacuna();
-				vacun.setModal(true);
-				vacun.setVisible(true);
-				refrescarComboVacunas(cbxVacuna);
-			}
-		});
-		btnNewButton_1.setBounds(249, 191, 177, 29);
-		contentPanel.add(btnNewButton_1);
-		
-		JLabel lblNewLabel_7 = new JLabel("Lote");
-		lblNewLabel_7.setBounds(15, 237, 69, 20);
-		contentPanel.add(lblNewLabel_7);
-		
-		txtLote = new JTextField();
-		txtLote.setEnabled(false);
-		txtLote.setColumns(10);
-		txtLote.setBounds(15, 258, 188, 26);
-		contentPanel.add(txtLote);
-		
-		txtEnfermedad = new JTextField();
-		txtEnfermedad.setEnabled(false);
-		txtEnfermedad.setColumns(10);
-		txtEnfermedad.setBounds(316, 258, 95, 26);
-		contentPanel.add(txtEnfermedad);
-		
-		JLabel lblCantidad = new JLabel("Cantidad");
-		lblCantidad.setBounds(236, 237, 69, 20);
-		contentPanel.add(lblCantidad);
-		
-		JLabel lblEnfermedad = new JLabel("Enfermedad");
-		lblEnfermedad.setBounds(316, 237, 93, 20);
-		contentPanel.add(lblEnfermedad);
-		
-		JLabel lblVencimiento = new JLabel("Vencimiento");
-		lblVencimiento.setBounds(451, 237, 90, 20);
-		contentPanel.add(lblVencimiento);
-		
-		JLabel lblNewLabel_8 = new JLabel("Fecha");
-		lblNewLabel_8.setBounds(494, 316, 69, 20);
-		contentPanel.add(lblNewLabel_8);
-		
-		JSpinner spnFecha = new JSpinner();
-		spnFecha.setEnabled(false);
-		spnFecha.setModel(new SpinnerDateModel(new Date(), null, new Date(), Calendar.DAY_OF_YEAR));
-		JSpinner.DateEditor editor = new JSpinner.DateEditor(spnFecha, "dd/MM/yyyy");
-		spnFecha.setEditor(editor);		
-		spnFecha.setBounds(451, 339, 112, 26);
-		contentPanel.add(spnFecha);
-		
-		JSpinner spnPeso = new JSpinner();
-		spnPeso.setModel(new SpinnerNumberModel(new Float(0), null, null, new Float(1)));
+
+		JLabel lblPeso = new JLabel("Peso (kg):");
+		lblPeso.setFont(labelFont);
+		lblPeso.setBounds(280, 125, 80, 20);
+		contentPanel.add(lblPeso);
+
+		spnPeso = new JSpinner();
+		spnPeso.setModel(new SpinnerNumberModel(0.0, 0.0, 300.0, 0.1));
 		spnPeso.setEnabled(false);
-		spnPeso.setBounds(316, 116, 86, 26);
+		spnPeso.setBounds(280, 145, 80, 25);
 		contentPanel.add(spnPeso);
-		
-		JSpinner spnEstatura = new JSpinner();
-		spnEstatura.setModel(new SpinnerNumberModel(new Float(0), null, null, new Float(1)));
+
+		JLabel lblEstatura = new JLabel("Estatura (cm):");
+		lblEstatura.setFont(labelFont);
+		lblEstatura.setBounds(380, 125, 100, 20);
+		contentPanel.add(lblEstatura);
+
+		spnEstatura = new JSpinner();
+		spnEstatura.setModel(new SpinnerNumberModel(0.0, 0.0, 250.0, 0.1));
 		spnEstatura.setEnabled(false);
-		spnEstatura.setBounds(430, 116, 121, 26);
+		spnEstatura.setBounds(380, 145, 80, 25);
 		contentPanel.add(spnEstatura);
-		
-		JSpinner spnVencimiento = new JSpinner();
-		spnVencimiento.setEnabled(false);
-		spnVencimiento.setModel(new SpinnerDateModel(new Date(), null, new Date(), Calendar.DAY_OF_YEAR));
-		JSpinner.DateEditor editora = new JSpinner.DateEditor(spnVencimiento, "dd/MM/yyyy");
-		spnVencimiento.setEditor(editora);			
-		spnVencimiento.setBounds(430, 258, 121, 26);
-		contentPanel.add(spnVencimiento);
-		
-		JSpinner spnCantidad = new JSpinner();
+
+		// VACUNA
+		JLabel lblSeccionVacuna = new JLabel("Vacuna:");
+		lblSeccionVacuna.setFont(labelFont);
+		lblSeccionVacuna.setBounds(15, 185, 200, 20);
+		contentPanel.add(lblSeccionVacuna);
+
+		cbxVacuna = new JComboBox<String>();
+		cbxVacuna.setModel(new DefaultComboBoxModel(new String[] { "<Seleccione>" }));
+		cargarVacunasDisponibles();
+		cbxVacuna.setBounds(15, 210, 250, 26);
+		contentPanel.add(cbxVacuna);
+
+		JButton btnRegistrarVacuna = new JButton("Nueva Vacuna");
+		btnRegistrarVacuna.setBounds(280, 210, 150, 26);
+		contentPanel.add(btnRegistrarVacuna);
+
+		lblInfoVacuna = new JLabel("Seleccione una vacuna");
+		lblInfoVacuna.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		lblInfoVacuna.setBounds(15, 245, 400, 15);
+		contentPanel.add(lblInfoVacuna);
+
+		JLabel lblLote = new JLabel("Lote:");
+		lblLote.setFont(labelFont);
+		lblLote.setBounds(15, 270, 80, 20);
+		contentPanel.add(lblLote);
+
+		txtLote = new JTextField();
+		txtLote.setEditable(false);
+		txtLote.setBounds(15, 290, 120, 25);
+		contentPanel.add(txtLote);
+
+		JLabel lblEnfermedad = new JLabel("Enfermedad:");
+		lblEnfermedad.setFont(labelFont);
+		lblEnfermedad.setBounds(150, 270, 100, 20);
+		contentPanel.add(lblEnfermedad);
+
+		txtEnfermedad = new JTextField();
+		txtEnfermedad.setEditable(false);
+		txtEnfermedad.setBounds(150, 290, 180, 25);
+		contentPanel.add(txtEnfermedad);
+
+		JLabel lblLaboratorio = new JLabel("Laboratorio:");
+		lblLaboratorio.setFont(labelFont);
+		lblLaboratorio.setBounds(340, 270, 100, 20);
+		contentPanel.add(lblLaboratorio);
+
+		txtLaboratorio = new JTextField();
+		txtLaboratorio.setEditable(false);
+		txtLaboratorio.setBounds(340, 290, 150, 25);
+		contentPanel.add(txtLaboratorio);
+
+		JLabel lblCantidad = new JLabel("Stock:");
+		lblCantidad.setFont(labelFont);
+		lblCantidad.setBounds(500, 270, 80, 20);
+		contentPanel.add(lblCantidad);
+
+		spnCantidad = new JSpinner();
 		spnCantidad.setEnabled(false);
-		spnCantidad.setBounds(236, 258, 51, 26);
+		spnCantidad.setBounds(500, 290, 60, 25);
 		contentPanel.add(spnCantidad);
+
+		JLabel lblVencimiento = new JLabel("Vencimiento:");
+		lblVencimiento.setFont(labelFont);
+		lblVencimiento.setBounds(15, 325, 80, 20);
+		contentPanel.add(lblVencimiento);
+
+		spnVencimiento = new JSpinner();
+		spnVencimiento.setEnabled(false);
+		spnVencimiento.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+		JSpinner.DateEditor editorVencimiento = new JSpinner.DateEditor(spnVencimiento, "dd/MM/yyyy");
+		spnVencimiento.setEditor(editorVencimiento);
+		spnVencimiento.setBounds(15, 345, 120, 25);
+		contentPanel.add(spnVencimiento);
+
+		// ADMINISTRACIÓN
+		JLabel lblSeccionAdmin = new JLabel("Aplicación:");
+		lblSeccionAdmin.setFont(labelFont);
+		lblSeccionAdmin.setBounds(15, 385, 250, 20);
+		contentPanel.add(lblSeccionAdmin);
+
+		JLabel lblEnfermera = new JLabel("Administrada por:");
+		lblEnfermera.setFont(labelFont);
+		lblEnfermera.setBounds(15, 410, 150, 20);
+		contentPanel.add(lblEnfermera);
+
+		txtEnfermera = new JTextField();
+		txtEnfermera.setBounds(15, 430, 250, 25);
+		contentPanel.add(txtEnfermera);
+
+		JLabel lblFecha = new JLabel("Fecha:");
+		lblFecha.setFont(labelFont);
+		lblFecha.setBounds(280, 410, 150, 20);
+		contentPanel.add(lblFecha);
+
+		spnFecha = new JSpinner();
+		spnFecha.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+		JSpinner.DateEditor editorFecha = new JSpinner.DateEditor(spnFecha, "dd/MM/yyyy");
+		spnFecha.setEditor(editorFecha);
+		spnFecha.setBounds(280, 430, 120, 25);
+		contentPanel.add(spnFecha);
+
+		// LISTENERS
 		cbxPaciente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-		        Object seleccionado = cbxPaciente.getSelectedItem();
-		        if (seleccionado == null) {
-		            return; 
-		        }
-				String codPaciente = cbxPaciente.getSelectedItem().toString();
-				if (cbxPaciente.getSelectedIndex()!=0) {
-					String[] buscandoelcodigo = codPaciente.split(":");
-					codPaciente = buscandoelcodigo[0].trim();
-					elVacunado = Clinica.getInstance().buscarPacientePorCodigo(codPaciente);
-					txtCedula.setText(elVacunado.getCedula());
-					spnEstatura.setValue(elVacunado.getEstatura());
-					spnPeso.setValue(elVacunado.getPeso());
-					txtSangre.setText(elVacunado.getTipoSangre());
-					btnVerAlergias.setEnabled(true);
+				if (cbxPaciente.getSelectedIndex() <= 0 || cbxPaciente.getSelectedItem() == null) {
+					limpiarDatosPaciente();
+					btnVerAlergias.setEnabled(false);
+					pacienteSeleccionado = null;
+					return;
 				}
-			}
-		});
-		cbxVacuna.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-		        Object seleccionado2 = cbxVacuna.getSelectedItem();
-		        if (seleccionado2 == null) {
-		            return; 
-		        }
-				String codVacuna = cbxVacuna.getSelectedItem().toString();
-				if (cbxVacuna.getSelectedIndex()!=0) {
-					String[] buscandoelcodigo = codVacuna.split(":");
-					codVacuna = buscandoelcodigo[0].trim();
-					laQuePuncha = Clinica.getInstance().buscarVacunaPorCodigo(codVacuna);
-					txtEnfermedad.setText(laQuePuncha.getEnfermedad());
-					txtLote.setText(laQuePuncha.getNumeroLote());
-					spnCantidad.setValue(laQuePuncha.getCantidad());
-					spnVencimiento.setValue(laQuePuncha.getFechaCaducidad());
-				}
-			}
-		});
-		btnVerAlergias.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				verAlergias viendo = new verAlergias(elVacunado);
-				viendo.setModal(true);
-				viendo.setVisible(true);
-			}
-		});
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("Administrar");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						if (cbxPaciente.getSelectedIndex()==0||cbxVacuna.getSelectedIndex()==0||txtEnfermera.getText().isEmpty()) {
-				            JOptionPane.showMessageDialog(null, "Complete todos los campos correctamente", "Error", JOptionPane.ERROR_MESSAGE);
+
+				try {
+					String itemSeleccionado = cbxPaciente.getSelectedItem().toString();
+					String[] partes = itemSeleccionado.split(":");
+					if (partes.length > 0) {
+						String codigoPaciente = partes[0].trim();
+						pacienteSeleccionado = Clinica.getInstance().buscarPacientePorCodigo(codigoPaciente);
+
+						if (pacienteSeleccionado != null) {
+							cargarDatosPaciente();
+							btnVerAlergias.setEnabled(true);
+							lblInfoPaciente.setText("Paciente: " + pacienteSeleccionado.getNombre() + " "
+									+ pacienteSeleccionado.getApellido());
 						}
-						Date fechaSeleccionada = (Date) spnFecha.getValue();
-						LocalDate fecha = fechaSeleccionada.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();						
-						RegistroVacuna termin = new RegistroVacuna(laQuePuncha, fecha, txtLote.getText(), txtEnfermera.getText());
-						Clinica.getInstance().registrarVacunaPaciente(elVacunado, termin);
-			            JOptionPane.showMessageDialog(null, "Registro Satisfactorio", "Información", JOptionPane.INFORMATION_MESSAGE);
-			            spnCantidad.setValue(0);
-			            spnEstatura.setValue(0);
-			            spnPeso.setValue(0);
-			            cbxPaciente.setSelectedIndex(0);
-			            cbxVacuna.setSelectedIndex(0);
-			            txtCedula.setText("");
-			            txtEnfermedad.setText("");
-			            txtEnfermera.setText("");
-			            txtLote.setText("");
-			            txtSangre.setText("");
-			            refrescarComboVacunas(cbxVacuna);
 					}
-				});
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				} catch (Exception ex) {
+					// Ignorar errores al limpiar el combo
+				}
 			}
-			{
-				JButton cancelButton = new JButton("Cancelar");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						dispose();
+		});
+
+		cbxVacuna.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (cbxVacuna.getSelectedIndex() <= 0 || cbxVacuna.getSelectedItem() == null) {
+					limpiarDatosVacuna();
+					vacunaSeleccionada = null;
+					return;
+				}
+
+				try {
+					String itemSeleccionado = cbxVacuna.getSelectedItem().toString();
+					String[] partes = itemSeleccionado.split(":");
+					if (partes.length > 0) {
+						String codigoVacuna = partes[0].trim();
+						vacunaSeleccionada = Clinica.getInstance().buscarVacunaPorCodigo(codigoVacuna);
+
+						if (vacunaSeleccionada != null) {
+							cargarDatosVacuna();
+						}
 					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
+				} catch (Exception ex) {
+					// Ignorar errores al limpiar el combo
+				}
+			}
+		});
+
+		btnVerAlergias.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (pacienteSeleccionado != null) {
+					verAlergias dialog = new verAlergias(pacienteSeleccionado);
+					dialog.setModal(true);
+					dialog.setVisible(true);
+				}
+			}
+		});
+
+		btnRegistrarPaciente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				regPaciente dialog = new regPaciente(null);
+				dialog.setModal(true);
+				dialog.setVisible(true);
+				refrescarComboPacientes();
+			}
+		});
+
+		btnRegistrarVacuna.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				regVacuna dialog = new regVacuna();
+				dialog.setModal(true);
+				dialog.setVisible(true);
+				cargarVacunasDisponibles();
+			}
+		});
+
+		// BOTONES
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton btnAdministrar = new JButton("Administrar");
+		btnAdministrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				administrarVacuna();
+			}
+		});
+		buttonPane.add(btnAdministrar);
+
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		buttonPane.add(btnCancelar);
+	}
+
+	private void cargarVacunasDisponibles() {
+		cbxVacuna.removeAllItems();
+		cbxVacuna.addItem("<Seleccione>");
+
+		for (Vacuna vacuna : Clinica.getInstance().getVacunas()) {
+			if (vacuna != null && vacuna.isActiva() && vacuna.getCantidad() > 0 && !vacuna.estaCaducada()) {
+				String texto = vacuna.getCodigoVacuna() + ": " + vacuna.getNombre();
+				if (vacuna.getCantidad() <= 5) {
+					texto += " (Stock: " + vacuna.getCantidad() + ")";
+				}
+				cbxVacuna.addItem(texto);
 			}
 		}
 	}
-	private void refrescarComboPacientes(JComboBox<String> cbxPaciente) {
-	    cbxPaciente.removeAllItems();
-	    cbxPaciente.addItem("<Seleccione>");
-	    for (Paciente recorriendo : Clinica.getInstance().getPacientes()) {
-	        cbxPaciente.addItem(
-	            recorriendo.getCodigoPaciente() + ": " +recorriendo.getNombre() + " " +recorriendo.getApellido());
-	    }
+
+	private void cargarDatosPaciente() {
+		if (pacienteSeleccionado == null)
+			return;
+
+		txtCedula.setText(pacienteSeleccionado.getCedula());
+		txtSangre.setText(pacienteSeleccionado.getTipoSangre());
+		spnPeso.setValue(pacienteSeleccionado.getPeso());
+		spnEstatura.setValue(pacienteSeleccionado.getEstatura());
 	}
-	
-	private void refrescarComboVacunas(JComboBox<String> cbxVacuna) {
-		cbxVacuna.removeAllItems(); 
-		cbxVacuna.addItem("<Seleccione>");
-	    for (Vacuna recorriendo : Clinica.getInstance().getVacunas()) {
-	    	if (recorriendo.getCantidad()>=1) {
-		    	cbxVacuna.addItem(recorriendo.getCodigoVacuna() + ": " +recorriendo.getNombre());
-	    	}
-	    }
+
+	private void cargarDatosVacuna() {
+		if (vacunaSeleccionada == null)
+			return;
+
+		txtLote.setText(vacunaSeleccionada.getNumeroLote());
+		txtEnfermedad.setText(vacunaSeleccionada.getEnfermedad());
+		txtLaboratorio.setText(vacunaSeleccionada.getLaboratorio());
+		spnCantidad.setValue(vacunaSeleccionada.getCantidad());
+		spnVencimiento.setValue(vacunaSeleccionada.getFechaCaducidad());
+
+		if (vacunaSeleccionada.estaCaducada()) {
+			lblInfoVacuna.setText("VACUNA CADUCADA");
+			lblInfoVacuna.setForeground(Color.RED);
+		} else {
+			lblInfoVacuna.setText("Vacuna: " + vacunaSeleccionada.getNombre());
+			lblInfoVacuna.setForeground(Color.BLUE);
+		}
+	}
+
+	private void limpiarDatosPaciente() {
+		txtCedula.setText("");
+		txtSangre.setText("");
+		spnPeso.setValue(0.0);
+		spnEstatura.setValue(0.0);
+		lblInfoPaciente.setText("Seleccione un paciente");
+		lblInfoPaciente.setForeground(Color.BLACK);
+	}
+
+	private void limpiarDatosVacuna() {
+		txtLote.setText("");
+		txtEnfermedad.setText("");
+		txtLaboratorio.setText("");
+		spnCantidad.setValue(0);
+		spnVencimiento.setValue(new Date());
+		lblInfoVacuna.setText("Seleccione una vacuna");
+		lblInfoVacuna.setForeground(Color.BLACK);
+	}
+
+	private void administrarVacuna() {
+		if (!validarDatos()) {
+			return;
+		}
+
+		try {
+			Date fechaDate = (Date) spnFecha.getValue();
+			LocalDate fechaAplicacion = fechaDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			if (fechaAplicacion.isAfter(LocalDate.now())) {
+				int respuesta = JOptionPane.showConfirmDialog(this, "La fecha es futura. ¿Continuar?", "Confirmar",
+						JOptionPane.YES_NO_OPTION);
+				if (respuesta != JOptionPane.YES_OPTION) {
+					return;
+				}
+			}
+
+			if (vacunaSeleccionada.estaCaducada()) {
+				JOptionPane.showMessageDialog(this, "Esta vacuna está caducada", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			if (pacienteSeleccionado.tieneVacuna(vacunaSeleccionada)) {
+				int respuesta = JOptionPane.showConfirmDialog(this,
+						"El paciente ya tiene esta vacuna. ¿Registrar otra dosis?", "Confirmar",
+						JOptionPane.YES_NO_OPTION);
+				if (respuesta != JOptionPane.YES_OPTION) {
+					return;
+				}
+			}
+
+			RegistroVacuna registro = new RegistroVacuna(vacunaSeleccionada, fechaAplicacion,
+					vacunaSeleccionada.getNumeroLote(), txtEnfermera.getText().trim());
+
+			boolean exito = Clinica.getInstance().registrarVacunaPaciente(pacienteSeleccionado, registro);
+
+			if (exito) {
+				JOptionPane.showMessageDialog(this, "Vacuna administrada correctamente", "Éxito",
+						JOptionPane.INFORMATION_MESSAGE);
+				limpiarFormulario();
+				cargarVacunasDisponibles();
+			} else {
+				JOptionPane.showMessageDialog(this, "Error al administrar la vacuna", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			ex.printStackTrace();
+		}
+	}
+
+	private boolean validarDatos() {
+		if (pacienteSeleccionado == null) {
+			JOptionPane.showMessageDialog(this, "Seleccione un paciente", "Error", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+
+		if (vacunaSeleccionada == null) {
+			JOptionPane.showMessageDialog(this, "Seleccione una vacuna", "Error", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+
+		if (txtEnfermera.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Ingrese quién administra la vacuna", "Error",
+					JOptionPane.WARNING_MESSAGE);
+			txtEnfermera.requestFocus();
+			return false;
+		}
+
+		if (vacunaSeleccionada.getCantidad() <= 0) {
+			JOptionPane.showMessageDialog(this, "No hay stock disponible", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+
+		if (vacunaSeleccionada.estaCaducada()) {
+			JOptionPane.showMessageDialog(this, "Esta vacuna está caducada", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+
+		if (!vacunaSeleccionada.isActiva()) {
+			JOptionPane.showMessageDialog(this, "Esta vacuna está inactiva", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+
+		return true;
+	}
+
+	private void limpiarFormulario() {
+		if (cbxPaciente != null) {
+			cbxPaciente.setSelectedIndex(0);
+		}
+
+		if (cbxVacuna != null) {
+			cbxVacuna.setSelectedIndex(0);
+		}
+
+		txtEnfermera.setText("");
+		limpiarDatosPaciente();
+		limpiarDatosVacuna();
+		btnVerAlergias.setEnabled(false);
+		pacienteSeleccionado = null;
+		vacunaSeleccionada = null;
+	}
+
+	private void refrescarComboPacientes() {
+		cbxPaciente.removeAllItems();
+		cbxPaciente.addItem("<Seleccione>");
+		for (Paciente paciente : Clinica.getInstance().getPacientes()) {
+			if (paciente != null && paciente.isActivo()) {
+				cbxPaciente.addItem(
+						paciente.getCodigoPaciente() + ": " + paciente.getNombre() + " " + paciente.getApellido());
+			}
+		}
 	}
 }
-
-

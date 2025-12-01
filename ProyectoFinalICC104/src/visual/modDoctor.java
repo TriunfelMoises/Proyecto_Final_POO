@@ -30,6 +30,7 @@ import javax.swing.text.MaskFormatter;
 import logico.Clinica;
 import logico.Doctor;
 import javax.swing.ButtonGroup;
+import javax.swing.SpinnerListModel;
 
 public class modDoctor extends JDialog {
 
@@ -41,8 +42,8 @@ public class modDoctor extends JDialog {
 	private JFormattedTextField txtTelefono;
 	private JTextArea txtDireccion;
 	private JTextField txtNumeroLicencia;
-	private JTextField txtHorarioInicio;
-	private JTextField txtHorarioFin;
+	private JSpinner spnHorarioInicio;
+	private JSpinner spnHorarioFin;
 	private JRadioButton rdbtnHombre;
 	private JRadioButton rdbtnMujer;
 	private JComboBox<String> cbxEspecialidad;
@@ -50,17 +51,6 @@ public class modDoctor extends JDialog {
 	private JSpinner spnFechaNacimiento;
 	private JCheckBox chckbxActivo;
 	private Doctor doctorAModificar;
-
-	public static void main(String[] args) {
-		try {
-			// Para pruebas, necesitas pasar un doctor
-			modDoctor dialog = new modDoctor(null);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public modDoctor(Doctor doctor) {
 		this.doctorAModificar = doctor;
@@ -81,6 +71,13 @@ public class modDoctor extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
+		crearComponentes();
+		cargarDatosDoctor();
+		configurarCamposNoEditables();
+		crearBotones();
+	}
+
+	private void crearComponentes() {
 		// ========== CÓDIGO (NO EDITABLE) ==========
 		JLabel lblCodigo = new JLabel("Código:");
 		lblCodigo.setBounds(540, 15, 60, 20);
@@ -88,10 +85,8 @@ public class modDoctor extends JDialog {
 
 		txtCodigo = new JTextField();
 		txtCodigo.setEditable(false);
-		txtCodigo.setEnabled(false);
 		txtCodigo.setBounds(540, 38, 100, 26);
 		contentPanel.add(txtCodigo);
-		txtCodigo.setText(doctor.getCodigoDoctor());
 
 		// ========== FILA 1: NOMBRE Y APELLIDO ==========
 		JLabel lblNombre = new JLabel("Nombre(s):");
@@ -101,7 +96,6 @@ public class modDoctor extends JDialog {
 		txtNombre = new JTextField();
 		txtNombre.setBounds(15, 38, 250, 26);
 		contentPanel.add(txtNombre);
-		txtNombre.setText(doctor.getNombre());
 
 		JLabel lblApellido = new JLabel("Apellido(s):");
 		lblApellido.setBounds(280, 15, 100, 20);
@@ -110,7 +104,6 @@ public class modDoctor extends JDialog {
 		txtApellido = new JTextField();
 		txtApellido.setBounds(280, 38, 245, 26);
 		contentPanel.add(txtApellido);
-		txtApellido.setText(doctor.getApellido());
 
 		// ========== FILA 2: CÉDULA (NO EDITABLE) Y TELÉFONO ==========
 		JLabel lblCedula = new JLabel("Cédula:");
@@ -124,11 +117,8 @@ public class modDoctor extends JDialog {
 		} catch (Exception e) {
 			txtCedula = new JFormattedTextField();
 		}
-		txtCedula.setEditable(false);
-		txtCedula.setEnabled(false);
 		txtCedula.setBounds(15, 103, 180, 26);
 		contentPanel.add(txtCedula);
-		txtCedula.setText(formatearCedula(doctor.getCedula()));
 
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setBounds(210, 80, 100, 20);
@@ -143,7 +133,6 @@ public class modDoctor extends JDialog {
 		}
 		txtTelefono.setBounds(210, 103, 180, 26);
 		contentPanel.add(txtTelefono);
-		txtTelefono.setText(formatearTelefono(doctor.getTelefono()));
 
 		// ========== FILA 3: SEXO Y FECHA DE NACIMIENTO ==========
 		JLabel lblSexo = new JLabel("Sexo:");
@@ -162,19 +151,12 @@ public class modDoctor extends JDialog {
 		grupoSexo.add(rdbtnHombre);
 		grupoSexo.add(rdbtnMujer);
 
-		if (doctor.getSexo() == 'M') {
-			rdbtnHombre.setSelected(true);
-		} else {
-			rdbtnMujer.setSelected(true);
-		}
-
 		JLabel lblFechaNacimiento = new JLabel("Fecha de nacimiento:");
 		lblFechaNacimiento.setBounds(15, 145, 150, 20);
 		contentPanel.add(lblFechaNacimiento);
 
 		spnFechaNacimiento = new JSpinner();
-		Date fechaNacDate = Date.from(doctor.getFechaNacimiento().atStartOfDay(ZoneId.systemDefault()).toInstant());
-		spnFechaNacimiento.setModel(new SpinnerDateModel(fechaNacDate, null, null, Calendar.DAY_OF_YEAR));
+		spnFechaNacimiento.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
 		JSpinner.DateEditor editor = new JSpinner.DateEditor(spnFechaNacimiento, "dd/MM/yyyy");
 		spnFechaNacimiento.setEditor(editor);
 		spnFechaNacimiento.setBounds(15, 168, 150, 26);
@@ -188,7 +170,6 @@ public class modDoctor extends JDialog {
 		txtDireccion = new JTextArea();
 		txtDireccion.setLineWrap(true);
 		txtDireccion.setWrapStyleWord(true);
-		txtDireccion.setText(doctor.getDireccion());
 		JScrollPane scrollDireccion = new JScrollPane(txtDireccion);
 		scrollDireccion.setBounds(180, 168, 460, 60);
 		contentPanel.add(scrollDireccion);
@@ -204,14 +185,13 @@ public class modDoctor extends JDialog {
 				"Otorrinolaringología", "Psiquiatría", "Urología", "Endocrinología" }));
 		cbxEspecialidad.setBounds(15, 268, 280, 26);
 		contentPanel.add(cbxEspecialidad);
-		cbxEspecialidad.setSelectedItem(doctor.getEspecialidad());
 
 		JLabel lblCitasPorDia = new JLabel("Citas por día:");
 		lblCitasPorDia.setBounds(310, 245, 100, 20);
 		contentPanel.add(lblCitasPorDia);
 
 		spnCitasPorDia = new JSpinner();
-		spnCitasPorDia.setModel(new SpinnerNumberModel(doctor.getCitasPorDia(), 1, 20, 1));
+		spnCitasPorDia.setModel(new SpinnerNumberModel(5, 1, 20, 1));
 		spnCitasPorDia.setBounds(310, 268, 80, 26);
 		contentPanel.add(spnCitasPorDia);
 
@@ -219,38 +199,28 @@ public class modDoctor extends JDialog {
 		lblInfoCitas.setBounds(400, 245, 100, 20);
 		contentPanel.add(lblInfoCitas);
 
-		// ========== FILA 5: NÚMERO DE LICENCIA ==========
-		JLabel lblNumeroLicencia = new JLabel("Número de Licencia Médica:");
+		// ========== FILA 5: NÚMERO DE LICENCIA (NO EDITABLE) ==========
+		JLabel lblNumeroLicencia = new JLabel("Número de Licencia:");
 		lblNumeroLicencia.setBounds(15, 310, 200, 20);
 		contentPanel.add(lblNumeroLicencia);
 
-		try {
-			MaskFormatter licenciaMask = new MaskFormatter("UUUU-#####");
-			licenciaMask.setPlaceholderCharacter('_');
-			txtNumeroLicencia = new JFormattedTextField(licenciaMask);
-			txtNumeroLicencia.setEnabled(false);
-			txtNumeroLicencia.setEditable(false);
-		} catch (Exception e) {
-			txtNumeroLicencia = new JFormattedTextField();
-		}
-
+		txtNumeroLicencia = new JTextField();
 		txtNumeroLicencia.setBounds(15, 333, 250, 26);
-		txtNumeroLicencia.setText(doctor.getNumeroLicencia());
 		contentPanel.add(txtNumeroLicencia);
 
 		JLabel lblInfoLicencia = new JLabel("(Ej: EXQM-12345)");
 		lblInfoLicencia.setBounds(270, 336, 200, 20);
 		contentPanel.add(lblInfoLicencia);
 
-		// ========== FILA 6: HORARIOS ==========
+		// ========== FILA 6: HORARIOS CON SPINNERS ==========
 		JLabel lblHorarioInicio = new JLabel("Horario Inicio:");
 		lblHorarioInicio.setBounds(15, 375, 120, 20);
 		contentPanel.add(lblHorarioInicio);
 
-		txtHorarioInicio = new JTextField();
-		txtHorarioInicio.setText(doctor.getHorarioInicio().toString());
-		txtHorarioInicio.setBounds(15, 398, 100, 26);
-		contentPanel.add(txtHorarioInicio);
+		String[] horasDisponibles = generarHorasDisponibles();
+		spnHorarioInicio = new JSpinner(new SpinnerListModel(horasDisponibles));
+		spnHorarioInicio.setBounds(15, 398, 100, 26);
+		contentPanel.add(spnHorarioInicio);
 
 		JLabel lblFormatoInicio = new JLabel("(HH:MM)");
 		lblFormatoInicio.setBounds(125, 401, 60, 20);
@@ -260,10 +230,9 @@ public class modDoctor extends JDialog {
 		lblHorarioFin.setBounds(200, 375, 100, 20);
 		contentPanel.add(lblHorarioFin);
 
-		txtHorarioFin = new JTextField();
-		txtHorarioFin.setText(doctor.getHorarioFin().toString());
-		txtHorarioFin.setBounds(200, 398, 100, 26);
-		contentPanel.add(txtHorarioFin);
+		spnHorarioFin = new JSpinner(new SpinnerListModel(horasDisponibles));
+		spnHorarioFin.setBounds(200, 398, 100, 26);
+		contentPanel.add(spnHorarioFin);
 
 		JLabel lblFormatoFin = new JLabel("(HH:MM)");
 		lblFormatoFin.setBounds(310, 401, 60, 20);
@@ -271,103 +240,156 @@ public class modDoctor extends JDialog {
 
 		// ========== ACTIVO ==========
 		chckbxActivo = new JCheckBox("Doctor Activo");
-		chckbxActivo.setSelected(doctor.isActivo());
 		chckbxActivo.setBounds(15, 440, 150, 29);
 		contentPanel.add(chckbxActivo);
-
-		// ========== PANEL DE BOTONES ==========
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton btnGuardar = new JButton("Guardar Cambios");
-				btnGuardar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						modificarDoctor();
-					}
-				});
-				btnGuardar.setActionCommand("OK");
-				buttonPane.add(btnGuardar);
-				getRootPane().setDefaultButton(btnGuardar);
-			}
-			{
-				JButton cancelButton = new JButton("Cancelar");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
-		}
 	}
 
-	// ========== MÉTODO PARA MODIFICAR DOCTOR ==========
-	private void modificarDoctor() {
-		// Validar campos vacíos
-		if (txtApellido.getText().trim().isEmpty() || txtDireccion.getText().trim().isEmpty()
-				|| txtNombre.getText().trim().isEmpty()
-				|| txtTelefono.getText().trim().replace("_", "").replace("(", "").replace(")", "").replace("-", "")
-						.replace(" ", "").isEmpty()
-				|| txtNumeroLicencia.getText().trim().isEmpty() || txtHorarioInicio.getText().trim().isEmpty()
-				|| txtHorarioFin.getText().trim().isEmpty() || cbxEspecialidad.getSelectedIndex() == 0) {
+	private void cargarDatosDoctor() {
+		if (doctorAModificar == null)
+			return;
 
-			JOptionPane.showMessageDialog(this, "Complete todos los campos correctamente", "Campos incompletos",
-					JOptionPane.WARNING_MESSAGE);
+		txtCodigo.setText(doctorAModificar.getCodigoDoctor());
+		txtNombre.setText(doctorAModificar.getNombre());
+		txtApellido.setText(doctorAModificar.getApellido());
+		txtCedula.setText(formatearCedula(doctorAModificar.getCedula()));
+		txtTelefono.setText(formatearTelefono(doctorAModificar.getTelefono()));
+		txtDireccion.setText(doctorAModificar.getDireccion());
+		txtNumeroLicencia.setText(doctorAModificar.getNumeroLicencia());
+
+		// Sexo
+		if (doctorAModificar.getSexo() == 'M') {
+			rdbtnHombre.setSelected(true);
+		} else {
+			rdbtnMujer.setSelected(true);
+		}
+
+		// Fecha de nacimiento
+		Date fechaNacDate = Date
+				.from(doctorAModificar.getFechaNacimiento().atStartOfDay(ZoneId.systemDefault()).toInstant());
+		spnFechaNacimiento.setValue(fechaNacDate);
+
+		// Especialidad
+		cbxEspecialidad.setSelectedItem(doctorAModificar.getEspecialidad());
+
+		// Citas por día
+		spnCitasPorDia.setValue(doctorAModificar.getCitasPorDia());
+
+		// Horarios
+		spnHorarioInicio.setValue(doctorAModificar.getHorarioInicio().toString());
+		spnHorarioFin.setValue(doctorAModificar.getHorarioFin().toString());
+
+		// Activo
+		chckbxActivo.setSelected(doctorAModificar.isActivo());
+	}
+
+	private void configurarCamposNoEditables() {
+		// Campos que NO se pueden modificar
+		txtCodigo.setEnabled(false);
+		txtCedula.setEnabled(false);
+		txtNumeroLicencia.setEnabled(false);
+		spnFechaNacimiento.setEnabled(false);
+		rdbtnHombre.setEnabled(false);
+		rdbtnMujer.setEnabled(false);
+	}
+
+	private void crearBotones() {
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton btnGuardar = new JButton("Guardar Cambios");
+		btnGuardar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				modificarDoctor();
+			}
+		});
+		buttonPane.add(btnGuardar);
+
+		JButton cancelButton = new JButton("Cancelar");
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		buttonPane.add(cancelButton);
+	}
+
+	private void modificarDoctor() {
+		// ========== 1. LIMPIAR DATOS ==========
+		String telefonoLimpio = txtTelefono.getText().replaceAll("[^0-9]", "");
+
+		// ========== 2. VALIDAR CAMPOS VACÍOS ==========
+		if (txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty()
+				|| telefonoLimpio.length() != 10 || txtDireccion.getText().trim().isEmpty()
+				|| cbxEspecialidad.getSelectedIndex() == 0) {
+
+			JOptionPane.showMessageDialog(this,
+					"Complete todos los campos correctamente.\n\n" + "Verifique:\n" + "• Teléfono: 10 dígitos\n"
+							+ "• Dirección completa\n" + "• Especialidad seleccionada",
+					"Campos incompletos", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		// Validar formato de teléfono
-		String telefonoLimpio = txtTelefono.getText().replaceAll("[^0-9]", "");
-		if (telefonoLimpio.length() != 10) {
-			JOptionPane.showMessageDialog(this, "El teléfono debe tener 10 dígitos", "Teléfono inválido",
-					JOptionPane.ERROR_MESSAGE);
+		// ========== 3. VALIDAR TELÉFONO DUPLICADO ==========
+		if (Clinica.getInstance().isTelefonoRegistrado(telefonoLimpio, doctorAModificar.getCedula())) {
+			JOptionPane.showMessageDialog(this,
+					"Este teléfono ya está registrado en el sistema.\n" + "Teléfono: " + txtTelefono.getText() + "\n"
+							+ "Por favor ingrese un teléfono diferente.",
+					"Teléfono duplicado", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
 		try {
-			// Convertir fecha de nacimiento
+			// ========== 4. FECHA DE NACIMIENTO ==========
 			Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
 			LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-			// Validar que no sea fecha futura
 			if (fechaNac.isAfter(LocalDate.now())) {
 				JOptionPane.showMessageDialog(this, "La fecha de nacimiento no puede ser futura", "Fecha inválida",
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
-			// Convertir horarios
-			LocalTime horarioInicio = LocalTime.parse(txtHorarioInicio.getText().trim());
-			LocalTime horarioFin = LocalTime.parse(txtHorarioFin.getText().trim());
+			// ========== 5. HORARIOS ==========
+			String horarioInicioStr = (String) spnHorarioInicio.getValue();
+			String horarioFinStr = (String) spnHorarioFin.getValue();
 
-			// Validar horarios
+			LocalTime horarioInicio = LocalTime.parse(horarioInicioStr);
+			LocalTime horarioFin = LocalTime.parse(horarioFinStr);
+
 			if (!horarioFin.isAfter(horarioInicio)) {
-				JOptionPane.showMessageDialog(this, "El horario de fin debe ser posterior al horario de inicio",
+				JOptionPane.showMessageDialog(this, "El horario de fin debe ser posterior al de inicio",
 						"Horario inválido", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
-			// Actualizar datos del doctor
+			// Validar que haya al menos 1 hora de diferencia
+			if (horarioInicio.plusHours(1).isAfter(horarioFin)) {
+				JOptionPane.showMessageDialog(
+						this, "El horario laboral debe ser de al menos 1 hora.\n" + "Horario actual: "
+								+ horarioInicioStr + " - " + horarioFinStr,
+						"Horario muy corto", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+
+			// ========== 6. ACTUALIZAR DOCTOR ==========
 			doctorAModificar.setNombre(txtNombre.getText().trim());
 			doctorAModificar.setApellido(txtApellido.getText().trim());
 			doctorAModificar.setTelefono(telefonoLimpio);
 			doctorAModificar.setDireccion(txtDireccion.getText().trim());
 			doctorAModificar.setFechaNacimiento(fechaNac);
-			doctorAModificar.setSexo(rdbtnHombre.isSelected() ? 'M' : 'F');
 			doctorAModificar.setEspecialidad(cbxEspecialidad.getSelectedItem().toString());
 			doctorAModificar.setCitasPorDia((Integer) spnCitasPorDia.getValue());
 			doctorAModificar.setHorarioInicio(horarioInicio);
 			doctorAModificar.setHorarioFin(horarioFin);
 			doctorAModificar.setActivo(chckbxActivo.isSelected());
 
-			// Modificar en la clínica
+			// ========== 7. GUARDAR CAMBIOS ==========
 			if (Clinica.getInstance().modificarDoctor(doctorAModificar)) {
 				JOptionPane.showMessageDialog(this,
-						"Doctor modificado exitosamente\n" + "Código: " + doctorAModificar.getCodigoDoctor() + "\n"
-								+ "Nombre: " + doctorAModificar.getNombre() + " " + doctorAModificar.getApellido(),
+						"Doctor modificado exitosamente\n\n" + "Código: " + doctorAModificar.getCodigoDoctor() + "\n"
+								+ "Nombre: " + doctorAModificar.getNombre() + " " + doctorAModificar.getApellido()
+								+ "\n" + "Horario: " + horarioInicioStr + " - " + horarioFinStr,
 						"Modificación Exitosa", JOptionPane.INFORMATION_MESSAGE);
 				dispose();
 			} else {
@@ -375,15 +397,30 @@ public class modDoctor extends JDialog {
 			}
 
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Error al modificar doctor:\n" + ex.getMessage()
-					+ "\n\nVerifique el formato de los horarios (HH:MM)", "Error", JOptionPane.ERROR_MESSAGE);
-			ex.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Error al modificar:\n" + ex.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	/**
+	 * Genera un array de horas disponibles en formato HH:MM desde las 6:00 AM hasta
+	 * las 10:00 PM en intervalos de 30 minutos
+	 */
+	private String[] generarHorasDisponibles() {
+		java.util.List<String> horas = new java.util.ArrayList<>();
+
+		for (int hora = 6; hora <= 22; hora++) {
+			for (int minuto = 0; minuto < 60; minuto += 30) {
+				String horaStr = String.format("%02d:%02d", hora, minuto);
+				horas.add(horaStr);
+			}
+		}
+
+		return horas.toArray(new String[0]);
 	}
 
 	// ========== MÉTODOS AUXILIARES PARA FORMATEAR ==========
 	private String formatearCedula(String cedula) {
-		// Formato: 000-0000000-0
 		if (cedula.length() == 11) {
 			return cedula.substring(0, 3) + "-" + cedula.substring(3, 10) + "-" + cedula.substring(10);
 		}
@@ -391,7 +428,6 @@ public class modDoctor extends JDialog {
 	}
 
 	private String formatearTelefono(String telefono) {
-		// Formato: (000) 000-0000
 		if (telefono.length() == 10) {
 			return "(" + telefono.substring(0, 3) + ") " + telefono.substring(3, 6) + "-" + telefono.substring(6);
 		}

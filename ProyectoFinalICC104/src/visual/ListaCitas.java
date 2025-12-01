@@ -243,9 +243,24 @@ public class ListaCitas extends JDialog {
 			return;
 		}
 
-		// Aquí abrirías tu ventana RegistroConsulta
-		JOptionPane.showMessageDialog(this, "Abrir ventana RegistroConsulta para la cita: " + codigoCita, "Info",
-				JOptionPane.INFORMATION_MESSAGE);
+		// Verificar que la cita sea para hoy o una fecha pasada
+		if (cita.getFechaCita().isAfter(LocalDate.now())) {
+			int respuesta = JOptionPane.showConfirmDialog(this,
+					"La cita seleccionada es para una fecha futura (" + cita.getFechaCita() + ").\n"
+							+ "¿Desea realizar la consulta de todas formas?",
+					"Cita Futura", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+			if (respuesta != JOptionPane.YES_OPTION) {
+				return;
+			}
+		}
+
+		// Abrir ventana de registro de consulta
+		regConsulta dialog = new regConsulta(); // Pasar la cita seleccionada
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
+
+		// Recargar citas después de cerrar la consulta
 		cargarCitas();
 	}
 

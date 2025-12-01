@@ -30,6 +30,7 @@ import javax.swing.text.MaskFormatter;
 import logico.Clinica;
 import logico.Doctor;
 import javax.swing.ButtonGroup;
+import javax.swing.SpinnerListModel;
 
 public class regDoctor extends JDialog {
 
@@ -41,8 +42,8 @@ public class regDoctor extends JDialog {
 	private JFormattedTextField txtTelefono;
 	private JTextArea txtDireccion;
 	private JTextField txtNumeroLicencia;
-	private JTextField txtHorarioInicio;
-	private JTextField txtHorarioFin;
+	private JSpinner spnHorarioInicio;
+	private JSpinner spnHorarioFin;
 	private JRadioButton rdbtnHombre;
 	private JRadioButton rdbtnMujer;
 	private JComboBox<String> cbxEspecialidad;
@@ -219,16 +220,17 @@ public class regDoctor extends JDialog {
 		lblInfoLicencia.setBounds(270, 336, 200, 20);
 		contentPanel.add(lblInfoLicencia);
 
-		// ========== FILA 6: HORARIOS ==========
+		// ========== FILA 6: HORARIOS CON SPINNERS ==========
 		JLabel lblHorarioInicio = new JLabel("Horario Inicio:");
 		lblHorarioInicio.setBounds(15, 375, 120, 20);
 		contentPanel.add(lblHorarioInicio);
 
-		txtHorarioInicio = new JTextField();
-		txtHorarioInicio.setText("08:00");
-		txtHorarioInicio.setBounds(15, 398, 100, 26);
-		contentPanel.add(txtHorarioInicio);
-		txtHorarioInicio.setColumns(10);
+		// Crear modelo para horas (de 6:00 AM a 10:00 PM en intervalos de 30 minutos)
+		String[] horasDisponibles = generarHorasDisponibles();
+		spnHorarioInicio = new JSpinner(new SpinnerListModel(horasDisponibles));
+		spnHorarioInicio.setValue("08:00"); // Valor por defecto
+		spnHorarioInicio.setBounds(15, 398, 100, 26);
+		contentPanel.add(spnHorarioInicio);
 
 		JLabel lblFormatoInicio = new JLabel("(HH:MM)");
 		lblFormatoInicio.setBounds(125, 401, 60, 20);
@@ -238,11 +240,10 @@ public class regDoctor extends JDialog {
 		lblHorarioFin.setBounds(200, 375, 100, 20);
 		contentPanel.add(lblHorarioFin);
 
-		txtHorarioFin = new JTextField();
-		txtHorarioFin.setText("17:00");
-		txtHorarioFin.setBounds(200, 398, 100, 26);
-		contentPanel.add(txtHorarioFin);
-		txtHorarioFin.setColumns(10);
+		spnHorarioFin = new JSpinner(new SpinnerListModel(horasDisponibles));
+		spnHorarioFin.setValue("17:00"); // Valor por defecto
+		spnHorarioFin.setBounds(200, 398, 100, 26);
+		contentPanel.add(spnHorarioFin);
 
 		JLabel lblFormatoFin = new JLabel("(HH:MM)");
 		lblFormatoFin.setBounds(310, 401, 60, 20);
@@ -297,102 +298,133 @@ public class regDoctor extends JDialog {
 		}
 	}
 
-	// ========== MÉTODO PARA REGISTRAR DOCTOR ==========
+	/**
+	 * Genera un array de horas disponibles en formato HH:MM desde las 6:00 AM hasta
+	 * las 10:00 PM en intervalos de 30 minutos
+	 */
+	private String[] generarHorasDisponibles() {
+		java.util.List<String> horas = new java.util.ArrayList<>();
+
+		for (int hora = 6; hora <= 22; hora++) {
+			for (int minuto = 0; minuto < 60; minuto += 30) {
+				String horaStr = String.format("%02d:%02d", hora, minuto);
+				horas.add(horaStr);
+			}
+		}
+
+		return horas.toArray(new String[0]);
+	}
+
 	private void registrarDoctor() {
-		char sexo;
-
-		// Validar campos vacíos
-		if (txtApellido.getText().trim().isEmpty()
-				|| txtCedula.getText().trim().replace("_", "").replace("-", "").isEmpty()
-				|| txtDireccion.getText().trim().isEmpty() || txtNombre.getText().trim().isEmpty()
-				|| txtTelefono.getText().trim().replace("_", "").replace("(", "").replace(")", "").replace("-", "")
-						.replace(" ", "").isEmpty()
-				|| txtNumeroLicencia.getText().trim().isEmpty() || txtHorarioInicio.getText().trim().isEmpty()
-				|| txtHorarioFin.getText().trim().isEmpty() || cbxEspecialidad.getSelectedIndex() == 0) {
-
-			JOptionPane.showMessageDialog(this, "Complete todos los campos correctamente", "Campos incompletos",
-					JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-
-		// Validar formato de cédula (debe tener 11 dígitos)
+		// ========== 1. LIMPIAR DATOS ==========
 		String cedulaLimpia = txtCedula.getText().replaceAll("[^0-9]", "");
-		if (cedulaLimpia.length() != 11) {
-			JOptionPane.showMessageDialog(this, "La cédula debe tener 11 dígitos", "Cédula inválida",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-
-		// Validar formato de teléfono (debe tener 10 dígitos)
 		String telefonoLimpio = txtTelefono.getText().replaceAll("[^0-9]", "");
-		if (telefonoLimpio.length() != 10) {
-			JOptionPane.showMessageDialog(this, "El teléfono debe tener 10 dígitos", "Teléfono inválido",
-					JOptionPane.ERROR_MESSAGE);
+		String licenciaTexto = txtNumeroLicencia.getText().trim().replaceAll("_", "");
+
+		// ========== 2. VALIDAR CAMPOS VACÍOS ==========
+		if (txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty()
+				|| cedulaLimpia.length() != 11 || telefonoLimpio.length() != 10
+				|| txtDireccion.getText().trim().isEmpty() || licenciaTexto.isEmpty() || licenciaTexto.length() < 4
+				|| cbxEspecialidad.getSelectedIndex() == 0) {
+
+			JOptionPane.showMessageDialog(this,
+					"Complete todos los campos correctamente.\n\n" + "Verifique:\n" + "• Cédula: 11 dígitos\n"
+							+ "• Teléfono: 10 dígitos\n" + "• Licencia: al menos 4 caracteres",
+					"Campos incompletos", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		// Determinar sexo
-		if (rdbtnHombre.isSelected()) {
-			sexo = 'M';
-		} else {
-			sexo = 'F';
+		// ========== 3. VALIDAR CÉDULA DUPLICADA ==========
+		if (Clinica.getInstance().isCedulaRegistrada(cedulaLimpia)) {
+			JOptionPane.showMessageDialog(this,
+					"Esta cédula ya está registrada en el sistema.\n" + "Cédula: " + txtCedula.getText(),
+					"Cédula duplicada", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
+
+		// ========== 4. VALIDAR TELÉFONO DUPLICADO ==========
+		if (Clinica.getInstance().isTelefonoRegistrado(telefonoLimpio)) {
+			JOptionPane.showMessageDialog(this,
+					"Este teléfono ya está registrado en el sistema.\n" + "Teléfono: " + txtTelefono.getText() + "\n"
+							+ "Por favor ingrese un teléfono diferente.",
+					"Teléfono duplicado", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		// ========== 5. VALIDAR LICENCIA DUPLICADA ==========
+		String licenciaCompleta = txtNumeroLicencia.getText().trim().toUpperCase();
+		if (Clinica.getInstance().isLicenciaRegistrada(licenciaCompleta)) {
+			JOptionPane.showMessageDialog(this,
+					"Esta licencia médica ya está registrada.\n" + "Licencia: " + licenciaCompleta,
+					"Licencia duplicada", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		// ========== 6. DETERMINAR SEXO ==========
+		char sexo = rdbtnHombre.isSelected() ? 'M' : 'F';
 
 		try {
-			// Convertir fecha de nacimiento
+			// ========== 7. FECHA DE NACIMIENTO ==========
 			Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
 			LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-			// Validar que no sea fecha futura
 			if (fechaNac.isAfter(LocalDate.now())) {
 				JOptionPane.showMessageDialog(this, "La fecha de nacimiento no puede ser futura", "Fecha inválida",
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
-			// Obtener especialidad
-			String especialidad = cbxEspecialidad.getSelectedItem().toString();
+			// ========== 8. HORARIOS ==========
+			String horarioInicioStr = (String) spnHorarioInicio.getValue();
+			String horarioFinStr = (String) spnHorarioFin.getValue();
 
-			// Obtener citas por día
-			int citasPorDia = (Integer) spnCitasPorDia.getValue();
+			LocalTime horarioInicio = LocalTime.parse(horarioInicioStr);
+			LocalTime horarioFin = LocalTime.parse(horarioFinStr);
 
-			// Convertir horarios
-			LocalTime horarioInicio = LocalTime.parse(txtHorarioInicio.getText().trim());
-			LocalTime horarioFin = LocalTime.parse(txtHorarioFin.getText().trim());
-
-			// Validar que horario fin sea después de horario inicio
 			if (!horarioFin.isAfter(horarioInicio)) {
-				JOptionPane.showMessageDialog(this, "El horario de fin debe ser posterior al horario de inicio",
+				JOptionPane.showMessageDialog(this, "El horario de fin debe ser posterior al de inicio",
 						"Horario inválido", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
-			// Obtener estado activo
+			// Validar que haya al menos 1 hora de diferencia
+			if (horarioInicio.plusHours(1).isAfter(horarioFin)) {
+				JOptionPane.showMessageDialog(
+						this, "El horario laboral debe ser de al menos 1 hora.\n" + "Horario actual: "
+								+ horarioInicioStr + " - " + horarioFinStr,
+						"Horario muy corto", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+
+			// ========== 9. CREAR DOCTOR ==========
+			String especialidad = cbxEspecialidad.getSelectedItem().toString();
+			int citasPorDia = (Integer) spnCitasPorDia.getValue();
 			boolean activo = chckbxActivo.isSelected();
 
-			// Crear el doctor
 			Doctor nuevoDoctor = new Doctor(cedulaLimpia, txtNombre.getText().trim(), txtApellido.getText().trim(),
 					telefonoLimpio, txtDireccion.getText().trim(), fechaNac, sexo, txtCodigo.getText(), especialidad,
-					txtNumeroLicencia.getText().trim().toUpperCase(), citasPorDia, horarioInicio, horarioFin, activo);
+					licenciaCompleta, citasPorDia, horarioInicio, horarioFin, activo);
 
-			// Registrar en la clínica
+			// ========== 10. REGISTRAR ==========
 			if (Clinica.getInstance().registrarDoctor(nuevoDoctor)) {
 				JOptionPane.showMessageDialog(this,
-						"Doctor registrado exitosamente\n" + "Código: " + txtCodigo.getText() + "\n" + "Nombre: "
-								+ nuevoDoctor.getNombre() + " " + nuevoDoctor.getApellido(),
+						" Doctor registrado exitosamente\n\n" + "Código: " + txtCodigo.getText() + "\n" + "Nombre: "
+								+ nuevoDoctor.getNombre() + " " + nuevoDoctor.getApellido() + "\n" + "Licencia: "
+								+ nuevoDoctor.getNumeroLicencia() + "\n" + "Horario: " + horarioInicioStr + " - "
+								+ horarioFinStr,
 						"Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-
-				// Limpiar campos
 				limpiarCampos();
 			} else {
-				JOptionPane.showMessageDialog(this, "Ya existe un doctor registrado con esa cédula", "Doctor duplicado",
+				JOptionPane.showMessageDialog(this,
+						"Error: No se pudo registrar el doctor.\n" + "Verifique que no existan duplicados.", "Error",
 						JOptionPane.ERROR_MESSAGE);
+				Clinica.getInstance().recalcularContadorDoctores();
 			}
 
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Error al registrar doctor:\n" + ex.getMessage()
-					+ "\n\nVerifique el formato de los horarios (HH:MM)", "Error", JOptionPane.ERROR_MESSAGE);
-			ex.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Error al registrar:\n" + ex.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+			Clinica.getInstance().recalcularContadorDoctores();
 		}
 	}
 
@@ -404,8 +436,8 @@ public class regDoctor extends JDialog {
 		txtTelefono.setText("");
 		txtDireccion.setText("");
 		txtNumeroLicencia.setText("");
-		txtHorarioInicio.setText("08:00");
-		txtHorarioFin.setText("17:00");
+		spnHorarioInicio.setValue("08:00");
+		spnHorarioFin.setValue("17:00");
 		txtCodigo.setText("DOC-" + Clinica.getInstance().contadorDoctores);
 		rdbtnHombre.setSelected(true);
 		chckbxActivo.setSelected(true);
