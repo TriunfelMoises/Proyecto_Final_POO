@@ -25,7 +25,7 @@ public class regVacuna extends JDialog {
 
 	public regVacuna() {
 		setTitle("Registrar Vacuna");
-		setBounds(100, 100, 520, 400);
+		setBounds(100, 100, 537, 400);
 		setLocationRelativeTo(null);
 		setModal(true);
 		setResizable(false);
@@ -47,7 +47,7 @@ public class regVacuna extends JDialog {
 		contentPanel.add(lblTitulo);
 
 		// Información
-		lblInfo = new JLabel("* Campos obligatorios. Seleccione la enfermedad contra la que protege la vacuna.");
+		lblInfo = new JLabel("Campos obligatorios. Seleccione la enfermedad contra la que protege la vacuna.");
 		lblInfo.setFont(infoFont);
 		lblInfo.setForeground(Color.BLACK);
 		lblInfo.setBounds(20, 35, 450, 15);
@@ -66,7 +66,7 @@ public class regVacuna extends JDialog {
 		contentPanel.add(txtCodigo);
 
 		// Nombre
-		JLabel lblNombre = new JLabel("Nombre:*");
+		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setFont(labelFont);
 		lblNombre.setBounds(20, 55, 80, 20);
 		contentPanel.add(lblNombre);
@@ -76,7 +76,7 @@ public class regVacuna extends JDialog {
 		contentPanel.add(txtNombre);
 
 		// Número de lote
-		JLabel lblNumeroLote = new JLabel("Número de Lote:*");
+		JLabel lblNumeroLote = new JLabel("Número de Lote:");
 		lblNumeroLote.setFont(labelFont);
 		lblNumeroLote.setBounds(20, 115, 120, 20);
 		contentPanel.add(lblNumeroLote);
@@ -86,7 +86,7 @@ public class regVacuna extends JDialog {
 		contentPanel.add(txtNumeroLote);
 
 		// Laboratorio
-		JLabel lblLaboratorio = new JLabel("Laboratorio:*");
+		JLabel lblLaboratorio = new JLabel("Laboratorio:");
 		lblLaboratorio.setFont(labelFont);
 		lblLaboratorio.setBounds(240, 115, 100, 20);
 		contentPanel.add(lblLaboratorio);
@@ -96,7 +96,7 @@ public class regVacuna extends JDialog {
 		contentPanel.add(txtLaboratorio);
 
 		// Enfermedad (COMBOBOX en lugar de TEXTFIELD)
-		JLabel lblEnfermedad = new JLabel("Enfermedad:*");
+		JLabel lblEnfermedad = new JLabel("Enfermedad:");
 		lblEnfermedad.setFont(labelFont);
 		lblEnfermedad.setBounds(20, 175, 100, 20);
 		contentPanel.add(lblEnfermedad);
@@ -109,12 +109,12 @@ public class regVacuna extends JDialog {
 
 		// Botón para agregar nueva enfermedad si no existe
 		JButton btnNuevaEnfermedad = new JButton("Nueva Enfermedad");
-		btnNuevaEnfermedad.setBounds(332, 195, 140, 25);
+		btnNuevaEnfermedad.setBounds(332, 195, 170, 25);
 		btnNuevaEnfermedad.addActionListener(e -> abrirRegistroEnfermedad());
 		contentPanel.add(btnNuevaEnfermedad);
 
 		// Cantidad
-		JLabel lblCantidad = new JLabel("Cantidad:*");
+		JLabel lblCantidad = new JLabel("Cantidad:");
 		lblCantidad.setFont(labelFont);
 		lblCantidad.setBounds(350, 235, 80, 20);
 		contentPanel.add(lblCantidad);
@@ -124,7 +124,7 @@ public class regVacuna extends JDialog {
 		contentPanel.add(spnCantidad);
 
 		// Fecha de caducidad
-		JLabel lblFechaCad = new JLabel("Fecha de Caducidad:*");
+		JLabel lblFechaCad = new JLabel("Fecha de Caducidad:");
 		lblFechaCad.setFont(labelFont);
 		lblFechaCad.setBounds(20, 235, 150, 20);
 		contentPanel.add(lblFechaCad);

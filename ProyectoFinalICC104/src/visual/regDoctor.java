@@ -315,6 +315,17 @@ public class regDoctor extends JDialog {
 		return horas.toArray(new String[0]);
 	}
 
+	private boolean validarNombre(String texto, String campo) {
+		// Solo letras, espacios y tildes
+		if (!texto.matches("[a-záéíóúñüA-ZÁÉÍÓÚÑÜ ]+")) {
+			JOptionPane.showMessageDialog(this,
+					campo + " solo puede contener letras y espacios.\nNo se permiten números ni caracteres especiales.",
+					"Nombre inválido", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
+	}
+
 	private void registrarDoctor() {
 		// ========== 1. LIMPIAR DATOS ==========
 		String cedulaLimpia = txtCedula.getText().replaceAll("[^0-9]", "");
@@ -331,6 +342,17 @@ public class regDoctor extends JDialog {
 					"Complete todos los campos correctamente.\n\n" + "Verifique:\n" + "• Cédula: 11 dígitos\n"
 							+ "• Teléfono: 10 dígitos\n" + "• Licencia: al menos 4 caracteres",
 					"Campos incompletos", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		// ========== 2.5. VALIDAR NOMBRE Y APELLIDO ==========
+		if (!validarNombre(txtNombre.getText().trim(), "El nombre")) {
+			txtNombre.requestFocus();
+			return;
+		}
+
+		if (!validarNombre(txtApellido.getText().trim(), "El apellido")) {
+			txtApellido.requestFocus();
 			return;
 		}
 
@@ -408,7 +430,7 @@ public class regDoctor extends JDialog {
 			// ========== 10. REGISTRAR ==========
 			if (Clinica.getInstance().registrarDoctor(nuevoDoctor)) {
 				JOptionPane.showMessageDialog(this,
-						" Doctor registrado exitosamente\n\n" + "Código: " + txtCodigo.getText() + "\n" + "Nombre: "
+						"Doctor registrado exitosamente\n\n" + "Código: " + txtCodigo.getText() + "\n" + "Nombre: "
 								+ nuevoDoctor.getNombre() + " " + nuevoDoctor.getApellido() + "\n" + "Licencia: "
 								+ nuevoDoctor.getNumeroLicencia() + "\n" + "Horario: " + horarioInicioStr + " - "
 								+ horarioFinStr,

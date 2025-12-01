@@ -6,6 +6,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -51,6 +53,18 @@ public class modDoctor extends JDialog {
 	private JSpinner spnFechaNacimiento;
 	private JCheckBox chckbxActivo;
 	private Doctor doctorAModificar;
+	private JButton btnGuardar;
+
+	// Datos originales para detectar cambios
+	private String telefonoOriginal = "";
+	private String direccionOriginal = "";
+	private String nombreOriginal = "";
+	private String apellidoOriginal = "";
+	private String especialidadOriginal = "";
+	private int citasPorDiaOriginal = 0;
+	private String horarioInicioOriginal = "";
+	private String horarioFinOriginal = "";
+	private boolean activoOriginal = false;
 
 	public modDoctor(Doctor doctor) {
 		this.doctorAModificar = doctor;
@@ -75,6 +89,7 @@ public class modDoctor extends JDialog {
 		cargarDatosDoctor();
 		configurarCamposNoEditables();
 		crearBotones();
+		configurarDeteccionCambios();
 	}
 
 	private void crearComponentes() {
@@ -280,6 +295,17 @@ public class modDoctor extends JDialog {
 
 		// Activo
 		chckbxActivo.setSelected(doctorAModificar.isActivo());
+
+		// Guardar datos originales
+		telefonoOriginal = doctorAModificar.getTelefono().replaceAll("[^0-9]", "");
+		direccionOriginal = doctorAModificar.getDireccion() != null ? doctorAModificar.getDireccion() : "";
+		nombreOriginal = doctorAModificar.getNombre();
+		apellidoOriginal = doctorAModificar.getApellido();
+		especialidadOriginal = doctorAModificar.getEspecialidad();
+		citasPorDiaOriginal = doctorAModificar.getCitasPorDia();
+		horarioInicioOriginal = doctorAModificar.getHorarioInicio().toString();
+		horarioFinOriginal = doctorAModificar.getHorarioFin().toString();
+		activoOriginal = doctorAModificar.isActivo();
 	}
 
 	private void configurarCamposNoEditables() {
@@ -292,12 +318,67 @@ public class modDoctor extends JDialog {
 		rdbtnMujer.setEnabled(false);
 	}
 
+	private void configurarDeteccionCambios() {
+		// Deshabilitar botón inicialmente
+		btnGuardar.setEnabled(false);
+
+		// Listener para campos de texto
+		DocumentListener cambioListener = new DocumentListener() {
+			public void insertUpdate(DocumentEvent e) {
+				verificarCambios();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				verificarCambios();
+			}
+
+			public void changedUpdate(DocumentEvent e) {
+				verificarCambios();
+			}
+		};
+
+		// Aplicar listeners
+		txtNombre.getDocument().addDocumentListener(cambioListener);
+		txtApellido.getDocument().addDocumentListener(cambioListener);
+		txtTelefono.getDocument().addDocumentListener(cambioListener);
+		txtDireccion.getDocument().addDocumentListener(cambioListener);
+
+		// Listeners para spinners y combobox
+		spnCitasPorDia.addChangeListener(e -> verificarCambios());
+		spnHorarioInicio.addChangeListener(e -> verificarCambios());
+		spnHorarioFin.addChangeListener(e -> verificarCambios());
+		cbxEspecialidad.addActionListener(e -> verificarCambios());
+		chckbxActivo.addActionListener(e -> verificarCambios());
+	}
+
+	private void verificarCambios() {
+		String telefonoActual = txtTelefono.getText().replaceAll("[^0-9]", "");
+		String direccionActual = txtDireccion.getText().trim();
+		String nombreActual = txtNombre.getText().trim();
+		String apellidoActual = txtApellido.getText().trim();
+		String especialidadActual = cbxEspecialidad.getSelectedItem() != null
+				? cbxEspecialidad.getSelectedItem().toString()
+				: "";
+		int citasPorDiaActual = (Integer) spnCitasPorDia.getValue();
+		String horarioInicioActual = (String) spnHorarioInicio.getValue();
+		String horarioFinActual = (String) spnHorarioFin.getValue();
+		boolean activoActual = chckbxActivo.isSelected();
+
+		boolean huboCambios = !telefonoActual.equals(telefonoOriginal) || !direccionActual.equals(direccionOriginal)
+				|| !nombreActual.equals(nombreOriginal) || !apellidoActual.equals(apellidoOriginal)
+				|| !especialidadActual.equals(especialidadOriginal) || citasPorDiaActual != citasPorDiaOriginal
+				|| !horarioInicioActual.equals(horarioInicioOriginal) || !horarioFinActual.equals(horarioFinOriginal)
+				|| activoActual != activoOriginal;
+
+		btnGuardar.setEnabled(huboCambios);
+	}
+
 	private void crearBotones() {
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-		JButton btnGuardar = new JButton("Guardar Cambios");
+		btnGuardar = new JButton("Guardar Cambios");
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				modificarDoctor();
@@ -312,6 +393,17 @@ public class modDoctor extends JDialog {
 			}
 		});
 		buttonPane.add(cancelButton);
+	}
+
+	private boolean validarNombre(String texto, String campo) {
+		// Solo letras, espacios y tildes
+		if (!texto.matches("[a-záéíóúñüA-ZÁÉÍÓÚÑÜ ]+")) {
+			JOptionPane.showMessageDialog(this,
+					campo + " solo puede contener letras y espacios.\nNo se permiten números ni caracteres especiales.",
+					"Nombre inválido", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
 	}
 
 	private void modificarDoctor() {
@@ -330,13 +422,26 @@ public class modDoctor extends JDialog {
 			return;
 		}
 
-		// ========== 3. VALIDAR TELÉFONO DUPLICADO ==========
-		if (Clinica.getInstance().isTelefonoRegistrado(telefonoLimpio, doctorAModificar.getCedula())) {
-			JOptionPane.showMessageDialog(this,
-					"Este teléfono ya está registrado en el sistema.\n" + "Teléfono: " + txtTelefono.getText() + "\n"
-							+ "Por favor ingrese un teléfono diferente.",
-					"Teléfono duplicado", JOptionPane.ERROR_MESSAGE);
+		// ========== 2.5. VALIDAR NOMBRE Y APELLIDO ==========
+		if (!validarNombre(txtNombre.getText().trim(), "El nombre")) {
+			txtNombre.requestFocus();
 			return;
+		}
+
+		if (!validarNombre(txtApellido.getText().trim(), "El apellido")) {
+			txtApellido.requestFocus();
+			return;
+		}
+
+		// ========== 3. VALIDAR TELÉFONO DUPLICADO (SOLO SI CAMBIÓ) ==========
+		if (!telefonoLimpio.equals(telefonoOriginal)) {
+			if (Clinica.getInstance().isTelefonoRegistrado(telefonoLimpio, doctorAModificar.getCedula())) {
+				JOptionPane.showMessageDialog(this,
+						"Este teléfono ya está registrado en el sistema.\n" + "Teléfono: " + txtTelefono.getText()
+								+ "\n" + "Por favor ingrese un teléfono diferente.",
+						"Teléfono duplicado", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 		}
 
 		try {
