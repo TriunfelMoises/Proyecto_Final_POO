@@ -8,7 +8,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import logico.Cita;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -134,23 +133,10 @@ public class DetalleCita extends JDialog {
 		lblEspecialidadValor.setBounds(100, 50, 354, 20);
 		panelDoctor.add(lblEspecialidadValor);
 
-		// BOTONES
+		// BOTONES - SOLO CERRAR
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
-
-		// Botón Ver Consulta (solo si está completada)
-		if (cita.estaCompletada()) {
-			JButton btnVerConsulta = new JButton("Ver Consulta");
-			btnVerConsulta.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// Aquí abrirías tu ventana DetalleConsulta
-					JOptionPane.showMessageDialog(null, "Abrir ventana DetalleConsulta", "Info",
-							JOptionPane.INFORMATION_MESSAGE);
-				}
-			});
-			buttonPane.add(btnVerConsulta);
-		}
 
 		JButton btnCerrar = new JButton("Cerrar");
 		btnCerrar.addActionListener(new ActionListener() {

@@ -52,7 +52,7 @@ public class AgendarCita extends JDialog {
 
 	public AgendarCita() {
 		setTitle("Agendar Cita");
-		setBounds(100, 100, 600, 600);
+		setBounds(100, 100, 633, 600);
 		setLocationRelativeTo(null);
 		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
@@ -285,7 +285,7 @@ public class AgendarCita extends JDialog {
 		txtTelefonio.setBackground(new Color(240, 240, 240));
 
 		// Actualizar mensaje
-		actualizarMensajeEstado(" Paciente registrado encontrado. Los datos están bloqueados para edición.");
+		actualizarMensajeEstado("Paciente registrado encontrado.");
 	}
 
 	private void prepararParaNuevoPaciente() {
@@ -308,7 +308,7 @@ public class AgendarCita extends JDialog {
 		txtPaciente.requestFocus();
 
 		// Actualizar mensaje
-		actualizarMensajeEstado(" Paciente no encontrado. Complete los datos para crear un nuevo interesado.");
+		actualizarMensajeEstado("Paciente no encontrado. Complete los datos.");
 	}
 
 	private void actualizarMensajeEstado(String mensaje) {

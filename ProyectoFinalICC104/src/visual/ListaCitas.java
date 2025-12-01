@@ -20,6 +20,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class ListaCitas extends JDialog {
 
@@ -32,6 +34,7 @@ public class ListaCitas extends JDialog {
 	private JButton btnVerDetalles;
 	private JButton btnRealizarConsulta;
 	private JButton btnCancelarCita;
+	private Cita citaSeleccionada = null;
 
 	public ListaCitas() {
 		setTitle("Lista de Citas");
@@ -57,6 +60,7 @@ public class ListaCitas extends JDialog {
 		cbxEstado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cargarCitas();
+				limpiarSeleccion();
 			}
 		});
 		panelFiltros.add(cbxEstado);
@@ -69,6 +73,7 @@ public class ListaCitas extends JDialog {
 		cbxDoctor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cargarCitas();
+				limpiarSeleccion();
 			}
 		});
 		panelFiltros.add(cbxDoctor);
@@ -84,6 +89,7 @@ public class ListaCitas extends JDialog {
 		btnBuscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cargarCitas();
+				limpiarSeleccion();
 			}
 		});
 		panelFiltros.add(btnBuscar);
@@ -100,6 +106,16 @@ public class ListaCitas extends JDialog {
 		};
 
 		tableCitas = new JTable(modelo);
+
+		// Listener para detectar selección en la tabla
+		tableCitas.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					manejarSeleccionCita();
+				}
+			}
+		});
+
 		scrollPane.setViewportView(tableCitas);
 
 		// BOTONES
@@ -108,6 +124,7 @@ public class ListaCitas extends JDialog {
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		btnVerDetalles = new JButton("Ver Detalles");
+		btnVerDetalles.setEnabled(false);
 		btnVerDetalles.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				verDetalles();
@@ -116,6 +133,7 @@ public class ListaCitas extends JDialog {
 		buttonPane.add(btnVerDetalles);
 
 		btnRealizarConsulta = new JButton("Realizar Consulta");
+		btnRealizarConsulta.setEnabled(false);
 		btnRealizarConsulta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				realizarConsulta();
@@ -124,6 +142,7 @@ public class ListaCitas extends JDialog {
 		buttonPane.add(btnRealizarConsulta);
 
 		btnCancelarCita = new JButton("Cancelar Cita");
+		btnCancelarCita.setEnabled(false);
 		btnCancelarCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cancelarCita();
@@ -212,41 +231,78 @@ public class ListaCitas extends JDialog {
 		}
 	}
 
-	private void verDetalles() {
+	private void manejarSeleccionCita() {
 		int filaSeleccionada = tableCitas.getSelectedRow();
+
 		if (filaSeleccionada == -1) {
-			JOptionPane.showMessageDialog(this, "Seleccione una cita", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			limpiarSeleccion();
 			return;
 		}
 
 		String codigoCita = (String) modelo.getValueAt(filaSeleccionada, 0);
-		Cita cita = Clinica.getInstance().buscarCita(codigoCita);
+		citaSeleccionada = Clinica.getInstance().buscarCita(codigoCita);
 
-		DetalleCita ventana = new DetalleCita(cita);
+		if (citaSeleccionada != null) {
+			// Habilitar siempre el botón Ver Detalles
+			btnVerDetalles.setEnabled(true);
+
+			// Determinar estado de la cita
+			String estado = citaSeleccionada.getEstadoCita();
+
+			// Botón Realizar Consulta - solo para citas Pendientes
+			btnRealizarConsulta.setEnabled(estado.equals("Pendiente"));
+
+			// Botón Cancelar Cita - solo para citas Pendientes
+			btnCancelarCita.setEnabled(estado.equals("Pendiente"));
+
+			// Cambiar texto del botón Cancelar según estado
+			if (estado.equals("Cancelada")) {
+				btnCancelarCita.setText("Cita Cancelada");
+			} else if (estado.equals("Completada")) {
+				btnCancelarCita.setText("Consulta Realizada");
+			} else {
+				btnCancelarCita.setText("Cancelar Cita");
+			}
+		} else {
+			limpiarSeleccion();
+		}
+	}
+
+	private void limpiarSeleccion() {
+		citaSeleccionada = null;
+		btnVerDetalles.setEnabled(false);
+		btnRealizarConsulta.setEnabled(false);
+		btnCancelarCita.setEnabled(false);
+		btnCancelarCita.setText("Cancelar Cita");
+	}
+
+	private void verDetalles() {
+		if (citaSeleccionada == null) {
+			JOptionPane.showMessageDialog(this, "Seleccione una cita", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		DetalleCita ventana = new DetalleCita(citaSeleccionada);
 		ventana.setModal(true);
 		ventana.setVisible(true);
 	}
 
 	private void realizarConsulta() {
-		int filaSeleccionada = tableCitas.getSelectedRow();
-		if (filaSeleccionada == -1) {
+		if (citaSeleccionada == null) {
 			JOptionPane.showMessageDialog(this, "Seleccione una cita", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		String codigoCita = (String) modelo.getValueAt(filaSeleccionada, 0);
-		Cita cita = Clinica.getInstance().buscarCita(codigoCita);
-
-		if (!cita.estaPendiente()) {
+		if (!citaSeleccionada.estaPendiente()) {
 			JOptionPane.showMessageDialog(this, "Solo se pueden realizar consultas a citas pendientes", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
 		// Verificar que la cita sea para hoy o una fecha pasada
-		if (cita.getFechaCita().isAfter(LocalDate.now())) {
+		if (citaSeleccionada.getFechaCita().isAfter(LocalDate.now())) {
 			int respuesta = JOptionPane.showConfirmDialog(this,
-					"La cita seleccionada es para una fecha futura (" + cita.getFechaCita() + ").\n"
+					"La cita seleccionada es para una fecha futura (" + citaSeleccionada.getFechaCita() + ").\n"
 							+ "¿Desea realizar la consulta de todas formas?",
 					"Cita Futura", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
@@ -256,33 +312,44 @@ public class ListaCitas extends JDialog {
 		}
 
 		// Abrir ventana de registro de consulta
-		regConsulta dialog = new regConsulta(); // Pasar la cita seleccionada
+		regConsulta dialog = new regConsulta(citaSeleccionada);
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
 
 		// Recargar citas después de cerrar la consulta
 		cargarCitas();
+		limpiarSeleccion();
 	}
 
 	private void cancelarCita() {
-		int filaSeleccionada = tableCitas.getSelectedRow();
-		if (filaSeleccionada == -1) {
+		if (citaSeleccionada == null) {
 			JOptionPane.showMessageDialog(this, "Seleccione una cita", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		String codigoCita = (String) modelo.getValueAt(filaSeleccionada, 0);
+		// Verificar que la cita esté pendiente
+		if (!citaSeleccionada.estaPendiente()) {
+			JOptionPane.showMessageDialog(this,
+					"No se puede cancelar una cita que ya está " + citaSeleccionada.getEstadoCita().toLowerCase(),
+					"Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 
-		int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de cancelar esta cita?", "Confirmar",
-				JOptionPane.YES_NO_OPTION);
+		int confirmacion = JOptionPane.showConfirmDialog(this,
+				"¿Está seguro de cancelar esta cita?\n\n" + "Código: " + citaSeleccionada.getCodigoCita() + "\n"
+						+ "Paciente: " + citaSeleccionada.getPaciente().getNombre() + " "
+						+ citaSeleccionada.getPaciente().getApellido() + "\n" + "Fecha: "
+						+ citaSeleccionada.getFechaCita() + "\n" + "Hora: " + citaSeleccionada.getHoraCita(),
+				"Confirmar Cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
 		if (confirmacion == JOptionPane.YES_OPTION) {
-			boolean cancelada = Clinica.getInstance().cancelarCita(codigoCita);
+			boolean cancelada = Clinica.getInstance().cancelarCita(citaSeleccionada.getCodigoCita());
 
 			if (cancelada) {
 				JOptionPane.showMessageDialog(this, "Cita cancelada exitosamente", "Éxito",
 						JOptionPane.INFORMATION_MESSAGE);
 				cargarCitas();
+				limpiarSeleccion();
 			} else {
 				JOptionPane.showMessageDialog(this, "No se pudo cancelar la cita", "Error", JOptionPane.ERROR_MESSAGE);
 			}
