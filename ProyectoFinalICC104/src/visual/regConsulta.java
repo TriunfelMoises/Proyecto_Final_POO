@@ -184,10 +184,12 @@ public class regConsulta extends JDialog {
 	private void cargarCitasPendientes() {
 		cbCitas.removeAllItems();
 		citasPendientes = Clinica.getInstance().listarCitasPendientes();
-
+		Doctor eldoc= Control.getInstance().buscarDocCredenciales(Control.getLoginUser());
 		cbCitas.addItem("<Seleccione>");
 		for (Cita c : citasPendientes) {
-			cbCitas.addItem(c.getCodigoCita() + " - " + c.getPaciente().getNombre());
+			if (c.getDoctor()==eldoc) {
+				cbCitas.addItem(c.getCodigoCita() + " - " + c.getPaciente().getNombre());
+			}
 		}
 	}
 

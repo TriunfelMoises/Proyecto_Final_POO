@@ -28,9 +28,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.MaskFormatter;
 import logico.Clinica;
+import logico.Control;
 import logico.Doctor;
+import logico.User;
+
 import javax.swing.ButtonGroup;
 import javax.swing.SpinnerListModel;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
 
 public class regDoctor extends JDialog {
 
@@ -50,6 +55,8 @@ public class regDoctor extends JDialog {
 	private JSpinner spnCitasPorDia;
 	private JSpinner spnFechaNacimiento;
 	private JCheckBox chckbxActivo;
+	private JTextField txtUsuario;
+	private JTextField txtContrasena;
 
 	public static void main(String[] args) {
 		try {
@@ -259,6 +266,42 @@ public class regDoctor extends JDialog {
 		JLabel lblInfo = new JLabel("Nota: Todos los campos son obligatorios");
 		lblInfo.setBounds(15, 480, 400, 20);
 		contentPanel.add(lblInfo);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new LineBorder(Color.GRAY, 1, true));
+		panel.setBounds(385, 386, 255, 153);
+		contentPanel.add(panel);
+		panel.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("Credenciales de acceso:");
+		lblNewLabel.setBounds(15, 0, 180, 20);
+		panel.add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("Usuario:");
+		lblNewLabel_1.setBounds(15, 41, 69, 20);
+		panel.add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_2 = new JLabel("Contrase\u00F1a:");
+		lblNewLabel_2.setBounds(15, 78, 85, 20);
+		panel.add(lblNewLabel_2);
+		
+		txtUsuario = new JTextField();
+		txtUsuario.setBounds(106, 38, 139, 26);
+		panel.add(txtUsuario);
+		txtUsuario.setColumns(10);
+		
+		txtContrasena = new JTextField();
+		txtContrasena.setBounds(106, 75, 139, 26);
+		panel.add(txtContrasena);
+		txtContrasena.setColumns(10);
+		
+		JLabel lblNewLabel_3 = new JLabel("Nota: El usuario y la contrase\u00F1a ");
+		lblNewLabel_3.setBounds(15, 114, 230, 20);
+		panel.add(lblNewLabel_3);
+		
+		JLabel lblNewLabel_4 = new JLabel("no podr\u00E1n ser modificados.");
+		lblNewLabel_4.setBounds(15, 133, 225, 20);
+		panel.add(lblNewLabel_4);
 
 		// ========== PANEL DE BOTONES ==========
 		{
@@ -336,7 +379,7 @@ public class regDoctor extends JDialog {
 		if (txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty()
 				|| cedulaLimpia.length() != 11 || telefonoLimpio.length() != 10
 				|| txtDireccion.getText().trim().isEmpty() || licenciaTexto.isEmpty() || licenciaTexto.length() < 4
-				|| cbxEspecialidad.getSelectedIndex() == 0) {
+				|| cbxEspecialidad.getSelectedIndex() == 0 || txtUsuario.getText().isEmpty() || txtContrasena.getText().isEmpty()) {
 
 			JOptionPane.showMessageDialog(this,
 					"Complete todos los campos correctamente.\n\n" + "Verifique:\n" + "• Cédula: 11 dígitos\n"
@@ -425,10 +468,12 @@ public class regDoctor extends JDialog {
 
 			Doctor nuevoDoctor = new Doctor(cedulaLimpia, txtNombre.getText().trim(), txtApellido.getText().trim(),
 					telefonoLimpio, txtDireccion.getText().trim(), fechaNac, sexo, txtCodigo.getText(), especialidad,
-					licenciaCompleta, citasPorDia, horarioInicio, horarioFin, activo);
+					licenciaCompleta, citasPorDia, horarioInicio, horarioFin, activo, txtUsuario.getText(), txtContrasena.getText());
+			User doc = new User("Doctor", txtUsuario.getText(), txtContrasena.getText());
 
 			// ========== 10. REGISTRAR ==========
 			if (Clinica.getInstance().registrarDoctor(nuevoDoctor)) {
+				Control.getInstance().regUser(doc);
 				JOptionPane.showMessageDialog(this,
 						"Doctor registrado exitosamente\n\n" + "Código: " + txtCodigo.getText() + "\n" + "Nombre: "
 								+ nuevoDoctor.getNombre() + " " + nuevoDoctor.getApellido() + "\n" + "Licencia: "
@@ -466,5 +511,7 @@ public class regDoctor extends JDialog {
 		cbxEspecialidad.setSelectedIndex(0);
 		spnCitasPorDia.setValue(5);
 		spnFechaNacimiento.setValue(new Date());
+		txtUsuario.setText("");
+		txtContrasena.setText("");
 	}
 }

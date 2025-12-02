@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 
 import logico.Clinica;
 import logico.Consulta;
+import logico.Control;
 import logico.Paciente;
 import logico.Doctor;
 
@@ -86,17 +87,21 @@ public class listConsulta extends JDialog {
 
                 String diagnostico = c.getDiagnostico();
                 String vigilancia = c.isEsEnfermedadVigilancia() ? "Sí" : "No";
+                
+                Doctor elUsu = Control.getInstance().buscarDocCredenciales(Control.getLoginUser());
+                
+                if (c.getDoctor() == elUsu) {
+                    Object[] fila = {
+                            codigo,
+                            nombrePaciente,
+                            nombreDoctor,
+                            fecha,
+                            diagnostico,
+                            vigilancia
+                    };
 
-                Object[] fila = {
-                        codigo,
-                        nombrePaciente,
-                        nombreDoctor,
-                        fecha,
-                        diagnostico,
-                        vigilancia
-                };
-
-                modelo.addRow(fila);
+                    modelo.addRow(fila);
+                }
             }
         }
     }

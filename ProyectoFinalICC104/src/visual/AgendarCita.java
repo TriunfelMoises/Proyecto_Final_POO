@@ -19,6 +19,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
 import logico.Clinica;
+import logico.Control;
 import logico.Doctor;
 import logico.Paciente;
 import logico.Cita;
@@ -150,6 +151,7 @@ public class AgendarCita extends JDialog {
 		panelCita.add(lblDoctor);
 
 		cbxDoctor = new JComboBox<String>();
+		cbxDoctor.setEnabled(false);
 		cbxDoctor.addActionListener(e -> actualizarHorariosDisponibles());
 		cbxDoctor.setBounds(100, 25, 454, 25);
 		panelCita.add(cbxDoctor);
@@ -221,17 +223,12 @@ public class AgendarCita extends JDialog {
 	private void cargarDoctores() {
 		cbxDoctor.removeAllItems();
 		doctoresActivos = Clinica.getInstance().listarDoctoresActivos();
+		
+		Doctor doctor = Control.getInstance().buscarDocCredenciales(Control.getLoginUser());
 
-		if (doctoresActivos.isEmpty()) {
-			cbxDoctor.addItem("No hay doctores disponibles");
-			cbxDoctor.setEnabled(false);
-		} else {
-			for (Doctor doctor : doctoresActivos) {
-				String info = doctor.getNombre() + " " + doctor.getApellido() + " - " + doctor.getEspecialidad();
-				cbxDoctor.addItem(info);
-			}
-			cbxDoctor.setEnabled(true);
-		}
+		String info = doctor.getNombre() + " " + doctor.getApellido() + " - " + doctor.getEspecialidad();
+		cbxDoctor.addItem(info);
+		
 	}
 
 	private void buscarPaciente() {

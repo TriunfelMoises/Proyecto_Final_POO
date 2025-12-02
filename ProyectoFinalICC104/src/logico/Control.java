@@ -71,4 +71,15 @@ public class Control implements Serializable {
 	public void setMisUsers(ArrayList<User> misUsers) {
 		this.misUsers = misUsers;
 	}
+	
+	public Doctor buscarDocCredenciales(User doctorActual) {
+		Doctor eldoc = null;
+		for (Doctor buscando : Clinica.getInstance().getDoctores()) {
+			if (buscando.getUsuario().equals(doctorActual.getUserName()) && buscando.getContrasena().equals(doctorActual.getPass())) {
+				eldoc = buscando;
+				return eldoc;
+			}
+		}
+		return eldoc;
+	}
 }

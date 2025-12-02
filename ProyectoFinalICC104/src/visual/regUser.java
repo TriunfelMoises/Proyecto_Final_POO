@@ -24,11 +24,10 @@ public class regUser extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtUserName;
 	private JPasswordField txtPass;
-	private JComboBox<String> comboTipo;
 
 	public regUser() {
 		setTitle("Registrar Usuario");
-		setBounds(100, 100, 380, 240);
+		setBounds(100, 100, 380, 251);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -54,11 +53,22 @@ public class regUser extends JDialog {
 		JLabel lblTipo = new JLabel("Tipo de usuario:");
 		lblTipo.setBounds(20, 85, 150, 20);
 		contentPanel.add(lblTipo);
-
-		comboTipo = new JComboBox<>();
-		comboTipo.setModel(new DefaultComboBoxModel<>(new String[] { "<Seleccione>", "Administrador", "Doctor" }));
-		comboTipo.setBounds(20, 110, 150, 24);
-		contentPanel.add(comboTipo);
+		
+		JLabel lblNewLabel = new JLabel("ADMINISTRADOR");
+		lblNewLabel.setBounds(20, 109, 150, 20);
+		contentPanel.add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("Para registrar un doctor");
+		lblNewLabel_1.setBounds(172, 74, 168, 20);
+		contentPanel.add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_2 = new JLabel("dirijase al men\u00FA: ");
+		lblNewLabel_2.setBounds(172, 96, 168, 20);
+		contentPanel.add(lblNewLabel_2);
+		
+		JLabel lblNewLabel_3 = new JLabel("\"DOCTORES\"");
+		lblNewLabel_3.setBounds(213, 120, 101, 20);
+		contentPanel.add(lblNewLabel_3);
 
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -78,17 +88,16 @@ public class regUser extends JDialog {
 	}
 
 	private void registrarUsuario() {
-		String tipo = (String) comboTipo.getSelectedItem();
 		String user = txtUserName.getText();
 		String pass = new String(txtPass.getPassword());
 
-		if (tipo == null || "<Seleccione>".equals(tipo) || user.isEmpty() || pass.isEmpty()) {
+		if (user.isEmpty() || pass.isEmpty()) {
 			javax.swing.JOptionPane.showMessageDialog(this, "Complete todos los campos y seleccione un tipo válido.",
 					"Datos incompletos", javax.swing.JOptionPane.WARNING_MESSAGE);//
 			return;
 		}
 
-		User nuevo = new User(tipo, user, pass);
+		User nuevo = new User("Administrador", user, pass);
 		Control.getInstance().regUser(nuevo);
 		javax.swing.JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente.");
 		dispose();

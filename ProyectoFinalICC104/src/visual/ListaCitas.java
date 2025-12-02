@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import logico.Clinica;
+import logico.Control;
 import logico.Cita;
 import logico.Doctor;
 import javax.swing.JLabel;
@@ -29,7 +30,6 @@ public class ListaCitas extends JDialog {
 	private JTable tableCitas;
 	private DefaultTableModel modelo;
 	private JComboBox<String> cbxEstado;
-	private JComboBox<String> cbxDoctor;
 	private JTextField txtBuscarPaciente;
 	private JButton btnVerDetalles;
 	private JButton btnRealizarConsulta;
@@ -64,19 +64,6 @@ public class ListaCitas extends JDialog {
 			}
 		});
 		panelFiltros.add(cbxEstado);
-
-		JLabel lblDoctor = new JLabel("  Doctor:");
-		panelFiltros.add(lblDoctor);
-
-		cbxDoctor = new JComboBox<String>();
-		cbxDoctor.addItem("Todos");
-		cbxDoctor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				cargarCitas();
-				limpiarSeleccion();
-			}
-		});
-		panelFiltros.add(cbxDoctor);
 
 		JLabel lblPaciente = new JLabel("  Paciente:");
 		panelFiltros.add(lblPaciente);
@@ -158,31 +145,15 @@ public class ListaCitas extends JDialog {
 		});
 		buttonPane.add(btnCerrar);
 
-		cargarDoctores();
 		cargarCitas();
 	}
 
-	private void cargarDoctores() {
-		cbxDoctor.removeAllItems();
-		cbxDoctor.addItem("Todos");
-
-		ArrayList<Doctor> doctores = Clinica.getInstance().listarDoctoresActivos();
-		for (Doctor doctor : doctores) {
-			cbxDoctor.addItem(doctor.getNombre() + " " + doctor.getApellido());
-		}
-	}
 
 	private void cargarCitas() {
 		modelo.setRowCount(0);
 		ArrayList<Cita> citas = Clinica.getInstance().getCitas();
 
-		// Verificar que los ComboBox no estén vacíos
-		if (cbxEstado.getSelectedItem() == null || cbxDoctor.getSelectedItem() == null) {
-			return; // Salir si no hay datos cargados
-		}
-
 		String estadoFiltro = (String) cbxEstado.getSelectedItem();
-		String doctorFiltro = (String) cbxDoctor.getSelectedItem();
 		String pacienteFiltro = txtBuscarPaciente.getText().trim().toLowerCase();
 
 		for (Cita cita : citas) {
@@ -205,14 +176,6 @@ public class ListaCitas extends JDialog {
 				}
 			}
 
-			// Filtro por doctor
-			if (!doctorFiltro.equals("Todos")) {
-				String nombreCompletoDoctor = cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido();
-				if (!nombreCompletoDoctor.equals(doctorFiltro)) {
-					cumpleFiltros = false;
-				}
-			}
-
 			// Filtro por paciente
 			if (!pacienteFiltro.isEmpty()) {
 				String nombreCompletoPaciente = cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellido();
@@ -220,13 +183,16 @@ public class ListaCitas extends JDialog {
 					cumpleFiltros = false;
 				}
 			}
-
+			
+			Doctor elUsuario = Control.getInstance().buscarDocCredenciales(Control.getLoginUser());
 			if (cumpleFiltros) {
-				Object[] fila = { cita.getCodigoCita(), cita.getFechaCita().toString(), cita.getHoraCita().toString(),
-						cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellido(),
-						cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido(), cita.getMotivoCita(),
-						cita.getEstadoCita() };
-				modelo.addRow(fila);
+				if (cita.getDoctor() == elUsuario) {
+					Object[] fila = { cita.getCodigoCita(), cita.getFechaCita().toString(), cita.getHoraCita().toString(),
+							cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellido(),
+							cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido(), cita.getMotivoCita(),
+							cita.getEstadoCita() };
+					modelo.addRow(fila);
+				}
 			}
 		}
 	}
