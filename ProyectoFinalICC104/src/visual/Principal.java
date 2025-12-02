@@ -209,6 +209,14 @@ public class Principal extends JFrame {
         // ------------------ MENU ADMIN ------------------
         JMenu mnAdministracion = new JMenu("Administracion");
         menuBar.add(mnAdministracion);
+        
+     // ITEM REPORTES
+        JMenuItem mntmReportes = new JMenuItem("Reportes");
+        mntmReportes.addActionListener(e -> {
+            Reportes ventana = new Reportes();
+            ventana.setVisible(true);
+        });
+        mnAdministracion.add(mntmReportes);
 
         JMenuItem mntmRegistrarUsuarios = new JMenuItem("Registrar usuarios");
         mntmRegistrarUsuarios.addActionListener(e -> {
@@ -243,7 +251,7 @@ public class Principal extends JFrame {
         				System.exit(1);
 					}
         		catch (IOException ioe) {
-    				System.out.println("Comunicación rechazada");
+    				System.out.println("Comunicaciï¿½n rechazada");
     				System.exit(1);				
     				}
         		}

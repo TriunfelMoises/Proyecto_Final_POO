@@ -762,49 +762,53 @@ public class Clinica implements Serializable {
 	}
 
 	// consultas
-	public Consulta registrarConsulta(String codigoCita, String sintomas, String diagnostico, String codigoTratamiento,
-			String notas, String codigoEnfermedad) {
+	public Consulta registrarConsulta(String codigoCita, String sintomas, String diagnostico, 
+	        String codigoTratamiento, String notas, String codigoEnfermedad) {
 
-		// Buscar la cita real
-		Cita cita = buscarCita(codigoCita);
-		if (cita == null) {
-			return null;
-		}
+	    Cita cita = buscarCita(codigoCita);
+	    if (cita == null) {
+	        return null;
+	    }
 
-		Paciente paciente = cita.getPaciente();
-		Doctor doctor = cita.getDoctor();
+	    Paciente paciente = cita.getPaciente();
+	    Doctor doctor = cita.getDoctor();
 
-		// Buscar el tratamiento por código
-		Tratamiento tratamiento = buscarTratamientoPorCodigo(codigoTratamiento);
-		if (tratamiento == null) {
-			return null;
-		}
+	    Tratamiento tratamiento = buscarTratamientoPorCodigo(codigoTratamiento);
+	    if (tratamiento == null) {
+	        return null;
+	    }
 
-		// Generar código de consulta
-		String codigoConsulta = generarCodigoConsulta();
+	    Enfermedad enfermedad = null;
+	    if (codigoEnfermedad != null) {
+	        enfermedad = buscarEnfermedadPorCodigo(codigoEnfermedad);
+	    }
 
-		// Crear la consulta
-		Consulta nuevaConsulta = new Consulta(codigoConsulta, paciente, doctor, cita, java.time.LocalDate.now(),
-				sintomas, diagnostico, tratamiento, notas);
+	    String codigoConsulta = generarCodigoConsulta();
 
-		// Enfermedad bajo vigilancia (si aplica)
-		if (codigoEnfermedad != null) {
-			Enfermedad enf = buscarEnfermedadPorCodigo(codigoEnfermedad);
-			if (enf != null && enf.isBajoVigilancia()) {
-				nuevaConsulta.setEsEnfermedadVigilancia(true);
-			} else {
-				nuevaConsulta.setEsEnfermedadVigilancia(false);
-			}
-		}
+	    Consulta nuevaConsulta = new Consulta(
+	            codigoConsulta,
+	            paciente,
+	            doctor,
+	            cita,
+	            LocalDate.now(),
+	            sintomas,
+	            diagnostico,
+	            tratamiento,
+	            notas,
+	            enfermedad   
+	    );
 
-		// Guardar en la historia clínica del paciente
-		paciente.getHistoriaClinica().agregarConsulta(nuevaConsulta);
+	    if (enfermedad != null && enfermedad.isBajoVigilancia()) {
+	        nuevaConsulta.setEsEnfermedadVigilancia(true);
+	    }
 
-		// Marcar la cita como completada
-		cita.cambiarEstado("Completada");
+	    paciente.getHistoriaClinica().agregarConsulta(nuevaConsulta);
 
-		return nuevaConsulta;
+	    cita.cambiarEstado("Completada");
+
+	    return nuevaConsulta;
 	}
+
 
 	public Paciente asegurarPacienteRegistrado(Paciente p) {
 		if (p == null)

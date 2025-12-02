@@ -1,128 +1,106 @@
 package logico;
-
+//cambios
 import java.io.Serializable;
 import java.time.LocalDate;
 
 public class Consulta implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String codigoConsulta;
-	private Paciente paciente;
-	private Doctor doctor;
-	private Cita cita;
-	private LocalDate fechaConsulta;
-	private String sintomas;
-	private String diagnostico;
-	private Tratamiento tratamiento;
-	private String notasMedicas;
-	private boolean incluidaEnResumen;
-	private boolean esEnfermedadVigilancia;
+    private String codigoConsulta;
+    private Paciente paciente;
+    private Doctor doctor;
+    private Cita cita;
+    private LocalDate fechaConsulta;
+    private String sintomas;
+    private String diagnostico;
+    private Tratamiento tratamiento;
+    private String notasMedicas;
+    private Enfermedad enfermedad;
+    private boolean incluidaEnResumen;
+    private boolean esEnfermedadVigilancia;
 
-	// ============================================================
-	//                      CONSTRUCTOR
-	// ============================================================
-	public Consulta(String codigoConsulta, Paciente paciente, Doctor doctor, 
-	                Cita cita, LocalDate fechaConsulta,
-	                String sintomas, String diagnostico, 
-	                Tratamiento tratamiento, String notasMedicas) {
-		super();
-		this.codigoConsulta = codigoConsulta;
-		this.paciente = paciente;
+    public Consulta(String codigoConsulta, Paciente paciente, Doctor doctor,
+                    Cita cita, LocalDate fechaConsulta,
+                    String sintomas, String diagnostico,
+                    Tratamiento tratamiento, String notasMedicas,
+                    Enfermedad enfermedad) {
+
+        this.codigoConsulta = codigoConsulta;
+        this.paciente = paciente;
         this.doctor = doctor;
-		this.cita = cita;
-		this.fechaConsulta = fechaConsulta;
-		this.sintomas = sintomas;
-		this.diagnostico = diagnostico;
-		this.tratamiento = tratamiento;
-		this.notasMedicas = notasMedicas;
-		this.incluidaEnResumen = false;
-		this.esEnfermedadVigilancia = false;
-	}
+        this.cita = cita;
+        this.fechaConsulta = fechaConsulta;
+        this.sintomas = sintomas;
+        this.diagnostico = diagnostico;
+        this.tratamiento = tratamiento;
+        this.notasMedicas = notasMedicas;
+        this.enfermedad = enfermedad;
+        this.incluidaEnResumen = false;
+        this.esEnfermedadVigilancia = false;
+    }
 
-	// ============================================================
-	//                      GETTERS & SETTERS
-	// ============================================================
-	public String getCodigoConsulta() {
-		return codigoConsulta;
-	}
+    public String getCodigoConsulta() {
+        return codigoConsulta;
+    }
 
-	public Paciente getPaciente() {
-		return paciente;
-	}
+    public Paciente getPaciente() {
+        return paciente;
+    }
 
-	public Doctor getDoctor() {
-		return doctor;
-	}
+    public Doctor getDoctor() {
+        return doctor;
+    }
 
-	public Cita getCita() {
-		return cita;
-	}
+    public Cita getCita() {
+        return cita;
+    }
 
-	public LocalDate getFechaConsulta() {
-		return fechaConsulta;
-	}
+    public LocalDate getFechaConsulta() {
+        return fechaConsulta;
+    }
 
-	public String getSintomas() {
-		return sintomas;
-	}
+    public String getSintomas() {
+        return sintomas;
+    }
 
-	public void setSintomas(String sintomas) {
-		this.sintomas = sintomas;
-	}
+    public String getDiagnostico() {
+        return diagnostico;
+    }
 
-	public String getDiagnostico() {
-		return diagnostico;
-	}
+    public Tratamiento getTratamiento() {
+        return tratamiento;
+    }
 
-	public void setDiagnostico(String diagnostico) {
-		this.diagnostico = diagnostico;
-	}
+    public String getNotasMedicas() {
+        return notasMedicas;
+    }
 
-	public Tratamiento getTratamiento() {
-		return tratamiento;
-	}
+    public Enfermedad getEnfermedad() {
+        return enfermedad;
+    }
 
-	public void setTratamiento(Tratamiento tratamiento) {
-		this.tratamiento = tratamiento;
-	}
+    public boolean isIncluidaEnResumen() {
+        return incluidaEnResumen;
+    }
 
-	public String getNotasMedicas() {
-		return notasMedicas;
-	}
+    public boolean isEsEnfermedadVigilancia() {
+        return esEnfermedadVigilancia;
+    }
 
-	public void setNotasMedicas(String notasMedicas) {
-		this.notasMedicas = notasMedicas;
-	}
+    public void setEsEnfermedadVigilancia(boolean esEnfermedadVigilancia) {
+        this.esEnfermedadVigilancia = esEnfermedadVigilancia;
+    }
 
-	public boolean isIncluidaEnResumen() {
-		return incluidaEnResumen;
-	}
+    public void marcarParaResumen() {
+        this.incluidaEnResumen = true;
+    }
 
-	public boolean isEsEnfermedadVigilancia() {
-		return esEnfermedadVigilancia;
-	}
+    public void desmarcarParaResumen() {
+        this.incluidaEnResumen = false;
+    }
 
-	public void setEsEnfermedadVigilancia(boolean esEnfermedadVigilancia) {
-		this.esEnfermedadVigilancia = esEnfermedadVigilancia;
-	}
-
-	// ============================================================
-	//                   MÉTODOS DE MARCADO
-	// ============================================================
-	public void marcarParaResumen() {
-		this.incluidaEnResumen = true;
-	}
-
-	public void desmarcarParaResumen() {
-		this.incluidaEnResumen = false;
-	}
-
-	public void marcarComoVigilancia() {
-		this.esEnfermedadVigilancia = true;
-	}
-
-	public boolean vaAlResumen() {
-		return incluidaEnResumen || esEnfermedadVigilancia;
-	}
+    public boolean vaAlResumen() {
+        return incluidaEnResumen || esEnfermedadVigilancia;
+    }
 }
