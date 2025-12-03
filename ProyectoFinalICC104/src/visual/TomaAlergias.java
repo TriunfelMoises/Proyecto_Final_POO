@@ -3,7 +3,6 @@ package visual;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -11,19 +10,23 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.JScrollPane;
-
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
-
 import logico.Alergia;
 import logico.Clinica;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class TomaAlergias extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JPanel panelChecks;
+	private JTextField txtBuscar;
+	private ArrayList<Alergia> alergiasSeleccionadas = null;
 
 	public static void main(String[] args) {
 		try {
@@ -35,97 +38,191 @@ public class TomaAlergias extends JDialog {
 		}
 	}
 
-
 	public TomaAlergias() {
-		setTitle("Selección de alergias");
-		setBounds(100, 100, 295, 372);
-		getContentPane().setLayout(null);
-		contentPanel.setBounds(0, 71, 273, 201);
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel);
-		contentPanel.setLayout(null);
+		setTitle("Selección de Alergias");
+		setModal(true);
+		setBounds(100, 100, 450, 500);
 		setLocationRelativeTo(null);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(null);
 
+		// ========== TÍTULO ==========
+		JLabel lblTitulo = new JLabel("Seleccione las alergias que padece:");
+		lblTitulo.setBounds(15, 10, 400, 20);
+		contentPanel.add(lblTitulo);
 
-		{
-			panelChecks = new JPanel();
-			panelChecks.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			panelChecks.setLayout(new javax.swing.BoxLayout(panelChecks, javax.swing.BoxLayout.Y_AXIS));
-			JScrollPane scrollPane = new JScrollPane(panelChecks);
-			scrollPane.setBounds(5, 0, 264, 159);
-			contentPanel.add(scrollPane);
-		}
+		// ========== BÚSQUEDA ==========
+		JLabel lblBuscar = new JLabel("Buscar:");
+		lblBuscar.setBounds(15, 40, 60, 20);
+		contentPanel.add(lblBuscar);
 
-		JButton btnNewButton = new JButton("Registrar alergia");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				regAlergia registoR = new regAlergia();
-				registoR.setModal(true);
-				registoR.setVisible(true);
+		txtBuscar = new JTextField();
+		txtBuscar.setBounds(80, 38, 250, 26);
+		contentPanel.add(txtBuscar);
+		txtBuscar.setColumns(10);
+
+		// Búsqueda en tiempo real
+		txtBuscar.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				buscarAlergias(txtBuscar.getText());
+			}
+		});
+
+		JButton btnLimpiar = new JButton("Limpiar");
+		btnLimpiar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtBuscar.setText("");
 				cargarAlergias();
 			}
 		});
-		btnNewButton.setBounds(59, 172, 165, 29);
-		contentPanel.add(btnNewButton);
+		btnLimpiar.setBounds(340, 38, 80, 26);
+		contentPanel.add(btnLimpiar);
 
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setBounds(0, 272, 273, 44);
-			buttonPane.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane);
+		// ========== PANEL DE CHECKBOXES ==========
+		panelChecks = new JPanel();
+		panelChecks.setBorder(new TitledBorder(null, "Alergias Disponibles", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelChecks.setLayout(new javax.swing.BoxLayout(panelChecks, javax.swing.BoxLayout.Y_AXIS));
 
-			JButton cancelButton = new JButton("Cancelar");
-			cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-				}
-			});
+		JScrollPane scrollPane = new JScrollPane(panelChecks);
+		scrollPane.setBounds(15, 75, 405, 260);
+		contentPanel.add(scrollPane);
 
-			JButton okButton = new JButton("Seleccionar");
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-				}
-			});
-			buttonPane.add(okButton);
-			cancelButton.setActionCommand("Cancelar");
-			buttonPane.add(cancelButton);
-		}
+		// ========== BOTÓN REGISTRAR NUEVA ==========
+		JButton btnRegistrarNueva = new JButton("+ Registrar Nueva Alergia");
+		btnRegistrarNueva.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				regAlergia dialog = new regAlergia();
+				dialog.setModal(true);
+				dialog.setVisible(true);
+				cargarAlergias();
+			}
+		});
+		btnRegistrarNueva.setBounds(15, 345, 200, 30);
+		contentPanel.add(btnRegistrarNueva);
 
-		JLabel lblNewLabel = new JLabel("Seleccione sus alergias:");
-		lblNewLabel.setBounds(15, 26, 166, 20);
-		getContentPane().add(lblNewLabel);
+		// ========== INFO ==========
+		JLabel lblInfo = new JLabel("Nota: Si no encuentra una alergia, puede registrarla");
+		lblInfo.setBounds(15, 385, 400, 20);
+		contentPanel.add(lblInfo);
+
+		// ========== PANEL DE BOTONES ==========
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton btnSeleccionar = new JButton("Seleccionar");
+		btnSeleccionar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				seleccionarAlergias();
+			}
+		});
+		buttonPane.add(btnSeleccionar);
+		getRootPane().setDefaultButton(btnSeleccionar);
+
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				alergiasSeleccionadas = null;
+				dispose();
+			}
+		});
+		btnCancelar.setActionCommand("Cancel");
+		buttonPane.add(btnCancelar);
 
 		cargarAlergias();
 	}
 
 	private void cargarAlergias() {
-		panelChecks.removeAll(); 
+		panelChecks.removeAll();
 
-		for (Alergia alergia : Clinica.getInstance().getAlergias()) {
-			JCheckBox chk = new JCheckBox(alergia.getNombre() + " (" + alergia.getTipo() + ")");
-			chk.putClientProperty("alergia", alergia);
-			panelChecks.add(chk);
+		ArrayList<Alergia> alergias = Clinica.getInstance().getAlergias();
+
+		if (alergias == null || alergias.isEmpty()) {
+			JLabel lblVacio = new JLabel("  No hay alergias registradas. Use el botón 'Registrar Nueva Alergia'");
+			panelChecks.add(lblVacio);
+		} else {
+			for (Alergia alergia : alergias) {
+				JCheckBox chk = new JCheckBox(alergia.getNombre() + " (" + alergia.getTipo() + ")");
+				chk.putClientProperty("alergia", alergia);
+				panelChecks.add(chk);
+			}
 		}
 
 		panelChecks.revalidate();
 		panelChecks.repaint();
 	}
-	public ArrayList<Alergia> AlergiasSeleccionadas() {
-		ArrayList<Alergia> seleccionadas = new ArrayList<>();
+
+	private void buscarAlergias(String criterio) {
+		panelChecks.removeAll();
+
+		if (criterio.trim().isEmpty()) {
+			cargarAlergias();
+			return;
+		}
+
+		String criterioLower = criterio.toLowerCase().trim();
+		ArrayList<Alergia> alergias = Clinica.getInstance().getAlergias();
+		boolean encontrado = false;
+
+		for (Alergia alergia : alergias) {
+			String nombreLower = alergia.getNombre().toLowerCase();
+			String tipoLower = alergia.getTipo().toLowerCase();
+
+			if (nombreLower.contains(criterioLower) || tipoLower.contains(criterioLower)) {
+				JCheckBox chk = new JCheckBox(alergia.getNombre() + " (" + alergia.getTipo() + ")");
+				chk.putClientProperty("alergia", alergia);
+				panelChecks.add(chk);
+				encontrado = true;
+			}
+		}
+
+		if (!encontrado) {
+			JLabel lblNoEncontrado = new JLabel("  No se encontraron alergias con ese criterio");
+			panelChecks.add(lblNoEncontrado);
+		}
+
+		panelChecks.revalidate();
+		panelChecks.repaint();
+	}
+
+	private void seleccionarAlergias() {
+		alergiasSeleccionadas = new ArrayList<>();
 
 		for (Component comp : panelChecks.getComponents()) {
 			if (comp instanceof JCheckBox) {
-				JCheckBox chk = (JCheckBox) comp;    
-				if (chk.isSelected()) { 
+				JCheckBox chk = (JCheckBox) comp;
+				if (chk.isSelected()) {
 					Alergia alergia = (Alergia) chk.getClientProperty("alergia");
-					seleccionadas.add(alergia);
+					if (alergia != null) {
+						alergiasSeleccionadas.add(alergia);
+					}
 				}
 			}
 		}
 
-		return seleccionadas;
+		if (alergiasSeleccionadas.isEmpty()) {
+			int confirmacion = JOptionPane.showConfirmDialog(this,
+				"No ha seleccionado ninguna alergia.\n¿Confirma que el paciente no tiene alergias?",
+				"Sin alergias seleccionadas",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE);
+
+			if (confirmacion == JOptionPane.YES_OPTION) {
+				dispose();
+			}
+		} else {
+			JOptionPane.showMessageDialog(this,
+				"Se seleccionaron " + alergiasSeleccionadas.size() + " alergia(s)",
+				"Alergias seleccionadas",
+				JOptionPane.INFORMATION_MESSAGE);
+			dispose();
+		}
 	}
 
+	public ArrayList<Alergia> AlergiasSeleccionadas() {
+		return alergiasSeleccionadas;
+	}
 }

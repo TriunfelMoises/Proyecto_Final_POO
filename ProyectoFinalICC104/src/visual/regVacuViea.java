@@ -2,17 +2,12 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 import logico.Vacuna;
 import logico.VacunaVieja;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -29,11 +24,11 @@ public class regVacuViea extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtEnfermedad;
-	private VacunaVieja vacu;
+	private JSpinner spnFecha;
+	private VacunaVieja vacunaRegistrada = null;
+	private Vacuna vacunaBase;
+	private JSpinner.DateEditor editor;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		try {
 			regVacuViea dialog = new regVacuViea(null);
@@ -44,79 +39,115 @@ public class regVacuViea extends JDialog {
 		}
 	}
 
-	/**
-	 * Create the dialog.
-	 */
-	public regVacuViea(Vacuna vacunasAn) {
-		setTitle("Ingreso de vacunas");
-		setBounds(100, 100, 316, 210);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+	public regVacuViea(Vacuna vacunaPrevia) {
+		this.vacunaBase = vacunaPrevia;
+
+		setTitle(vacunaPrevia != null ? "Registrar: " + vacunaPrevia.getNombre() : "Registrar Vacuna Previa");
+		setModal(true);
+		setBounds(100, 100, 420, 249);
 		setLocationRelativeTo(null);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-		
-		JLabel lblNewLabel = new JLabel("Enfermedad:");
-		lblNewLabel.setBounds(15, 30, 112, 20);
-		contentPanel.add(lblNewLabel);
-		
+
+		// ========== ENFERMEDAD ==========
+		JLabel lblEnfermedad = new JLabel("Enfermedad que previene:");
+		lblEnfermedad.setBounds(15, 15, 180, 20);
+		contentPanel.add(lblEnfermedad);
+
 		txtEnfermedad = new JTextField();
-		txtEnfermedad.setBounds(108, 27, 170, 26);
+		txtEnfermedad.setBounds(15, 38, 360, 26);
 		contentPanel.add(txtEnfermedad);
 		txtEnfermedad.setColumns(10);
-		
-		if (vacunasAn!=null) {
+
+		if (vacunaPrevia != null) {
+			txtEnfermedad.setText(vacunaPrevia.getEnfermedad());
 			txtEnfermedad.setEnabled(false);
-			txtEnfermedad.setText(vacunasAn.getEnfermedad());
 		}
-		
-		JLabel lblNewLabel_1 = new JLabel("Fecha de aplicaci\u00F3n:");
-		lblNewLabel_1.setBounds(15, 78, 142, 20);
-		contentPanel.add(lblNewLabel_1);
-		
-		JSpinner spnFecha = new JSpinner();
+
+		JLabel lblInfo = new JLabel("(Ejemplo: Sarampión, Hepatitis B, etc.)");
+		lblInfo.setBounds(15, 67, 360, 20);
+		contentPanel.add(lblInfo);
+
+		// ========== FECHA DE APLICACIÓN ==========
+		JLabel lblFecha = new JLabel("Fecha de aplicación:");
+		lblFecha.setBounds(15, 100, 150, 20);
+		contentPanel.add(lblFecha);
+
+		spnFecha = new JSpinner();
 		spnFecha.setModel(new SpinnerDateModel(new Date(), null, new Date(), Calendar.DAY_OF_YEAR));
-		JSpinner.DateEditor editor = new JSpinner.DateEditor(spnFecha, "dd/MM/yyyy");
-		spnFecha.setEditor(editor);		
-		spnFecha.setBounds(158, 75, 120, 26);
+		editor = new JSpinner.DateEditor(spnFecha, "dd/MM/yyyy");
+		spnFecha.setEditor(editor);
+		spnFecha.setBounds(15, 123, 150, 26);
 		contentPanel.add(spnFecha);
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("A\u00F1adir");
-			    okButton.addActionListener(e -> {
-			        if (txtEnfermedad.getText().isEmpty()) {
-			            JOptionPane.showMessageDialog(regVacuViea.this, "Complete los datos", "Información", JOptionPane.INFORMATION_MESSAGE);
-			            return;
-			        }
-			        Date fechaVacuna = (Date) spnFecha.getValue();
-			        LocalDate fechapusir = fechaVacuna.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			        vacu = new VacunaVieja(txtEnfermedad.getText(), fechapusir);
-			        dispose();
-			    });
 
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+		JLabel lblInfoFecha = new JLabel("(Cuando se aplicó)");
+		lblInfoFecha.setBounds(180, 126, 200, 20);
+		contentPanel.add(lblInfoFecha);
+
+		// ========== PANEL DE BOTONES ==========
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton btnAnadir = new JButton("Añadir");
+		btnAnadir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				registrarVacuna();
 			}
-			{
-				JButton cancelButton = new JButton("Cancelar");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						dispose();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
+		});
+		btnAnadir.setActionCommand("OK");
+		buttonPane.add(btnAnadir);
+		getRootPane().setDefaultButton(btnAnadir);
+
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				vacunaRegistrada = null;
+				dispose();
 			}
+		});
+		btnCancelar.setActionCommand("Cancel");
+		buttonPane.add(btnCancelar);
+	}
+
+	private boolean validarNombre(String texto) {
+		if (!texto.matches("[a-záéíóúñüA-ZÁÉÍÓÚÑÜ ]+")) {
+			JOptionPane.showMessageDialog(this, "Solo letras y espacios", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
-	
-	}
-	public VacunaVieja mandarLaVacu() {
-		return vacu;
+		return true;
 	}
 
-	
+	private void registrarVacuna() {
+		if (txtEnfermedad.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Ingrese la enfermedad", "Campo vacío", JOptionPane.WARNING_MESSAGE);
+			txtEnfermedad.requestFocus();
+			return;
+		}
+
+		if (!validarNombre(txtEnfermedad.getText().trim())) {
+			txtEnfermedad.requestFocus();
+			return;
+		}
+
+		Date fechaVacuna = (Date) spnFecha.getValue();
+		LocalDate fechaAplicacion = fechaVacuna.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		if (fechaAplicacion.isAfter(LocalDate.now())) {
+			JOptionPane.showMessageDialog(this, "Fecha no puede ser futura", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		vacunaRegistrada = new VacunaVieja(txtEnfermedad.getText().trim(), fechaAplicacion);
+
+		JOptionPane.showMessageDialog(this, "Vacuna registrada", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+		dispose();
+	}
+
+	public VacunaVieja mandarLaVacu() {
+		return vacunaRegistrada;
+	}
 }

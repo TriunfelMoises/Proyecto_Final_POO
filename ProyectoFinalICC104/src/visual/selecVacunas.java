@@ -3,7 +3,6 @@ package visual;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -11,24 +10,22 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.JScrollPane;
-
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
-
 import logico.Clinica;
 import logico.Paciente;
 import logico.Vacuna;
 import logico.VacunaVieja;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import java.awt.Font;
 
 public class selecVacunas extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JPanel panelChecks;
-	Paciente paciente;
+	private Paciente paciente;
 
 	public static void main(String[] args) {
 		try {
@@ -40,147 +37,162 @@ public class selecVacunas extends JDialog {
 		}
 	}
 
-
 	public selecVacunas(Paciente elPaciente) {
-		paciente = elPaciente;
-		setTitle("Selecci�n de vacunas");
-		setBounds(100, 100, 295, 372);
-		getContentPane().setLayout(null);
-		contentPanel.setBounds(0, 71, 273, 201);
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel);
-		contentPanel.setLayout(null);
+		this.paciente = elPaciente;
+
+		setTitle("Registro de Vacunas - " + (elPaciente != null ? elPaciente.getNombre() : ""));
+		setModal(true);
+		setBounds(100, 100, 550, 500);
 		setLocationRelativeTo(null);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(null);
 
+		// ========== TÍTULO PRINCIPAL ==========
+		JLabel lblTitulo = new JLabel("Registro de Vacunas Aplicadas Previamente");
+		lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblTitulo.setBounds(15, 10, 500, 25);
+		contentPanel.add(lblTitulo);
 
-		{
-			panelChecks = new JPanel();
-			panelChecks.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			panelChecks.setLayout(new javax.swing.BoxLayout(panelChecks, javax.swing.BoxLayout.Y_AXIS));
-			JScrollPane scrollPane = new JScrollPane(panelChecks);
-			scrollPane.setBounds(5, 0, 264, 159);
-			contentPanel.add(scrollPane);
-		}
+		// ========== MENSAJE INFORMATIVO ==========
+		JLabel lblInfo1 = new JLabel("¿El paciente tiene vacunas aplicadas antes de hoy?");
+		lblInfo1.setBounds(15, 40, 500, 20);
+		contentPanel.add(lblInfo1);
 
-		JButton btnNewButton = new JButton("Registrar vacuna");
-		btnNewButton.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent arg0) {
-		        regVacuViea registroR = new regVacuViea(null);
-		        registroR.setModal(true);
-		        registroR.setVisible(true);
-		        VacunaVieja nueva = registroR.mandarLaVacu();
-		        if (nueva != null) {
-		            anadirVacunaAlPaciente(nueva);
-		        }
-		    }
+		JLabel lblInfo2 = new JLabel("Regístrelas aquí.");
+		lblInfo2.setBounds(15, 60, 500, 20);
+		contentPanel.add(lblInfo2);
+
+		// ========== SECCIÓN REGISTRO ==========
+		JLabel lblVacunasPrevias = new JLabel("Registrar Vacunas:");
+		lblVacunasPrevias.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblVacunasPrevias.setBounds(15, 95, 250, 20);
+		contentPanel.add(lblVacunasPrevias);
+
+		JButton btnRegistrarPrevia = new JButton("+ Registrar Vacuna");
+		btnRegistrarPrevia.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				registrarVacunaPrevia();
+			}
 		});
-		btnNewButton.setBounds(59, 172, 165, 29);
-		contentPanel.add(btnNewButton);
+		btnRegistrarPrevia.setBounds(15, 120, 180, 30);
+		contentPanel.add(btnRegistrarPrevia);
 
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setBounds(0, 272, 273, 44);
-			buttonPane.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane);
+		JLabel lblInfoPrevia = new JLabel("(Ejemplo: Sarampión, Hepatitis B, etc.)");
+		lblInfoPrevia.setBounds(205, 125, 300, 20);
+		contentPanel.add(lblInfoPrevia);
 
-			JButton cancelButton = new JButton("Cancelar");
-			cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+		// ========== PANEL DE CHECKBOXES ==========
+		panelChecks = new JPanel();
+		panelChecks.setBorder(
+				new TitledBorder(null, "Vacunas Registradas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelChecks.setLayout(new javax.swing.BoxLayout(panelChecks, javax.swing.BoxLayout.Y_AXIS));
+
+		JScrollPane scrollPane = new JScrollPane(panelChecks);
+		scrollPane.setBounds(15, 160, 500, 200);
+		contentPanel.add(scrollPane);
+
+		// ========== PANEL DE BOTONES ==========
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton btnOmitir = new JButton("Omitir");
+		btnOmitir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int confirmacion = JOptionPane.showConfirmDialog(selecVacunas.this,
+						"¿Omitir el registro de vacunas previas?", "Confirmar", JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE);
+
+				if (confirmacion == JOptionPane.YES_OPTION) {
 					dispose();
 				}
-			});
+			}
+		});
+		buttonPane.add(btnOmitir);
 
-			JButton okButton = new JButton("Seleccionar");
-			okButton.addActionListener(new ActionListener() {
-			    public void actionPerformed(ActionEvent e) {
-			        for (Component comp : panelChecks.getComponents()) {
-			            if (comp instanceof JCheckBox) {
-			                JCheckBox chk = (JCheckBox) comp;
-			                Object vacObj = chk.getClientProperty("vacuna"); 
-			                if (vacObj != null) {
-			                    if (chk.isSelected()) {
-			                        Vacuna vac = (Vacuna) vacObj;
-			                        regVacuViea dialog = new regVacuViea(vac);
-			                        dialog.setModal(true);
-			                        dialog.setLocationRelativeTo(selecVacunas.this);
-			                        dialog.setVisible(true);
-			                        VacunaVieja nueva = dialog.mandarLaVacu();
-			                        if (nueva != null) {
-			                            anadirVacunaAlPaciente(nueva);
-			                            chk.setSelected(false);
-			                            chk.setEnabled(false);
-			                        }
-			                    }
-			                } 
-			            }
-			        }
-			        cargarVacunas();
-			        dispose();
-			    }
-			});
-
-			buttonPane.add(okButton);
-			cancelButton.setActionCommand("Cancelar");
-			buttonPane.add(cancelButton);
-		}
-
-		JLabel lblNewLabel = new JLabel("Seleccione sus vacunas:");
-		lblNewLabel.setBounds(15, 26, 166, 20);
-		getContentPane().add(lblNewLabel);
+		JButton btnFinalizar = new JButton("Finalizar");
+		btnFinalizar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				finalizarRegistro();
+			}
+		});
+		buttonPane.add(btnFinalizar);
+		getRootPane().setDefaultButton(btnFinalizar);
 
 		cargarVacunas();
 	}
 
-	private void cargarVacunas() {
-		panelChecks.removeAll(); 
-		for (VacunaVieja vacunita : paciente.getVacunasViejas()) {
-			JCheckBox chk = new JCheckBox(vacunita.getEnfermedad());
-			chk.putClientProperty("vacunaVieja", vacunita);
-			panelChecks.add(chk);
-			chk.setSelected(true);
-			chk.setEnabled(false);
+	private void registrarVacunaPrevia() {
+		regVacuViea dialog = new regVacuViea(null);
+		dialog.setModal(true);
+		dialog.setVisible(true);
+
+		VacunaVieja vacunaRegistrada = dialog.mandarLaVacu();
+
+		if (vacunaRegistrada != null) {
+			anadirVacunaAlPaciente(vacunaRegistrada);
 		}
-		
-		for (Vacuna vacunita : Clinica.getInstance().getVacunas()) {
-			JCheckBox chk = new JCheckBox(vacunita.getNombre() + " (" + vacunita.getEnfermedad() + ")");
-			chk.putClientProperty("vacuna", vacunita);
-			panelChecks.add(chk);
+	}
+
+	private void cargarVacunas() {
+		panelChecks.removeAll();
+
+		if (paciente != null && paciente.getVacunasViejas() != null && !paciente.getVacunasViejas().isEmpty()) {
+			for (VacunaVieja vacuna : paciente.getVacunasViejas()) {
+				JCheckBox chk = new JCheckBox(vacuna.getEnfermedad() + " - " + vacuna.getFecha());
+				chk.setSelected(true);
+				chk.setEnabled(false);
+				panelChecks.add(chk);
+			}
+		} else {
+			JLabel lblVacio = new JLabel("  Sin vacunas registradas");
+			panelChecks.add(lblVacio);
 		}
 
 		panelChecks.revalidate();
 		panelChecks.repaint();
 	}
-	public ArrayList<Vacuna> VacunasSeleccionadas() {
-		ArrayList<Vacuna> seleccionadas = new ArrayList<>();
 
-		for (Component comp : panelChecks.getComponents()) {
-			if (comp instanceof JCheckBox) {
-				JCheckBox chk = (JCheckBox) comp;    
-				if (chk.isSelected()) { 
-					Vacuna vacunita = (Vacuna) chk.getClientProperty("vacuna");
-					seleccionadas.add(vacunita);
-				}
-			}
+	private void anadirVacunaAlPaciente(VacunaVieja vacuna) {
+		if (vacuna == null)
+			return;
+
+		if (paciente == null) {
+			JOptionPane.showMessageDialog(this, "Error: No hay paciente", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
 
-		return seleccionadas;
+		if (paciente.getVacunasViejas() == null) {
+			paciente.setVacunasViejas(new ArrayList<>());
+		}
+
+		paciente.getVacunasViejas().add(vacuna);
+		Clinica.getInstance().modificarPaciente(paciente);
+
+		JOptionPane.showMessageDialog(this, "Vacuna agregada: " + vacuna.getEnfermedad(), "Éxito",
+				JOptionPane.INFORMATION_MESSAGE);
+
+		cargarVacunas();
 	}
-	
-	private void anadirVacunaAlPaciente(VacunaVieja vv) {
-	    if (vv == null) return;
-	    if (paciente == null) {
-	        JOptionPane.showMessageDialog(this, "No hay paciente para asignar la vacuna.", "Error", JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
 
-	    if (paciente.getVacunasViejas() == null) {
-	        paciente.setVacunasViejas(new ArrayList<>());
-	    }
+	private void finalizarRegistro() {
+		int cantidadVacunas = 0;
 
-	    paciente.getVacunasViejas().add(vv);
-	    Clinica.getInstance().modificarPaciente(paciente);
-	    cargarVacunas();
+		if (paciente != null && paciente.getVacunasViejas() != null) {
+			cantidadVacunas = paciente.getVacunasViejas().size();
+		}
 
-}
+		if (cantidadVacunas > 0) {
+			JOptionPane.showMessageDialog(this, cantidadVacunas + " vacuna(s) registrada(s)", "Completado",
+					JOptionPane.INFORMATION_MESSAGE);
+		}
+
+		dispose();
+	}
+
+	public ArrayList<Vacuna> VacunasSeleccionadas() {
+		return new ArrayList<>();
+	}
 }

@@ -56,7 +56,6 @@ public class regPaciente extends JDialog {
 	private boolean esModificacion = false;
 	private JButton btnModificar;
 
-	// Datos originales para detectar cambios
 	private String telefonoOriginal = "";
 	private String direccionOriginal = "";
 	private float pesoOriginal = 0;
@@ -97,7 +96,6 @@ public class regPaciente extends JDialog {
 	}
 
 	private void crearComponentes() {
-		// Código
 		JLabel lblCodigo = new JLabel("Código");
 		lblCodigo.setBounds(15, 23, 69, 20);
 		contentPanel.add(lblCodigo);
@@ -109,7 +107,6 @@ public class regPaciente extends JDialog {
 		txtCodigo.setColumns(10);
 		txtCodigo.setText("PAC-" + Clinica.getInstance().contadorPacientes);
 
-		// Nombre
 		JLabel lblNombre = new JLabel("Nombre(s)");
 		lblNombre.setBounds(15, 57, 80, 20);
 		contentPanel.add(lblNombre);
@@ -119,7 +116,6 @@ public class regPaciente extends JDialog {
 		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
 
-		// Apellido
 		JLabel lblApellido = new JLabel("Apellido(s)");
 		lblApellido.setBounds(15, 95, 80, 20);
 		contentPanel.add(lblApellido);
@@ -129,7 +125,6 @@ public class regPaciente extends JDialog {
 		contentPanel.add(txtApellido);
 		txtApellido.setColumns(10);
 
-		// Cédula
 		JLabel lblCedula = new JLabel("Cédula");
 		lblCedula.setBounds(15, 133, 69, 20);
 		contentPanel.add(lblCedula);
@@ -144,7 +139,6 @@ public class regPaciente extends JDialog {
 		txtCedula.setBounds(111, 131, 196, 25);
 		contentPanel.add(txtCedula);
 
-		// Tipo de Sangre
 		JLabel lblTipoSangre = new JLabel("Tipo de sangre");
 		lblTipoSangre.setBounds(322, 133, 100, 20);
 		contentPanel.add(lblTipoSangre);
@@ -155,7 +149,6 @@ public class regPaciente extends JDialog {
 		cbxTipoSangre.setBounds(450, 128, 100, 25);
 		contentPanel.add(cbxTipoSangre);
 
-		// Estatura
 		JLabel lblEstatura = new JLabel("Estatura(cm)");
 		lblEstatura.setBounds(450, 57, 99, 20);
 		contentPanel.add(lblEstatura);
@@ -165,7 +158,6 @@ public class regPaciente extends JDialog {
 		spnEstatura.setBounds(450, 79, 80, 25);
 		contentPanel.add(spnEstatura);
 
-		// Peso
 		JLabel lblPeso = new JLabel("Peso(lb)");
 		lblPeso.setBounds(15, 166, 69, 20);
 		contentPanel.add(lblPeso);
@@ -175,7 +167,6 @@ public class regPaciente extends JDialog {
 		spnPeso.setBounds(111, 164, 94, 25);
 		contentPanel.add(spnPeso);
 
-		// Fecha de Nacimiento
 		JLabel lblFechaNacimiento = new JLabel("Fecha de nacimiento");
 		lblFechaNacimiento.setBounds(287, 169, 120, 20);
 		contentPanel.add(lblFechaNacimiento);
@@ -187,7 +178,6 @@ public class regPaciente extends JDialog {
 		spnFechaNacimiento.setBounds(414, 166, 136, 25);
 		contentPanel.add(spnFechaNacimiento);
 
-		// Teléfono
 		JLabel lblTelefono = new JLabel("Teléfono");
 		lblTelefono.setBounds(15, 214, 69, 20);
 		contentPanel.add(lblTelefono);
@@ -202,7 +192,6 @@ public class regPaciente extends JDialog {
 		txtTelefono.setBounds(111, 212, 196, 25);
 		contentPanel.add(txtTelefono);
 
-		// Sexo
 		JLabel lblSexo = new JLabel("Sexo");
 		lblSexo.setBounds(336, 214, 69, 20);
 		contentPanel.add(lblSexo);
@@ -220,7 +209,6 @@ public class regPaciente extends JDialog {
 		grupoSexo.add(rdbtnHombre);
 		grupoSexo.add(rdbtnMujer);
 
-		// Dirección
 		JLabel lblDireccion = new JLabel("Dirección");
 		lblDireccion.setBounds(15, 287, 69, 20);
 		contentPanel.add(lblDireccion);
@@ -228,13 +216,12 @@ public class regPaciente extends JDialog {
 		JScrollPane scrollDireccion = new JScrollPane();
 		scrollDireccion.setBounds(100, 258, 454, 80);
 		contentPanel.add(scrollDireccion);
-		
-				txtdireccion = new JTextArea();
-				scrollDireccion.setViewportView(txtdireccion);
-				txtdireccion.setLineWrap(true);
-				txtdireccion.setWrapStyleWord(true);
 
-		// Alergias
+		txtdireccion = new JTextArea();
+		scrollDireccion.setViewportView(txtdireccion);
+		txtdireccion.setLineWrap(true);
+		txtdireccion.setWrapStyleWord(true);
+
 		JLabel lblAlergias = new JLabel("¿Padece de alguna alergia?");
 		lblAlergias.setBounds(15, 351, 200, 20);
 		contentPanel.add(lblAlergias);
@@ -243,7 +230,6 @@ public class regPaciente extends JDialog {
 		chckbxAlergias.setBounds(222, 349, 200, 25);
 		contentPanel.add(chckbxAlergias);
 
-		// Fecha de Registro
 		JLabel lblFecha = new JLabel("Fecha Registro");
 		lblFecha.setBounds(15, 400, 100, 20);
 		contentPanel.add(lblFecha);
@@ -256,7 +242,6 @@ public class regPaciente extends JDialog {
 		spnFechaActual.setBounds(111, 398, 120, 25);
 		contentPanel.add(spnFechaActual);
 
-		// Botones
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
@@ -302,7 +287,7 @@ public class regPaciente extends JDialog {
 				}
 			}
 		} else if (pacienteCar != null && pacienteCar.getCodigoPaciente().equals("XX")) {
-			JOptionPane.showMessageDialog(this, "Complete los datos de este paciente", "Información",
+			JOptionPane.showMessageDialog(this, "Complete los datos del paciente", "Información",
 					JOptionPane.INFORMATION_MESSAGE);
 			txtCedula.setEnabled(false);
 			txtNombre.setEnabled(false);
@@ -406,7 +391,6 @@ public class regPaciente extends JDialog {
 			alegecitas = pacienteCar.getAlergias();
 		}
 
-		// Guardar datos originales
 		telefonoOriginal = pacienteCar.getTelefono().replaceAll("[^0-9]", "");
 		direccionOriginal = pacienteCar.getDireccion() != null ? pacienteCar.getDireccion() : "";
 		pesoOriginal = pacienteCar.getPeso();
@@ -414,11 +398,9 @@ public class regPaciente extends JDialog {
 	}
 
 	private boolean validarNombre(String texto, String campo) {
-		// Solo letras, espacios y tildes
 		if (!texto.matches("[a-záéíóúñüA-ZÁÉÍÓÚÑÜ ]+")) {
-			JOptionPane.showMessageDialog(this,
-					campo + " solo puede contener letras y espacios.\nNo se permiten números ni caracteres especiales.",
-					"Nombre inválido", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, campo + " solo puede contener letras", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 		return true;
@@ -428,17 +410,14 @@ public class regPaciente extends JDialog {
 		String cedulaLimpia = txtCedula.getText().replaceAll("[^0-9]", "");
 		String telefonoLimpio = txtTelefono.getText().replaceAll("[^0-9]", "");
 
-		// Validar campos vacíos
 		if (txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty()
 				|| cedulaLimpia.length() != 11 || telefonoLimpio.length() != 10
 				|| txtdireccion.getText().trim().isEmpty() || cbxTipoSangre.getSelectedIndex() == 0) {
 
-			JOptionPane.showMessageDialog(this, "Complete todos los campos", "Campos incompletos",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Complete todos los campos", "Incompleto", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		// Validar nombre y apellido
 		if (!validarNombre(txtNombre.getText().trim(), "El nombre")) {
 			txtNombre.requestFocus();
 			return;
@@ -449,18 +428,14 @@ public class regPaciente extends JDialog {
 			return;
 		}
 
-		// Validar cédula duplicada
 		if (!esModificacion && Clinica.getInstance().isCedulaRegistrada(cedulaLimpia)) {
-			JOptionPane.showMessageDialog(this, "Esta cédula ya está registrada", "Cédula duplicada",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Cédula ya registrada", "Duplicado", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
-		// Validar teléfono duplicado (solo si cambió)
 		if (!telefonoLimpio.equals(telefonoOriginal)) {
 			if (Clinica.getInstance().isTelefonoRegistrado(telefonoLimpio, cedulaLimpia)) {
-				JOptionPane.showMessageDialog(this, "Este teléfono ya está registrado", "Teléfono duplicado",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Teléfono ya registrado", "Duplicado", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 		}
@@ -469,26 +444,32 @@ public class regPaciente extends JDialog {
 		float estatura = ((Number) spnEstatura.getValue()).floatValue();
 
 		if (peso < 1 || peso > 500) {
-			JOptionPane.showMessageDialog(this, "El peso debe estar entre 1 y 500 libras", "Peso inválido",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Peso: 1-500 libras", "Inválido", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
 		if (estatura < 1 || estatura > 300) {
-			JOptionPane.showMessageDialog(this, "La estatura debe estar entre 1 y 300 cm", "Estatura inválida",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Estatura: 1-300 cm", "Inválido", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
 		char sexo = rdbtnHombre.isSelected() ? 'M' : 'F';
 
 		if (!esModificacion && chckbxAlergias.isSelected()) {
-			TomaAlergias alergenoS = new TomaAlergias();
-			alergenoS.setModal(true);
-			alergenoS.setVisible(true);
-			alegecitas = alergenoS.AlergiasSeleccionadas();
-			if (alegecitas == null || alegecitas.isEmpty()) {
-				return;
+			TomaAlergias dialogAlergias = new TomaAlergias();
+			dialogAlergias.setModal(true);
+			dialogAlergias.setVisible(true);
+			alegecitas = dialogAlergias.AlergiasSeleccionadas();
+
+			if (alegecitas == null) {
+				int confirmacion = JOptionPane.showConfirmDialog(this, "¿Continuar sin alergias?", "Sin alergias",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+				if (confirmacion == JOptionPane.NO_OPTION) {
+					return;
+				}
+
+				alegecitas = new ArrayList<>();
 			}
 		}
 
@@ -500,7 +481,7 @@ public class regPaciente extends JDialog {
 				pacienteCar.setPeso(peso);
 
 				if (Clinica.getInstance().modificarPaciente(pacienteCar)) {
-					JOptionPane.showMessageDialog(this, "Paciente modificado exitosamente", "Éxito",
+					JOptionPane.showMessageDialog(this, "Paciente modificado", "Éxito",
 							JOptionPane.INFORMATION_MESSAGE);
 					dispose();
 				}
@@ -509,7 +490,7 @@ public class regPaciente extends JDialog {
 				LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 				if (fechaNac.isAfter(LocalDate.now())) {
-					JOptionPane.showMessageDialog(this, "La fecha de nacimiento no puede ser futura", "Fecha inválida",
+					JOptionPane.showMessageDialog(this, "Fecha no puede ser futura", "Error",
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
@@ -529,12 +510,16 @@ public class regPaciente extends JDialog {
 				}
 
 				if (Clinica.getInstance().registrarPaciente(nuevoPaciente)) {
-					// Abrir ventana de vacunas solo para registros nuevos
-					selecVacunas viejitas = new selecVacunas(nuevoPaciente);
-					viejitas.setModal(true);
-					viejitas.setVisible(true);
+					int respuesta = JOptionPane.showConfirmDialog(this, "¿Registrar vacunas previas?", "Vacunas",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-					JOptionPane.showMessageDialog(this, "Registro exitoso", "Información",
+					if (respuesta == JOptionPane.YES_OPTION) {
+						selecVacunas dialogVacunas = new selecVacunas(nuevoPaciente);
+						dialogVacunas.setModal(true);
+						dialogVacunas.setVisible(true);
+					}
+
+					JOptionPane.showMessageDialog(this, "Paciente registrado", "Éxito",
 							JOptionPane.INFORMATION_MESSAGE);
 					dispose();
 				}
