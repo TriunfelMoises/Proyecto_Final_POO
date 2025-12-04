@@ -153,6 +153,13 @@ public class listPacientes extends JDialog {
 				if (doctorRegistrador != null && doctorRegistrador.equals(licenciaDoctorLogeado)) {
 					resultado.add(paciente);
 				}
+				for (Consulta consultas : paciente.getHistoriaClinica().getConsultas()) {
+					if (consultas.getDoctor().equals(Control.getDoctorLogeado())) {
+						if (!resultado.contains(paciente)) {
+							resultado.add(paciente);
+						}
+					}
+				}
 			}
 		}
 

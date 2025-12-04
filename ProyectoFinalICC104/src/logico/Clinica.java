@@ -119,12 +119,7 @@ public class Clinica implements Serializable {
 		return reporteEnfermedades;
 	}
 
-	/**
-	 * Recalcula el contador de cÃƒÆ’Ã‚Â³digos de tratamientos en base a la cantidad
-	 * actual de tratamientos predefinidos. ÃƒÆ’Ã…Â¡til cuando se abriÃƒÆ’Ã‚Â³ la ventana de
-	 * registrar tratamiento pero no se llegÃƒÆ’Ã‚Â³ a guardar ninguno, para que no se
-	 * "salte" un cÃƒÆ’Ã‚Â³digo TRA-000X.
-	 */
+
 	public void recalcularContadorTratamientos() {
 		this.contadorTratamientos = tratamientos.size() + 1;
 	}
@@ -170,14 +165,7 @@ public class Clinica implements Serializable {
 		return null;
 	}
 
-	/**
-	 * Busca un doctor por su nÃƒÆ’Ã‚Âºmero de licencia (no por el cÃƒÆ’Ã‚Â³digo interno).
-	 * 
-	 * @param numeroLicencia NÃƒÆ’Ã‚Âºmero de licencia del doctor (por ejemplo
-	 *                       EXQM-12345).
-	 * @return El doctor que tiene ese nÃƒÆ’Ã‚Âºmero de licencia, o null si no se
-	 *         encuentra.
-	 */
+
 	public Doctor buscarDoctorPorNumeroLicencia(String numeroLicencia) {
 		if (numeroLicencia == null || numeroLicencia.trim().isEmpty()) {
 			return null;
@@ -193,11 +181,7 @@ public class Clinica implements Serializable {
 		return null;
 	}
 
-	/**
-	 * Recalcula el contador de cÃƒÆ’Ã‚Â³digos de doctores en base a la cantidad actual.
-	 * ÃƒÆ’Ã…Â¡til cuando se abriÃƒÆ’Ã‚Â³ la ventana de registro pero no se llegÃƒÆ’Ã‚Â³ a
-	 * guardar ningÃƒÆ’Ã‚Âºn doctor, para que no se "salte" un cÃƒÆ’Ã‚Â³digo DOC-000X.
-	 */
+
 	public void recalcularContadorDoctores() {
 		this.contadorDoctores = doctores.size() + 1; // ajusta doctores al nombre real
 	}
