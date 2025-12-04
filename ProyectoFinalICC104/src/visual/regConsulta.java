@@ -30,7 +30,12 @@ public class regConsulta extends JDialog {
 	private ArrayList<Tratamiento> tratamientos;
 	private ArrayList<Enfermedad> enfermedades;
 
-	// Constructor sin parÃ¡metros
+	/**
+	 * Constructor de regConsulta sin parámetros.
+	 * Recibe: nada.
+	 * Hace: inicializa la ventana en modo modal y carga todos los componentes visuales.
+	 * Devuelve: no devuelve nada (constructor).
+	 */
 	public regConsulta() {
 		super((Frame) null, "Registrar consulta", true);
 		setIconImage(Toolkit.getDefaultToolkit()
@@ -38,8 +43,12 @@ public class regConsulta extends JDialog {
 		inicializar();
 	}
 
-	// Constructor con parÃ¡metro
-	public regConsulta(Cita citaSeleccionada) {
+	/**
+	 * Constructor que inicializa regConsulta con una cita seleccionada.
+	 * Recibe: un objeto Cita (citaSeleccionada) que se desea mostrar por defecto.
+	 * Hace: inicializa los componentes y selecciona la cita indicada en el combo.
+	 * Devuelve: no devuelve nada (constructor).
+	 */	public regConsulta(Cita citaSeleccionada) {
 		super((Frame) null, "Registrar consulta", true);
 		inicializar();
 
@@ -48,6 +57,12 @@ public class regConsulta extends JDialog {
 		}
 	}
 
+	 /**
+	  * Busca y selecciona una cita en el JComboBox a partir de su código.
+	  * Recibe: String codigoCita.
+	  * Hace: recorre el combo y selecciona el ítem cuyo texto comience con el código.
+	  * Devuelve: nada.
+	  */
 	private void seleccionarCitaPorCodigo(String codigoCita) {
 		for (int i = 0; i < cbCitas.getItemCount(); i++) {
 			String item = cbCitas.getItemAt(i);
@@ -58,6 +73,13 @@ public class regConsulta extends JDialog {
 		}
 	}
 
+	/**
+	 * Configura toda la interfaz gráfica de la ventana.
+	 * Recibe: nada.
+	 * Hace: crea labels, combos, text areas, botones y enlaza listeners.  
+	 *      También llama a cargarCitasPendientes, cargarEnfermedades y cargarTratamientos.
+	 * Devuelve: nada.
+	 */
 	private void inicializar() {
 
 		setBounds(100, 100, 820, 590);
@@ -185,12 +207,17 @@ public class regConsulta extends JDialog {
 		btnRegistrar.addActionListener(e -> registrarConsulta());
 		contentPanel.add(btnRegistrar);
 	}
-
+	
+	/**
+	 * Carga en el combo las citas pendientes del doctor logeado.
+	 * Recibe: nada.
+	 * Hace: obtiene el doctor logeado, filtra sus citas pendientes y las agrega al JComboBox.
+	 * Devuelve: nada.
+	 */
 	private void cargarCitasPendientes() {
 		cbCitas.removeAllItems();
 		citasPendientes = Clinica.getInstance().listarCitasPendientes();
 
-		// Obtener doctor logeado
 		Doctor doctorLogeado = Control.getDoctorLogeado();
 
 		cbCitas.addItem("<Seleccione>");
@@ -205,7 +232,7 @@ public class regConsulta extends JDialog {
 		boolean tieneCitas = false;
 
 		for (Cita c : citasPendientes) {
-			// Verificar que el doctor de la cita sea el mismo que estÃ¡ logeado
+
 			if (c.getDoctor() != null && c.getDoctor().getNumeroLicencia().equals(licenciaDoctorLogeado)) {
 
 				cbCitas.addItem(c.getCodigoCita() + " - " + c.getPaciente().getNombre());
@@ -213,7 +240,7 @@ public class regConsulta extends JDialog {
 			}
 		}
 
-		// Si no hay citas para este doctor
+
 		if (!tieneCitas) {
 			cbCitas.addItem("No tiene citas pendientes");
 			cbCitas.setEnabled(false);
@@ -222,6 +249,12 @@ public class regConsulta extends JDialog {
 		}
 	}
 
+	/**
+	 * Obtiene la cita seleccionada en el combo.
+	 * Recibe: nada.
+	 * Hace: verifica el índice seleccionado y retorna la cita correspondiente.
+	 * Devuelve: un objeto Cita, o null si no hay selección válida.
+	 */
 	private Cita getCitaSeleccionada() {
 		int i = cbCitas.getSelectedIndex();
 		if (i <= 0)
@@ -229,6 +262,13 @@ public class regConsulta extends JDialog {
 		return citasPendientes.get(i - 1);
 	}
 
+	/**
+	 * Actualiza en pantalla la información del paciente de la cita seleccionada.
+	 * Recibe: nada.
+	 * Hace: verifica si el paciente está registrado, muestra alergias y activa/desactiva
+	 *       el botón de "Registrar paciente".
+	 * Devuelve: nada.
+	 */
 	private void actualizarDatosCita() {
 		Cita c = getCitaSeleccionada();
 		if (c == null)
@@ -238,14 +278,11 @@ public class regConsulta extends JDialog {
 		if (p == null)
 			return;
 
-		// VERIFICAR SI EL PACIENTE ESTÃ� REGISTRADO EN EL SISTEMA
 		Paciente pacienteRegistrado = Clinica.getInstance().buscarPacientePorCedula(p.getCedula());
 		boolean estaRegistrado = (pacienteRegistrado != null);
 
-		// Mostrar botÃ³n solo si NO estÃ¡ registrado
 		btnRegistrarPaciente.setVisible(!estaRegistrado);
 
-		// Mostrar alergias del paciente (si existe en el sistema, usar ese)
 		Paciente pacienteParaMostrar = estaRegistrado ? pacienteRegistrado : p;
 
 		if (pacienteParaMostrar.getAlergias() == null || pacienteParaMostrar.getAlergias().isEmpty()) {
@@ -263,6 +300,12 @@ public class regConsulta extends JDialog {
 		}
 	}
 
+	/**
+	 * Muestra en un diálogo los detalles completos de las alergias del paciente.
+	 * Recibe: nada.
+	 * Hace: obtiene la cita actual, toma sus alergias y las muestra en JOptionPane.
+	 * Devuelve: nada.
+	 */
 	private void verDetallesAlergias() {
 		Cita c = getCitaSeleccionada();
 		if (c == null)
@@ -282,6 +325,12 @@ public class regConsulta extends JDialog {
 		JOptionPane.showMessageDialog(this, sb.toString(), "Detalles de alergias", JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	/**
+	 * Carga todas las enfermedades registradas en la clínica dentro del combo.
+	 * Recibe: nada.
+	 * Hace: limpia el combo, agrega "No especificar" y luego lista cada enfermedad.
+	 * Devuelve: nada.
+	 */
 	private void cargarEnfermedades() {
 		cbEnfermedades.removeAllItems();
 		cbEnfermedades.addItem("No especificar");
@@ -291,6 +340,12 @@ public class regConsulta extends JDialog {
 		}
 	}
 
+	/**
+	 * Carga todos los tratamientos existentes en el combo de tratamientos.
+	 * Recibe: nada.
+	 * Hace: limpia el combo, valida si existen tratamientos y los agrega.
+	 * Devuelve: nada.
+	 */
 	private void cargarTratamientos() {
 		cbTratamientos.removeAllItems();
 		tratamientos = Clinica.getInstance().listarTratamientos();
@@ -307,12 +362,24 @@ public class regConsulta extends JDialog {
 		}
 	}
 
+	/**
+	 * Abre la ventana de registro de enfermedades.
+	 * Recibe: nada.
+	 * Hace: muestra regEnfermedades como ventana modal y actualiza el combo al cerrar.
+	 * Devuelve: nada.
+	 */
 	private void abrirRegEnfermedad() {
 		regEnfermedades win = new regEnfermedades();
 		win.setVisible(true);
 		cargarEnfermedades();
 	}
 
+	/**
+	 * Abre el módulo de gestión de tratamientos.
+	 * Recibe: nada.
+	 * Hace: muestra GestionTratamientos como ventana modal y recarga los tratamientos.
+	 * Devuelve: nada.
+	 */
 	private void abrirGestionTratamientos() {
 		GestionTratamientos dialogo = new GestionTratamientos();
 		dialogo.setModal(true);
@@ -321,6 +388,13 @@ public class regConsulta extends JDialog {
 		cargarTratamientos();
 	}
 
+	/**
+	 * Permite registrar un paciente que vino como “interesado” en una cita.
+	 * Recibe: nada.
+	 * Hace: abre la ventana regPaciente con los datos precargados, registra el paciente
+	 *       real en la clínica y actualiza la cita para que use esta nueva instancia.
+	 * Devuelve: nada.
+	 */
 	private void registrarNuevoPaciente() {
 	    Cita c = getCitaSeleccionada();
 	    if (c == null)
@@ -328,8 +402,7 @@ public class regConsulta extends JDialog {
 
 	    Paciente pre = c.getPaciente();
 
-	    // Crear una instancia especial para registrar
-	    regPaciente win = new regPaciente(pre);  // <-- true = es interesado
+	    regPaciente win = new regPaciente(pre);  
 	    win.setModal(true);
 	    win.setVisible(true);
 
@@ -342,6 +415,17 @@ public class regConsulta extends JDialog {
 	    actualizarDatosCita();
 	}
 
+	/**
+	 * Registra formalmente la consulta médica asociada a la cita seleccionada.
+	 * Recibe: nada.
+	 * Hace:
+	 *   - Valida que la cita sea válida y que el paciente esté registrado.
+	 *   - Verifica que exista un tratamiento seleccionado.
+	 *   - Obtiene síntomas, diagnóstico, notas y enfermedad asociada.
+	 *   - Llama a registrarConsulta() en la clase Clinica.
+	 *   - Cierra la ventana al finalizar.
+	 * Devuelve: nada.
+	 */
 	private void registrarConsulta() {
 		Cita c = getCitaSeleccionada();
 		if (c == null) {

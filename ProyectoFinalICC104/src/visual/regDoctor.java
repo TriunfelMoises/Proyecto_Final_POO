@@ -78,7 +78,7 @@ public class regDoctor extends JDialog {
 	}
 
 	private void inicializarComponentes() {
-		// ========== CÓDIGO (esquina superior derecha) ==========
+
 		JLabel lblCodigo = new JLabel("Código:");
 		lblCodigo.setBounds(540, 15, 60, 20);
 		contentPanel.add(lblCodigo);
@@ -91,7 +91,6 @@ public class regDoctor extends JDialog {
 		txtCodigo.setText("DOC-" + Clinica.getInstance().getContadorDoctores());
 		contentPanel.add(txtCodigo);
 
-		// ========== NOMBRE Y APELLIDO (parte superior) ==========
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setBounds(15, 15, 100, 20);
 		contentPanel.add(lblNombre);
@@ -110,7 +109,6 @@ public class regDoctor extends JDialog {
 		txtApellido.setColumns(10);
 		contentPanel.add(txtApellido);
 
-		// ========== RESTO DE COMPONENTES ==========
 		crearCamposCedulaTelefono();
 		crearCamposSexoYNacimiento();
 		crearCampoDireccion();
@@ -377,12 +375,10 @@ public class regDoctor extends JDialog {
 	}
 
 	private void registrarDoctor() {
-		// ========== 1. LIMPIAR DATOS ==========
 		String cedulaLimpia = txtCedula.getText().replaceAll("[^0-9]", "");
 		String telefonoLimpio = txtTelefono.getText().replaceAll("[^0-9]", "");
 		String licenciaTexto = txtNumeroLicencia.getText().trim().replaceAll("_", "");
 
-		// ========== 2. VALIDAR CAMPOS VACÍOS ==========
 		if (txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty()
 				|| cedulaLimpia.length() != 11 || telefonoLimpio.length() != 10
 				|| txtDireccion.getText().trim().isEmpty() || licenciaTexto.isEmpty() || licenciaTexto.length() < 4
@@ -397,7 +393,6 @@ public class regDoctor extends JDialog {
 			return;
 		}
 
-		// ========== 2.5. VALIDAR NOMBRE Y APELLIDO ==========
 		if (!validarNombre(txtNombre.getText().trim(), "El nombre")) {
 			txtNombre.requestFocus();
 			return;
@@ -408,7 +403,6 @@ public class regDoctor extends JDialog {
 			return;
 		}
 
-		// ========== 3. VALIDAR CÉDULA DUPLICADA ==========
 		if (Clinica.getInstance().isCedulaRegistrada(cedulaLimpia)) {
 			JOptionPane.showMessageDialog(this,
 					"Esta cédula ya está registrada en el sistema.\n" + "Cédula: " + txtCedula.getText(),
@@ -416,7 +410,6 @@ public class regDoctor extends JDialog {
 			return;
 		}
 
-		// ========== 4. VALIDAR TELÉFONO DUPLICADO ==========
 		if (Clinica.getInstance().isTelefonoRegistrado(telefonoLimpio)) {
 			JOptionPane.showMessageDialog(this,
 					"Este teléfono ya está registrado en el sistema.\n" + "Teléfono: " + txtTelefono.getText(),
@@ -424,7 +417,6 @@ public class regDoctor extends JDialog {
 			return;
 		}
 
-		// ========== 5. VALIDAR LICENCIA DUPLICADA ==========
 		String licenciaCompleta = txtNumeroLicencia.getText().trim().toUpperCase();
 		if (Clinica.getInstance().isLicenciaRegistrada(licenciaCompleta)) {
 			JOptionPane.showMessageDialog(this,
@@ -433,7 +425,6 @@ public class regDoctor extends JDialog {
 			return;
 		}
 
-		// ========== 6. VALIDAR USUARIO DUPLICADO ==========
 		String usuario = txtUsuario.getText().trim();
 
 		if (Control.getInstance().existeUsuario(usuario)) {
@@ -454,7 +445,6 @@ public class regDoctor extends JDialog {
 			return;
 		}
 
-		// ========== 7. VALIDAR CONTRASEÑA ==========
 		String contrasena = txtContrasena.getText().trim();
 		if (contrasena.length() < 4) {
 			JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos 4 caracteres.",
@@ -464,7 +454,6 @@ public class regDoctor extends JDialog {
 		}
 
 		try {
-			// ========== 8. FECHA DE NACIMIENTO ==========
 			Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
 			LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -474,7 +463,6 @@ public class regDoctor extends JDialog {
 				return;
 			}
 
-			// ========== 9. HORARIOS ==========
 			String horarioInicioStr = (String) spnHorarioInicio.getValue();
 			String horarioFinStr = (String) spnHorarioFin.getValue();
 
@@ -487,7 +475,6 @@ public class regDoctor extends JDialog {
 				return;
 			}
 
-			// ========== 10. CREAR DOCTOR ==========
 			char sexo = rdbtnHombre.isSelected() ? 'M' : 'F';
 			String especialidad = cbxEspecialidad.getSelectedItem().toString();
 			int citasPorDia = (Integer) spnCitasPorDia.getValue();
@@ -497,10 +484,8 @@ public class regDoctor extends JDialog {
 					telefonoLimpio, txtDireccion.getText().trim(), fechaNac, sexo, txtCodigo.getText(), especialidad,
 					licenciaCompleta, citasPorDia, horarioInicio, horarioFin, activo, usuario, contrasena);
 
-			// ========== 11. CREAR USUARIO ==========
 			User usuarioDoctor = new User("Doctor", usuario, contrasena);
 
-			// ========== 12. REGISTRAR DOCTOR ==========
 			boolean doctorRegistrado = Clinica.getInstance().registrarDoctor(nuevoDoctor);
 			boolean usuarioRegistrado = Control.getInstance().regUser(usuarioDoctor);
 

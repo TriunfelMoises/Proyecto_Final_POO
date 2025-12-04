@@ -36,6 +36,13 @@ public class regEnfermedades extends JDialog {
 	private Enfermedad enfermedadEditando = null;
 	private boolean soloCambiarVigilancia = false;
 
+	/**
+	 * Constructor principal para registrar una nueva enfermedad.
+	 * Recibe: nada.
+	 * Hace: configura la ventana, inicializa todos los componentes visuales,
+	 *       define los combos, botones y carga el código automático ENF-X.
+	 * Devuelve: nada (constructor).
+	 */
 	public regEnfermedades() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(regEnfermedades.class.getResource("/recursos/enfc.jpg")));
 		setTitle("Registrar Enfermedad");
@@ -174,6 +181,18 @@ public class regEnfermedades extends JDialog {
 		inicializarCodigo();
 	}
 
+	/**
+	 * Constructor usado para editar una enfermedad existente o cambiar solo su estado
+	 * de vigilancia.
+	 * Recibe: 
+	 *   - Enfermedad enfermedad: la enfermedad que se desea modificar.
+	 *   - boolean soloCambiarVigilancia: indica si solo se editará el checkbox de vigilancia.
+	 * Hace:
+	 *   - Carga todos los datos existentes de la enfermedad en los campos.
+	 *   - Si soloCambiarVigilancia es true, deshabilita los demás campos y solo permite
+	 *     modificar la vigilancia. 
+	 * Devuelve: nada (constructor).
+	 */
 	public regEnfermedades(Enfermedad enfermedad, boolean soloCambiarVigilancia) {
 		this();
 		this.enfermedadEditando = enfermedad;
@@ -204,11 +223,30 @@ public class regEnfermedades extends JDialog {
 		}
 	}
 
+	/**
+	 * Genera y muestra un nuevo código automático para una enfermedad.
+	 * Recibe: nada.
+	 * Hace: toma el contador global de enfermedades de Clinica y arma el código ENF-XXX.
+	 * Devuelve: nada.
+	 */
 	private void inicializarCodigo() {
 		String codigo = "ENF-" + Clinica.getInstance().contadorEnfermedades;
 		txtCodigo.setText(codigo);
 	}
 
+	/**
+	 * Guarda o actualiza la información de una enfermedad.
+	 * Recibe: nada.
+	 * Hace: 
+	 *   - Si se está editando solo la vigilancia, actualiza únicamente ese atributo.
+	 *   - Si es un registro nuevo o una edición completa:
+	 *       * Valida que nombre, síntomas y tipo estén completos.
+	 *       * Toma todos los valores del formulario.
+	 *       * Crea un objeto Enfermedad.
+	 *       * Llama a Clinica.registrarEnfermedad() para guardarla.
+	 *       * Limpia los campos y genera un nuevo código si el registro fue exitoso.
+	 * Devuelve: nada.
+	 */
 	private void guardarEnfermedad() {
 		if (enfermedadEditando != null && soloCambiarVigilancia) {
 			boolean nuevoEstado = chkBajoVigilancia.isSelected();

@@ -22,6 +22,13 @@ public class regMedicamento extends JDialog {
     private Medicamento medicamentoTemporal;
     private Medicamento medicamentoEditar;
 
+    /**
+     * Constructor para registrar un nuevo medicamento.
+     * Recibe: nada.
+     * Hace: configura la ventana, inicializa todos los componentes del formulario
+     *       (nombre, dosis, frecuencia, duración, vía, indicaciones).
+     * Devuelve: nada (constructor).
+     */
     public regMedicamento() {
     	setIconImage(Toolkit.getDefaultToolkit().getImage(regMedicamento.class.getResource("/recursos/agu.jpg")));
 
@@ -40,6 +47,13 @@ public class regMedicamento extends JDialog {
         construirFormulario();
     }
 
+    /**
+     * Constructor que permite editar un medicamento previamente creado.
+     * Recibe: un objeto Medicamento existente que se desea modificar.
+     * Hace: configura la ventana, inicializa todos los campos y carga en ellos
+     *       los valores del medicamento recibido.
+     * Devuelve: nada (constructor).
+     */
     public regMedicamento(Medicamento existente) {
 
         this.medicamentoEditar = existente;
@@ -58,7 +72,15 @@ public class regMedicamento extends JDialog {
         construirFormulario();
         cargarDatos(existente);
     }
+    
 
+    /**
+     * Construye todos los elementos visuales del formulario de registro.
+     * Recibe: nada.
+     * Hace: crea labels, campos de texto, combos, spinners, área de texto,
+     *       botones de acción y los agrega al panel principal.
+     * Devuelve: nada.
+     */
     private void construirFormulario() {
 
         JLabel lblNombre = new JLabel("Nombre:");
@@ -130,6 +152,13 @@ public class regMedicamento extends JDialog {
         panelBotones.add(btnCancelar);
     }
 
+    /**
+     * Carga en el formulario los datos de un medicamento existente.
+     * Recibe: un objeto Medicamento m que contiene los valores a mostrar.
+     * Hace: asigna en los campos del formulario el nombre, dosis, vía,
+     *       duración, frecuencia e indicaciones del medicamento.
+     * Devuelve: nada.
+     */
     private void cargarDatos(Medicamento m) {
 
         txtNombre.setText(m.getNombre());
@@ -140,6 +169,19 @@ public class regMedicamento extends JDialog {
         txtIndicaciones.setText(m.getIndicaciones());
     }
 
+    /**
+     * Guarda o actualiza un medicamento según el modo del formulario.
+     * Recibe: nada.
+     * Hace:
+     *   - Valida que el nombre y la vía hayan sido ingresados.
+     *   - Toma todos los datos escritos por el usuario.
+     *   - Si medicamentoEditar no es null: actualiza ese medicamento.
+     *   - Si es un registro nuevo: crea un nuevo objeto Medicamento.
+     *   - Guarda temporalmente el medicamento resultante para ser recuperado
+     *     mediante getMedicamento().
+     *   - Cierra la ventana al finalizar.
+     * Devuelve: nada.
+     */
     private void guardar() {
 
         String nombre = txtNombre.getText().trim();
@@ -177,6 +219,12 @@ public class regMedicamento extends JDialog {
         dispose();
     }
 
+    /**
+     * Devuelve el medicamento registrado o editado en esta ventana.
+     * Recibe: nada.
+     * Hace: simplemente retorna la referencia del medicamento temporal.
+     * Devuelve: un objeto Medicamento con los datos finales ingresados.
+     */
     public Medicamento getMedicamento() {
         return medicamentoTemporal;
     }
