@@ -1,5 +1,9 @@
 package visualGraficos;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -8,49 +12,68 @@ import org.jfree.data.general.DefaultPieDataset;
 import logico.Clinica;
 import logico.Paciente;
 
-public class GraficaSexoPacientes {
+public class GraficaSexoPacientes extends JFrame {
 
+    private static final long serialVersionUID = 1L;
+
+    private JFreeChart chart;
     private ChartPanel chartPanel;
 
     public GraficaSexoPacientes() {
 
-        DefaultPieDataset dataset = getDataset();
+        setTitle("Distribución por Sexo");
+        setSize(800, 600);
+        setLayout(new BorderLayout());
 
-        JFreeChart chart = ChartFactory.createPieChart(
-                "Distribuci�n por sexo",
+        DefaultPieDataset dataset = cargarDatos();
+
+        chart = ChartFactory.createPieChart(
+                "Distribución por Sexo",
                 dataset,
                 true,
                 true,
                 false
         );
 
-        chart.getTitle().setPaint(new java.awt.Color(28, 63, 117));
-        chart.setBackgroundPaint(java.awt.Color.WHITE);
-
         chartPanel = new ChartPanel(chart);
-        chartPanel.setMouseWheelEnabled(true);
     }
 
-    private DefaultPieDataset getDataset() {
+    // ============================================================
+    //                   CARGAR DATOS DESDE LA CLÍNICA
+    // ============================================================
+    private DefaultPieDataset cargarDatos() {
 
-        int hombres = 0;
-        int mujeres = 0;
+        int masculino = 0;
+        int femenino = 0;
+        int otro = 0;
 
         for (Paciente p : Clinica.getInstance().getPacientes()) {
 
-            char sexo = p.getSexo();
+            char sexo = p.getSexo();   // ← AQUÍ USAMOS CHAR
 
-            if (sexo == 'F' || sexo == 'f') mujeres++;
-            else hombres++;
+            if (sexo == 'M' || sexo == 'm') {
+                masculino++;
+            }
+            else if (sexo == 'F' || sexo == 'f') {
+                femenino++;
+            }
+            else {
+                otro++;
+            }
         }
 
-        DefaultPieDataset dataset = new DefaultPieDataset();
-        dataset.setValue("Hombres", hombres);
-        dataset.setValue("Mujeres", mujeres);
+        DefaultPieDataset ds = new DefaultPieDataset();
 
-        return dataset;
+        ds.setValue("Masculino", masculino);
+        ds.setValue("Femenino", femenino);
+        ds.setValue("Otro", otro);
+
+        return ds;
     }
 
+    // ============================================================
+    //                  DEVOLVER PANEL A REPORTES
+    // ============================================================
     public ChartPanel getPanel() {
         return chartPanel;
     }

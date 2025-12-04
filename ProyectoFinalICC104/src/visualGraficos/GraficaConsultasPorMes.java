@@ -1,7 +1,11 @@
 package visualGraficos;
 
+import java.awt.BorderLayout;
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.HashMap;
+
+import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -11,18 +15,26 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import logico.Clinica;
 import logico.Consulta;
-import logico.HistoriaClinica;
 import logico.Paciente;
 
-public class GraficaConsultasPorMes {
+public class GraficaConsultasPorMes extends JFrame {
 
+    private static final long serialVersionUID = 1L;
+
+    private JFreeChart chart;
     private ChartPanel chartPanel;
 
     public GraficaConsultasPorMes() {
 
-        DefaultCategoryDataset dataset = getDataset();
+        // Esta ventana no se usa directamente, pero la clase sí
+        setTitle("Consultas atendidas por mes");
+        setSize(800, 600);
+        setLayout(new BorderLayout());
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JFreeChart chart = ChartFactory.createBarChart(
+        DefaultCategoryDataset dataset = cargarDatos();
+
+        chart = ChartFactory.createBarChart(
                 "Consultas atendidas por mes",
                 "Mes",
                 "Cantidad",
@@ -34,9 +46,14 @@ public class GraficaConsultasPorMes {
         );
 
         chartPanel = new ChartPanel(chart);
+
+        // NO se hace add(chartPanel) porque Reportes se encarga
     }
 
-    private DefaultCategoryDataset getDataset() {
+    // ============================================================
+    //   Cargar datos desde el historial clínico de cada paciente
+    // ============================================================
+    private DefaultCategoryDataset cargarDatos() {
 
         HashMap<Month, Integer> contador = new HashMap<>();
 
@@ -44,15 +61,16 @@ public class GraficaConsultasPorMes {
             contador.put(m, 0);
         }
 
+        // TU ESTRUCTURA REAL: Paciente → Historial → Consultas
         for (Paciente p : Clinica.getInstance().getPacientes()) {
+            if (p.getHistoriaClinica() != null) {
+                for (Consulta c : p.getHistoriaClinica().getConsultas()) {
 
-            HistoriaClinica hc = p.getHistoriaClinica();
-            if (hc == null) continue;
+                    LocalDate fecha = c.getFechaConsulta();
+                    Month mes = fecha.getMonth();
 
-            for (Consulta c : hc.getConsultas()) {
-
-                Month mes = c.getFechaConsulta().getMonth();
-                contador.put(mes, contador.get(mes) + 1);
+                    contador.put(mes, contador.get(mes) + 1);
+                }
             }
         }
 
@@ -65,6 +83,9 @@ public class GraficaConsultasPorMes {
         return dataset;
     }
 
+    // ============================================================
+    //   ESTE MÉTODO ES CLAVE PARA REPORTES.JAVA
+    // ============================================================
     public ChartPanel getPanel() {
         return chartPanel;
     }

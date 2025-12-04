@@ -1,7 +1,9 @@
 package visualGraficos;
 
+import java.awt.BorderLayout;
 import java.util.HashMap;
-import java.util.Map;
+
+import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -11,59 +13,66 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import logico.Clinica;
 import logico.Consulta;
-import logico.HistoriaClinica;
 import logico.Paciente;
+import logico.Enfermedad;
 
-public class GraficaEnfermedadesDiagnosticas {
+public class GraficaEnfermedadesDiagnosticas extends JFrame {
 
+    private static final long serialVersionUID = 1L;
+
+    private JFreeChart chart;
     private ChartPanel chartPanel;
 
     public GraficaEnfermedadesDiagnosticas() {
 
-        DefaultCategoryDataset dataset = getDataset();
+        setTitle("Enfermedades Más Diagnosticadas");
+        setSize(800, 600);
+        setLayout(new BorderLayout());
 
-        JFreeChart chart = ChartFactory.createBarChart(
-                "Enfermedades más diagnosticadas",
+        DefaultCategoryDataset dataset = cargarDatos();
+
+        chart = ChartFactory.createBarChart(
+                "Enfermedades Más Diagnosticadas",
                 "Enfermedad",
-                "Frecuencia",
+                "Cantidad de Diagnósticos",
                 dataset,
                 PlotOrientation.VERTICAL,
-                false, true, false
+                false,
+                true,
+                false
         );
 
-        chart.setBackgroundPaint(java.awt.Color.WHITE);
-        chart.getTitle().setPaint(new java.awt.Color(28, 63, 117));
-
         chartPanel = new ChartPanel(chart);
-        chartPanel.setMouseWheelEnabled(true);
     }
 
-    private DefaultCategoryDataset getDataset() {
+    private DefaultCategoryDataset cargarDatos() {
 
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        HashMap<String, Integer> contador = new HashMap<>();
+        HashMap<String, Integer> cont = new HashMap<>();
 
         for (Paciente p : Clinica.getInstance().getPacientes()) {
 
-            HistoriaClinica hc = p.getHistoriaClinica();
+            if (p.getHistoriaClinica() != null) {
 
-            for (Consulta c : hc.getConsultas()) {
+                for (Consulta c : p.getHistoriaClinica().getConsultas()) {
 
-                String diag = c.getDiagnostico();
+                    Enfermedad enf = c.getEnfermedad();
 
-                if (diag == null || diag.trim().isEmpty()) {
-                    continue; // ignorar diagnósticos vacíos
+                    if (enf != null) {
+                        String nombre = enf.getNombre();
+
+                        cont.put(nombre, cont.getOrDefault(nombre, 0) + 1);
+                    }
                 }
-
-                contador.put(diag, contador.getOrDefault(diag, 0) + 1);
             }
         }
 
-        for (Map.Entry<String, Integer> entry : contador.entrySet()) {
-            dataset.addValue(entry.getValue(), "Frecuencia", entry.getKey());
+        DefaultCategoryDataset ds = new DefaultCategoryDataset();
+
+        for (String e : cont.keySet()) {
+            ds.addValue(cont.get(e), "Diagnósticos", e);
         }
 
-        return dataset;
+        return ds;
     }
 
     public ChartPanel getPanel() {

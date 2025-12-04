@@ -1,61 +1,75 @@
 package visualGraficos;
 
+import java.awt.BorderLayout;
+import javax.swing.JFrame;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
-import logico.Cita;
 import logico.Clinica;
+import logico.Paciente;
+import logico.Consulta;
 
-public class GraficaCitasAtendidas {
+public class GraficaCitasAtendidas extends JFrame {
 
+    private static final long serialVersionUID = 1L;
+
+    private JFreeChart chart;
     private ChartPanel chartPanel;
 
     public GraficaCitasAtendidas() {
 
-        DefaultPieDataset dataset = getDataset();
+        setTitle("Citas Atendidas vs No Atendidas");
+        setSize(800, 600);
+        setLayout(new BorderLayout());
 
-        JFreeChart chart = ChartFactory.createPieChart(
-                "Citas atendidas vs no atendidas",
-                dataset,
+        DefaultPieDataset ds = cargarDatos();
+
+        chart = ChartFactory.createPieChart(
+                "Citas Atendidas vs No Atendidas",
+                ds,
                 true,
                 true,
                 false
         );
 
-        chart.getTitle().setPaint(new java.awt.Color(28, 63, 117));
-        chart.setBackgroundPaint(java.awt.Color.WHITE);
-
         chartPanel = new ChartPanel(chart);
-        chartPanel.setMouseWheelEnabled(true);
     }
 
-    private DefaultPieDataset getDataset() {
-
-        DefaultPieDataset dataset = new DefaultPieDataset();
+    private DefaultPieDataset cargarDatos() {
 
         int atendidas = 0;
         int noAtendidas = 0;
 
-        for (Cita c : Clinica.getInstance().getCitas()) {
+        for (Paciente p : Clinica.getInstance().getPacientes()) {
 
-            if (c == null || c.getEstadoCita() == null) continue;
+            if (p.getHistoriaClinica() != null) {
 
-            String estado = c.getEstadoCita().trim().toLowerCase();
+                for (Consulta c : p.getHistoriaClinica().getConsultas()) {
 
-            if (estado.equals("completada")) {
-                atendidas++;
-            } else {
-                noAtendidas++;
+                    if (c.getCita() != null) {
+
+                        String estado = c.getCita().getEstadoCita();
+
+                        if (estado != null && estado.equalsIgnoreCase("Atendida")) {
+                            atendidas++;
+                        } else {
+                            noAtendidas++;
+                        }
+                    }
+                }
             }
         }
 
-        dataset.setValue("Atendidas", atendidas);
-        dataset.setValue("No atendidas", noAtendidas);
+        DefaultPieDataset ds = new DefaultPieDataset();
+        ds.setValue("Atendidas", atendidas);
+        ds.setValue("No Atendidas", noAtendidas);
 
-        return dataset;
+        return ds;
     }
+
 
     public ChartPanel getPanel() {
         return chartPanel;

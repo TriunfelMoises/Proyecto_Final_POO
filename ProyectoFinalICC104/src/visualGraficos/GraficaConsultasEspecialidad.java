@@ -1,72 +1,91 @@
 package visualGraficos;
 
+import java.awt.BorderLayout;
 import java.util.HashMap;
-import java.util.Map;
+
+import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import logico.Clinica;
 import logico.Consulta;
-import logico.HistoriaClinica;
+import logico.Doctor;
 import logico.Paciente;
 
-public class GraficaConsultasEspecialidad {
+public class GraficaConsultasEspecialidad extends JFrame {
 
+    private static final long serialVersionUID = 1L;
+
+    private JFreeChart chart;
     private ChartPanel chartPanel;
 
     public GraficaConsultasEspecialidad() {
 
-        DefaultPieDataset dataset = getDataset();
+        setTitle("Consultas por Especialidad");
+        setSize(800, 600);
+        setLayout(new BorderLayout());
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JFreeChart chart = ChartFactory.createPieChart(
-                "Consultas por especialidad",
+        DefaultCategoryDataset dataset = cargarDatos();
+
+        chart = ChartFactory.createBarChart(
+                "Consultas por Especialidad",
+                "Especialidad",
+                "Cantidad de Consultas",
                 dataset,
-                true,   // leyenda
+                PlotOrientation.VERTICAL,
+                false,
                 true,
                 false
         );
 
-        chart.getTitle().setPaint(new java.awt.Color(28, 63, 117));
-        chart.setBackgroundPaint(java.awt.Color.WHITE);
-
         chartPanel = new ChartPanel(chart);
-        chartPanel.setMouseWheelEnabled(true);
     }
 
-    private DefaultPieDataset getDataset() {
+    // =================================================================
+    //      CARGAR DATOS DESDE EL HISTORIAL DE CADA PACIENTE
+    // =================================================================
+    private DefaultCategoryDataset cargarDatos() {
 
-        DefaultPieDataset dataset = new DefaultPieDataset();
-        HashMap<String, Integer> contador = new HashMap<>();
+        HashMap<String, Integer> contadorEspecialidades = new HashMap<>();
 
-        // RECORRER PACIENTES Y SUS CONSULTAS
+        // Recorrer todos los pacientes
         for (Paciente p : Clinica.getInstance().getPacientes()) {
 
-            HistoriaClinica hc = p.getHistoriaClinica();
-            if (hc == null) continue;
+            if (p.getHistoriaClinica() != null) {
+                for (Consulta c : p.getHistoriaClinica().getConsultas()) {
 
-            for (Consulta c : hc.getConsultas()) {
+                    Doctor doc = c.getDoctor();  // El doctor que atendió la consulta
 
-                if (c == null || c.getDoctor() == null) continue;
+                    if (doc != null) {
+                        String esp = doc.getEspecialidad();
 
-                String esp = c.getDoctor().getEspecialidad();
-
-                if (esp == null || esp.trim().isEmpty()) continue;
-
-                contador.put(esp, contador.getOrDefault(esp, 0) + 1);
+                        contadorEspecialidades.put(
+                                esp,
+                                contadorEspecialidades.getOrDefault(esp, 0) + 1
+                        );
+                    }
+                }
             }
         }
 
-        // AGREGAR AL DATASET
-        for (Map.Entry<String, Integer> entry : contador.entrySet()) {
-            dataset.setValue(entry.getKey(), entry.getValue());
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        for (String especialidad : contadorEspecialidades.keySet()) {
+            dataset.addValue(contadorEspecialidades.get(especialidad),
+                    "Consultas", especialidad);
         }
 
         return dataset;
     }
 
+    // =================================================================
+    //      DEVOLVER EL PANEL PARA QUE REPORTES LO USE
+    // =================================================================
     public ChartPanel getPanel() {
         return chartPanel;
     }

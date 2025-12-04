@@ -1,9 +1,18 @@
 package logico;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Clinica implements Serializable {
 
@@ -23,6 +32,8 @@ public class Clinica implements Serializable {
 	private ArrayList<Alergia> alergias;
 	private ArrayList<Paciente> interesados;
 	private boolean primerIngresp = false;
+	private HashMap<String, Integer> reporteEnfermedades;
+
 
 	public static int contadorPacientes = 1;
 	public static int contadorDoctores = 1;
@@ -48,6 +59,9 @@ public class Clinica implements Serializable {
 		this.alergias = new ArrayList<>();
 		this.interesados = new ArrayList<>();
 		setarContadores();
+		
+		cargarReporteEnfermedades();///////////////////////////////
+
 	}
 
 	public static Clinica getInstance() {
@@ -99,6 +113,10 @@ public class Clinica implements Serializable {
 
 	public ArrayList<Cita> getCitas() {
 		return citas;
+	}
+	
+	public HashMap<String, Integer> getReporteEnfermedades() {
+	    return reporteEnfermedades;
 	}
 
 	/**
@@ -1373,6 +1391,73 @@ public class Clinica implements Serializable {
 		}
 
 		return null;
+	}
+	
+	private void cargarReporteEnfermedades() {
+	    try {
+	        File f = new File("reporteEnfermedades.dat");
+
+	        if (f.exists()) {
+	            FileInputStream fis = new FileInputStream(f);
+	            ObjectInputStream ois = new ObjectInputStream(fis);
+	            reporteEnfermedades = (HashMap<String, Integer>) ois.readObject();
+	            ois.close();
+	            fis.close();
+	        } else {
+	            reporteEnfermedades = new HashMap<>();
+	            guardarReporteSerializado();
+	            guardarReporteTXT();
+	        }
+
+	    } catch (Exception e) {
+	        System.out.println("Error cargando reporte: " + e.getMessage());
+	        reporteEnfermedades = new HashMap<>();
+	    }
+	}
+	
+	public void agregarEnfermedadVigilancia(String nombre) {
+	    if (!reporteEnfermedades.containsKey(nombre)) {
+	        reporteEnfermedades.put(nombre, 0);
+	        guardarReporteSerializado();
+	        guardarReporteTXT();
+	    }
+	}
+	
+	private void guardarReporteSerializado() {
+	    try {
+	        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("reporteEnfermedades.dat"));
+	        oos.writeObject(reporteEnfermedades);
+	        oos.close();
+	    } catch (Exception e) {
+	        System.out.println("Error guardando archivo serializado: " + e.getMessage());
+	    }
+	}
+	
+	private void guardarReporteTXT() {
+	    try {
+	        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("reporteEnfermedades.txt")));
+	        pw.println("=== ENFERMEDADES BAJO VIGILANCIA ===\n");
+
+	        for (String enf : reporteEnfermedades.keySet()) {
+	            pw.println(enf + ": " + reporteEnfermedades.get(enf) + " casos");
+	        }
+
+	        pw.close();
+
+	    } catch (Exception e) {
+	        System.out.println("Error guardando TXT: " + e.getMessage());
+	    }
+	}
+	
+	public void agregarCasoEnfermedad(String nombre) {
+	    if (!reporteEnfermedades.containsKey(nombre)) {
+	        reporteEnfermedades.put(nombre, 0);
+	    }
+
+	    reporteEnfermedades.put(nombre, reporteEnfermedades.get(nombre) + 1);
+
+	    guardarReporteSerializado();
+	    guardarReporteTXT();
 	}
 
 }

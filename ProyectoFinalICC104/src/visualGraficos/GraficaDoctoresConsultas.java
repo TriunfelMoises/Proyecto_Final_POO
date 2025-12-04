@@ -1,70 +1,78 @@
 package visualGraficos;
 
+import java.awt.BorderLayout;
 import java.util.HashMap;
-import java.util.Map;
+
+import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import logico.Clinica;
 import logico.Consulta;
-import logico.HistoriaClinica;
 import logico.Paciente;
 import logico.Doctor;
 
-public class GraficaDoctoresConsultas {
+public class GraficaDoctoresConsultas extends JFrame {
 
+    private static final long serialVersionUID = 1L;
+
+    private JFreeChart chart;
     private ChartPanel chartPanel;
 
     public GraficaDoctoresConsultas() {
 
-        DefaultCategoryDataset dataset = getDataset();
+        setTitle("Doctores con Más Consultas");
+        setSize(800, 600);
+        setLayout(new BorderLayout());
 
-        JFreeChart chart = ChartFactory.createBarChart(
-                "Doctores con más consultas",
+        DefaultCategoryDataset ds = cargarDatos();
+
+        chart = ChartFactory.createBarChart(
+                "Doctores con Más Consultas",
                 "Doctor",
-                "Consultas",
-                dataset,
-                PlotOrientation.VERTICAL,
-                false, true, false
+                "Cantidad de Consultas",
+                ds,
+                org.jfree.chart.plot.PlotOrientation.VERTICAL,
+                false,
+                true,
+                false
         );
 
-        chart.setBackgroundPaint(java.awt.Color.WHITE);
-        chart.getTitle().setPaint(new java.awt.Color(28, 63, 117));
-
         chartPanel = new ChartPanel(chart);
-        chartPanel.setMouseWheelEnabled(true);
     }
 
-    private DefaultCategoryDataset getDataset() {
+    private DefaultCategoryDataset cargarDatos() {
 
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         HashMap<String, Integer> contador = new HashMap<>();
 
         for (Paciente p : Clinica.getInstance().getPacientes()) {
+            if (p.getHistoriaClinica() != null) {
+                for (Consulta c : p.getHistoriaClinica().getConsultas()) {
 
-            HistoriaClinica hc = p.getHistoriaClinica();
-            if (hc == null) continue;
+                    Doctor doc = c.getDoctor();
 
-            for (Consulta c : hc.getConsultas()) {
+                    if (doc != null) {
+                        String nombre = doc.getNombre() + " " + doc.getApellido();
 
-                Doctor d = c.getDoctor();
-                if (d == null) continue;
-
-                String nombre = d.getNombre() + " " + d.getApellido();
-
-                contador.put(nombre, contador.getOrDefault(nombre, 0) + 1);
+                        contador.put(
+                            nombre,
+                            contador.getOrDefault(nombre, 0) + 1
+                        );
+                    }
+                }
             }
         }
 
-        for (Map.Entry<String, Integer> entry : contador.entrySet()) {
-            dataset.addValue(entry.getValue(), "Consultas", entry.getKey());
+        DefaultCategoryDataset ds = new DefaultCategoryDataset();
+
+        for (String doc : contador.keySet()) {
+            ds.addValue(contador.get(doc), "Consultas", doc);
         }
 
-        return dataset;
+        return ds;
     }
 
     public ChartPanel getPanel() {

@@ -1,65 +1,71 @@
 package visualGraficos;
 
+import java.awt.BorderLayout;
 import java.util.HashMap;
-import java.util.Map;
+
+import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import logico.Alergia;
 import logico.Clinica;
 import logico.Paciente;
+import logico.Alergia;
 
-public class GraficaAlergiasComunes {
+public class GraficaAlergiasComunes extends JFrame {
 
+    private static final long serialVersionUID = 1L;
+
+    private JFreeChart chart;
     private ChartPanel chartPanel;
 
     public GraficaAlergiasComunes() {
 
-        DefaultCategoryDataset dataset = getDataset();
+        setTitle("Alergias Más Comunes");
+        setSize(800, 600);
+        setLayout(new BorderLayout());
 
-        JFreeChart chart = ChartFactory.createBarChart(
-                "Alergias más comunes",
+        DefaultCategoryDataset ds = cargarDatos();
+
+        chart = ChartFactory.createBarChart(
+                "Alergias Más Comunes",
                 "Alergia",
-                "Pacientes",
-                dataset,
-                PlotOrientation.VERTICAL,
-                false, true, false
+                "Cantidad de Pacientes",
+                ds,
+                org.jfree.chart.plot.PlotOrientation.VERTICAL,
+                false,
+                true,
+                false
         );
 
-        chart.getTitle().setPaint(new java.awt.Color(28, 63, 117));
-        chart.setBackgroundPaint(java.awt.Color.WHITE);
-
         chartPanel = new ChartPanel(chart);
-        chartPanel.setMouseWheelEnabled(true);
     }
 
-    private DefaultCategoryDataset getDataset() {
+    private DefaultCategoryDataset cargarDatos() {
 
         HashMap<String, Integer> contador = new HashMap<>();
 
         for (Paciente p : Clinica.getInstance().getPacientes()) {
 
-            for (Alergia a : p.getAlergias()) {
+            if (p.getAlergias() != null) {
+                for (Alergia a : p.getAlergias()) {
 
-                if (a == null || a.getNombre() == null) continue;
+                    String nombre = a.getNombre();
 
-                String nombre = a.getNombre();
-
-                contador.put(nombre, contador.getOrDefault(nombre, 0) + 1);
+                    contador.put(nombre, contador.getOrDefault(nombre, 0) + 1);
+                }
             }
         }
 
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        DefaultCategoryDataset ds = new DefaultCategoryDataset();
 
-        for (Map.Entry<String, Integer> entry : contador.entrySet()) {
-            dataset.addValue(entry.getValue(), "Pacientes", entry.getKey());
+        for (String alergia : contador.keySet()) {
+            ds.addValue(contador.get(alergia), "Pacientes", alergia);
         }
 
-        return dataset;
+        return ds;
     }
 
     public ChartPanel getPanel() {
