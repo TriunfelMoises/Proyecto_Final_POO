@@ -126,27 +126,28 @@ public class listPacientes extends JDialog {
 
 	private ArrayList<Paciente> obtenerPacientesVisibles() {
 		ArrayList<Paciente> resultado = new ArrayList<>();
+		Clinica clinica = Clinica.getInstance();
 
 		if (Control.esAdministrador()) {
 			// ADMIN ve TODOS los pacientes
-			resultado.addAll(Clinica.getInstance().getPacientes());
+			resultado.addAll(clinica.getPacientes());
 		} else if (Control.esDoctor()) {
-			// DOCTOR solo ve pacientes que ÉL registró
-			Doctor doctorLogeado = Control.getDoctorLogeado();
+			// DOCTOR ve pacientes que ÉL registró (no importa si los atendió o no)
+			String licenciaDoctorLogeado = Control.getLicenciaDoctorLogeado();
 
-			if (doctorLogeado == null) {
+			if (licenciaDoctorLogeado == null || licenciaDoctorLogeado.isEmpty()) {
 				JOptionPane.showMessageDialog(this, "Error: No se pudo identificar al doctor logeado",
 						"Error de sesión", JOptionPane.ERROR_MESSAGE);
 				return resultado;
 			}
 
-			for (Paciente paci : Clinica.getInstance().getPacientes()) {
-				for (Consulta buscando : paci.getHistoriaClinica().getConsultas()) {
-					if (buscando.getDoctor().getNumeroLicencia().equals(Control.getLicenciaDoctorLogeado())){
-						if (!resultado.contains(paci)) {
-							resultado.add(paci);
-						}
-					}
+			// CORRECCIÓN: Buscar por doctor registrador en el paciente
+			for (Paciente paciente : clinica.getPacientes()) {
+				String doctorRegistrador = paciente.getDoctorRegistrador();
+
+				// Si el paciente fue registrado por este doctor, agregarlo
+				if (doctorRegistrador != null && doctorRegistrador.equals(licenciaDoctorLogeado)) {
+					resultado.add(paciente);
 				}
 			}
 		}

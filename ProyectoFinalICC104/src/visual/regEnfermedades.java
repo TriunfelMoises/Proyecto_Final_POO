@@ -77,7 +77,7 @@ public class regEnfermedades extends JDialog {
 		contentPanel.add(chkBajoVigilancia);
 
 		// Síntomas y signos
-		JLabel lblSintomas = new JLabel("Síntomas y signos:");
+		JLabel lblSintomas = new JLabel("Sintomas y signos:");
 		lblSintomas.setFont(labelFont);
 		lblSintomas.setBounds(20, 120, 120, 22);
 		contentPanel.add(lblSintomas);
@@ -100,7 +100,7 @@ public class regEnfermedades extends JDialog {
 		contentPanel.add(spnNivelGravedad);
 
 		// Potencial de propagación
-		JLabel lblPotencial = new JLabel("Potencial de propagación:");
+		JLabel lblPotencial = new JLabel("Potencial de propagacion:");
 		lblPotencial.setFont(labelFont);
 		lblPotencial.setBounds(20, 280, 160, 22);
 		contentPanel.add(lblPotencial);
