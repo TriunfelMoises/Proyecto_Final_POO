@@ -24,6 +24,7 @@ public class regVacuna extends JDialog {
 	private JLabel lblInfo;
 
 	public regVacuna() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(regVacuna.class.getResource("/recursos/agu.jpg")));
 		setTitle("Registrar Vacuna");
 		setBounds(100, 100, 537, 400);
 		setLocationRelativeTo(null);

@@ -11,6 +11,7 @@ import logico.Consulta;
 import logico.Control;
 import logico.Paciente;
 import logico.Doctor;
+import java.awt.Toolkit;
 
 public class listConsulta extends JDialog {
 
@@ -21,6 +22,7 @@ public class listConsulta extends JDialog {
     private DefaultTableModel modelo;
 
     public listConsulta() {
+    	setIconImage(Toolkit.getDefaultToolkit().getImage(listConsulta.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
         setTitle("Listado de consultas");
         setBounds(100, 100, 900, 500);
         setLocationRelativeTo(null);

@@ -33,6 +33,7 @@ import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.ButtonGroup;
+import java.awt.Toolkit;
 
 public class regPaciente extends JDialog {
 
@@ -72,6 +73,7 @@ public class regPaciente extends JDialog {
 	}
 
 	public regPaciente(Paciente elpaci) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(regPaciente.class.getResource("/recursos/pac.jpg")));
 		pacienteCar = elpaci;
 		esModificacion = (pacienteCar != null && !pacienteCar.getCodigoPaciente().equals("XX"));
 

@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class regVacuViea extends JDialog {
 
@@ -40,6 +41,7 @@ public class regVacuViea extends JDialog {
 	}
 
 	public regVacuViea(Vacuna vacunaPrevia) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(regVacuViea.class.getResource("/recursos/agu.jpg")));
 		this.vacunaBase = vacunaPrevia;
 
 		setTitle(vacunaPrevia != null ? "Registrar: " + vacunaPrevia.getNombre() : "Registrar Vacuna Previa");

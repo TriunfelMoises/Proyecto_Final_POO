@@ -28,6 +28,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.Color;
 import javax.swing.JScrollPane;
+import java.awt.Toolkit;
 
 public class adminVacuna extends JDialog {
 
@@ -65,6 +66,7 @@ public class adminVacuna extends JDialog {
 	}
 
 	public adminVacuna() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(adminVacuna.class.getResource("/recursos/agu.jpg")));
 		setTitle("Administrar Vacuna");
 		setBounds(100, 100, 700, 550);
 		getContentPane().setLayout(new BorderLayout());

@@ -20,6 +20,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import logico.Clinica;
 import logico.Doctor;
+import java.awt.Toolkit;
 
 public class listDoctor extends JDialog {
 	private final JPanel contentPanel = new JPanel();
@@ -42,6 +43,7 @@ public class listDoctor extends JDialog {
 	}
 
 	public listDoctor() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(listDoctor.class.getResource("/recursos/doc.jpg")));
 		setTitle("Listado de Doctores");
 		setBounds(100, 100, 950, 500);
 		setLocationRelativeTo(null);

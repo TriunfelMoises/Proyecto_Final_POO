@@ -26,6 +26,7 @@ public class Reportes extends JDialog {
     private JComboBox<String> cbReportes;
 
     public Reportes() {
+    	setIconImage(Toolkit.getDefaultToolkit().getImage(Reportes.class.getResource("/recursos/adm.jpg")));
         setTitle("Reportes de la Clínica");
         setBounds(100, 100, 1000, 650);
         setModal(true);

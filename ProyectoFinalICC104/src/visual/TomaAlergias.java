@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.Toolkit;
 
 public class TomaAlergias extends JDialog {
 
@@ -39,6 +40,7 @@ public class TomaAlergias extends JDialog {
 	}
 
 	public TomaAlergias() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(TomaAlergias.class.getResource("/recursos/enfc.jpg")));
 		setTitle("Selección de Alergias");
 		setModal(true);
 		setBounds(100, 100, 450, 500);

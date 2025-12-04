@@ -18,6 +18,7 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class regUser extends JDialog {
 
@@ -26,6 +27,7 @@ public class regUser extends JDialog {
 	private JPasswordField txtPass;
 
 	public regUser() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(regUser.class.getResource("/recursos/pac.jpg")));
 		setTitle("Registrar Usuario");
 		setBounds(100, 100, 380, 251);
 		setLocationRelativeTo(null);

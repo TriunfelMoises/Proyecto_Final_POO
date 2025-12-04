@@ -23,6 +23,7 @@ public class regMedicamento extends JDialog {
     private Medicamento medicamentoEditar;
 
     public regMedicamento() {
+    	setIconImage(Toolkit.getDefaultToolkit().getImage(regMedicamento.class.getResource("/recursos/agu.jpg")));
 
         setTitle("Agregar medicamento");
         setBounds(100, 100, 520, 460);

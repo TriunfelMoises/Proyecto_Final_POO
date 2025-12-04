@@ -20,6 +20,7 @@ import logico.Consulta;
 import logico.Tratamiento;
 import logico.Medicamento;
 import java.util.ArrayList;
+import java.awt.Toolkit;
 
 public class DetalleConsulta extends JDialog {
 
@@ -41,6 +42,7 @@ public class DetalleConsulta extends JDialog {
 	private String numeroLicenciaDoctor = null;
 
 	public DetalleConsulta(Consulta consulta) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(DetalleConsulta.class.getResource("/javax/swing/plaf/metal/icons/ocean/file.gif")));
 		this.consultaActual = consulta;
 		// verificarPermisos();
 		initialize();

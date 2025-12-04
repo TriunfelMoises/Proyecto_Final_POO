@@ -24,6 +24,7 @@ import javax.swing.table.DefaultTableModel;
 import logico.Clinica;
 import logico.Tratamiento;
 import logico.Medicamento;
+import java.awt.Toolkit;
 
 public class regTratamiento extends JDialog {
 
@@ -42,6 +43,7 @@ public class regTratamiento extends JDialog {
     private Tratamiento tratamientoAModificar = null;
 
     public regTratamiento() {
+    	setIconImage(Toolkit.getDefaultToolkit().getImage(regTratamiento.class.getResource("/recursos/agu.jpg")));
         setTitle("Registrar Tratamiento");
         setBounds(100, 100, 750, 600);
         setLocationRelativeTo(null);

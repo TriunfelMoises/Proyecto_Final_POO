@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JOptionPane;
 import logico.Clinica;
 import logico.Enfermedad;
+import java.awt.Toolkit;
 
 public class regEnfermedades extends JDialog {
 
@@ -35,6 +36,7 @@ public class regEnfermedades extends JDialog {
 	private boolean soloCambiarVigilancia = false;
 
 	public regEnfermedades() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(regEnfermedades.class.getResource("/recursos/enfc.jpg")));
 		setTitle("Registrar Enfermedad");
 		setBounds(100, 100, 650, 500);
 		setLocationRelativeTo(null);

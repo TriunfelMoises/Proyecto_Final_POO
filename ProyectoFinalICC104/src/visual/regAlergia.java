@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class regAlergia extends JDialog {
 
@@ -33,6 +34,7 @@ public class regAlergia extends JDialog {
 	}
 
 	public regAlergia() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(regAlergia.class.getResource("/recursos/enfc.jpg")));
 		setTitle("Registro de Alergia");
 		setModal(true);
 		setBounds(100, 100, 400, 250);

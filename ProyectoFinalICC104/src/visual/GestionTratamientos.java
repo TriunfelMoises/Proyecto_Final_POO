@@ -16,6 +16,7 @@ import javax.swing.ListSelectionModel;
 import logico.Clinica;
 import logico.Tratamiento;
 import logico.Medicamento;
+import java.awt.Toolkit;
 
 public class GestionTratamientos extends JDialog {
 
@@ -25,6 +26,7 @@ public class GestionTratamientos extends JDialog {
     private DefaultTableModel modeloTabla;
 
     public GestionTratamientos() {
+    	setIconImage(Toolkit.getDefaultToolkit().getImage(GestionTratamientos.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
         setTitle("Gestion de Tratamientos");
         setBounds(100, 100, 900, 600);
         setLocationRelativeTo(null);

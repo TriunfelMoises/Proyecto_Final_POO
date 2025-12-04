@@ -12,6 +12,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class DetalleCita extends JDialog {
 
@@ -19,6 +20,7 @@ public class DetalleCita extends JDialog {
 	private Cita cita;
 
 	public DetalleCita(Cita cita) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(DetalleCita.class.getResource("/javax/swing/plaf/metal/icons/ocean/menu.gif")));
 		this.cita = cita;
 
 		setTitle("Detalles de la Cita");

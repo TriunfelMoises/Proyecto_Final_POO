@@ -52,8 +52,9 @@ public class Principal extends JFrame {
 	}
 
 	public Principal() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/javax/swing/plaf/metal/icons/ocean/computer.gif")));
 
-		setTitle("Clinica - Principal");
+		setTitle("Clínica - Principal");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();

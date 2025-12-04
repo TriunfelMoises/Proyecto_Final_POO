@@ -33,6 +33,7 @@ public class regConsulta extends JDialog {
 	// Constructor sin parámetros
 	public regConsulta() {
 		super((Frame) null, "Registrar consulta", true);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(regConsulta.class.getResource("/javax/swing/plaf/metal/icons/ocean/file.gif")));
 		inicializar();
 	}
 

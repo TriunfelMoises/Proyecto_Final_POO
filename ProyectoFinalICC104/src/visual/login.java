@@ -23,6 +23,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class login extends JFrame {
 
@@ -47,6 +48,7 @@ public class login extends JFrame {
 	}
 
 	public login() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(login.class.getResource("/recursos/doc.jpg")));
 		setTitle("Login - Clínica");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 340, 260);

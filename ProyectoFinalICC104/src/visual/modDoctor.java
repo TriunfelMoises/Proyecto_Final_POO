@@ -33,6 +33,7 @@ import logico.Clinica;
 import logico.Doctor;
 import javax.swing.ButtonGroup;
 import javax.swing.SpinnerListModel;
+import java.awt.Toolkit;
 
 public class modDoctor extends JDialog {
 
@@ -67,6 +68,7 @@ public class modDoctor extends JDialog {
 	private boolean activoOriginal = false;
 
 	public modDoctor(Doctor doctor) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(modDoctor.class.getResource("/recursos/doc.jpg")));
 		this.doctorAModificar = doctor;
 
 		if (doctor == null) {

@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.Toolkit;
 
 public class ListaCitas extends JDialog {
 
@@ -37,6 +38,7 @@ public class ListaCitas extends JDialog {
 	private Cita citaSeleccionada = null;
 
 	public ListaCitas() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ListaCitas.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
 		setTitle("Lista de Citas");
 		setBounds(100, 100, 900, 600);
 		getContentPane().setLayout(new BorderLayout());

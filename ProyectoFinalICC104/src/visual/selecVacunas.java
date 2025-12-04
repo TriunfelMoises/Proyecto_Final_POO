@@ -20,6 +20,7 @@ import logico.VacunaVieja;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Font;
+import java.awt.Toolkit;
 
 public class selecVacunas extends JDialog {
 
@@ -38,6 +39,7 @@ public class selecVacunas extends JDialog {
 	}
 
 	public selecVacunas(Paciente elPaciente) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(selecVacunas.class.getResource("/recursos/agu.jpg")));
 		this.paciente = elPaciente;
 
 		setTitle("Registro de Vacunas - " + (elPaciente != null ? elPaciente.getNombre() : ""));

@@ -36,6 +36,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.SpinnerListModel;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
+import java.awt.Toolkit;
 
 public class regDoctor extends JDialog {
 
@@ -69,6 +70,7 @@ public class regDoctor extends JDialog {
 	}
 
 	public regDoctor() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(regDoctor.class.getResource("/recursos/doc.jpg")));
 		setTitle("Registro de Doctores");
 		setModal(true);
 		setBounds(100, 100, 680, 650);

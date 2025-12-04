@@ -22,6 +22,7 @@ import logico.Clinica;
 import logico.Doctor;
 import logico.Paciente;
 import logico.Vacuna;
+import java.awt.Toolkit;
 
 public class listVacuna extends JDialog {
 	private final JPanel contentPanel = new JPanel();
@@ -43,6 +44,7 @@ public class listVacuna extends JDialog {
 	}
 
 	public listVacuna() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(listVacuna.class.getResource("/recursos/agu.jpg")));
 		setTitle("Listado de vacunas");
 		setBounds(100, 100, 833, 489);
 		setLocationRelativeTo(null);

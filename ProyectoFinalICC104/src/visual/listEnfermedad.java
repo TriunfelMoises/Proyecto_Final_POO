@@ -29,6 +29,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.SwingConstants;
 import logico.Clinica;
 import logico.Enfermedad;
+import java.awt.Toolkit;
 
 public class listEnfermedad extends JDialog {
 
@@ -41,6 +42,7 @@ public class listEnfermedad extends JDialog {
 	private ArrayList<Enfermedad> listaFiltrada;
 
 	public listEnfermedad() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(listEnfermedad.class.getResource("/recursos/enfc.jpg")));
 		setTitle("Listado de Enfermedades");
 		setBounds(100, 100, 800, 450);
 		setLocationRelativeTo(null);
@@ -315,7 +317,7 @@ public class listEnfermedad extends JDialog {
 		dlg.setSize(600, 420);
 		dlg.setLocationRelativeTo(this);
 		dlg.setResizable(false);
-		dlg.setLayout(new BorderLayout(10, 10));
+		dlg.getContentPane().setLayout(new BorderLayout(10, 10));
 
 		JPanel panelInfo = new JPanel(new GridBagLayout());
 		panelInfo.setBorder(new EmptyBorder(10, 10, 0, 10));
@@ -406,7 +408,7 @@ public class listEnfermedad extends JDialog {
 		panelInfo.add(valTipo, gbc);
 		fila++;
 
-		dlg.add(panelInfo, BorderLayout.NORTH);
+		dlg.getContentPane().add(panelInfo, BorderLayout.NORTH);
 
 		// Panel de sintomas
 		JPanel panelSintomas = new JPanel(new BorderLayout());
@@ -425,14 +427,14 @@ public class listEnfermedad extends JDialog {
 
 		JScrollPane sp = new JScrollPane(txtArea);
 		panelSintomas.add(sp, BorderLayout.CENTER);
-		dlg.add(panelSintomas, BorderLayout.CENTER);
+		dlg.getContentPane().add(panelSintomas, BorderLayout.CENTER);
 
 		// Boton cerrar
 		JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton btnCerrar = new JButton("Cerrar");
 		btnCerrar.addActionListener(ev -> dlg.dispose());
 		panelBoton.add(btnCerrar);
-		dlg.add(panelBoton, BorderLayout.SOUTH);
+		dlg.getContentPane().add(panelBoton, BorderLayout.SOUTH);
 
 		dlg.setVisible(true);
 	}

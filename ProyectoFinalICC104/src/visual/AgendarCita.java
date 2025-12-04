@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Toolkit;
 
 public class AgendarCita extends JDialog {
 
@@ -52,6 +53,7 @@ public class AgendarCita extends JDialog {
 	private ArrayList<Doctor> doctoresActivos = new ArrayList<>();
 
 	public AgendarCita() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(AgendarCita.class.getResource("/javax/swing/plaf/metal/icons/ocean/menu.gif")));
 		setTitle("Agendar Cita");
 		setBounds(100, 100, 633, 600);
 		setLocationRelativeTo(null);

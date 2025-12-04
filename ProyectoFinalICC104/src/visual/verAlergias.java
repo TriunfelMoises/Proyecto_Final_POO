@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class verAlergias extends JDialog {
 
@@ -42,6 +43,7 @@ public class verAlergias extends JDialog {
 	 * Create the dialog.
 	 */
 	public verAlergias(Paciente alergico) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(verAlergias.class.getResource("/recursos/enfc.jpg")));
 		setTitle("Visualizar alergias");
 		setBounds(100, 100, 321, 300);
 		getContentPane().setLayout(new BorderLayout());

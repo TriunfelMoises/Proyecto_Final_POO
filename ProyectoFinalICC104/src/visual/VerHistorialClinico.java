@@ -27,6 +27,7 @@ import logico.VacunaVieja;
 import logico.RegistroVacuna;
 import logico.Alergia;
 import java.util.ArrayList;
+import java.awt.Toolkit;
 
 public class VerHistorialClinico extends JDialog {
 
@@ -52,6 +53,7 @@ public class VerHistorialClinico extends JDialog {
 	private Paciente pacienteActual = null;
 
 	public VerHistorialClinico() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(VerHistorialClinico.class.getResource("/recursos/adm.jpg")));
 		setTitle("Historial Clínico");
 		setBounds(100, 100, 1000, 700);
 		setLocationRelativeTo(null);

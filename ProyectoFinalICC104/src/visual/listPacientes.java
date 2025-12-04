@@ -21,6 +21,7 @@ import javax.swing.table.DefaultTableModel;
 import logico.Clinica;
 import logico.Doctor;
 import logico.Paciente;
+import java.awt.Toolkit;
 
 public class listPacientes extends JDialog {
 	private final JPanel contentPanel = new JPanel();
@@ -42,6 +43,7 @@ public class listPacientes extends JDialog {
 	}
 
 	public listPacientes() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(listPacientes.class.getResource("/recursos/pac.jpg")));
 		setTitle("Listado de pacientes");
 		setBounds(100, 100, 748, 489);
 		setLocationRelativeTo(null);
