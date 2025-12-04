@@ -13,6 +13,8 @@ import logico.Clinica;
 import logico.Control;
 import logico.Cita;
 import logico.Doctor;
+import logico.User;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
@@ -38,7 +40,8 @@ public class ListaCitas extends JDialog {
 	private Cita citaSeleccionada = null;
 
 	public ListaCitas() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(ListaCitas.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(ListaCitas.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
 		setTitle("Lista de Citas");
 		setBounds(100, 100, 900, 600);
 		getContentPane().setLayout(new BorderLayout());
@@ -151,11 +154,25 @@ public class ListaCitas extends JDialog {
 		cargarCitas();
 	}
 
-
 	private void cargarCitas() {
 		modelo.setRowCount(0);
-		ArrayList<Cita> citas = Clinica.getInstance().getCitas();
 
+		// Obtener usuario actual
+		User usuarioActual = Control.getLoginUser();
+		if (usuarioActual == null) {
+			JOptionPane.showMessageDialog(this, "No hay usuario logeado", "Error", JOptionPane.ERROR_MESSAGE);
+			dispose();
+			return;
+		}
+
+		// Verificar si es admin
+		boolean esAdmin = Control.esAdministrador();
+
+		// Obtener doctor logeado (si es doctor)
+		Doctor doctorLogeado = Control.getDoctorLogeado();
+		String licenciaDoctorLogeado = (doctorLogeado != null) ? doctorLogeado.getNumeroLicencia() : "";
+
+		ArrayList<Cita> citas = Clinica.getInstance().getCitas();
 		String estadoFiltro = (String) cbxEstado.getSelectedItem();
 		String pacienteFiltro = txtBuscarPaciente.getText().trim().toLowerCase();
 
@@ -186,11 +203,24 @@ public class ListaCitas extends JDialog {
 					cumpleFiltros = false;
 				}
 			}
-			
-			Doctor elUsuario = Control.getInstance().buscarDocCredenciales(Control.getLoginUser());
+
+			// FILTRO POR PERMISOS DE VISIBILIDAD
 			if (cumpleFiltros) {
-				if (cita.getDoctor() == elUsuario) {
-					Object[] fila = { cita.getCodigoCita(), cita.getFechaCita().toString(), cita.getHoraCita().toString(),
+				boolean puedeVer = false;
+
+				// 1. Admin ve todo
+				if (esAdmin) {
+					puedeVer = true;
+				}
+				// 2. Doctor solo ve sus propias citas
+				else if (doctorLogeado != null && cita.getDoctor() != null) {
+					boolean esCitaDelDoctor = cita.getDoctor().getNumeroLicencia().equals(licenciaDoctorLogeado);
+					puedeVer = esCitaDelDoctor;
+				}
+
+				if (puedeVer) {
+					Object[] fila = { cita.getCodigoCita(), cita.getFechaCita().toString(),
+							cita.getHoraCita().toString(),
 							cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellido(),
 							cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido(), cita.getMotivoCita(),
 							cita.getEstadoCita() };
@@ -198,17 +228,32 @@ public class ListaCitas extends JDialog {
 				}
 			}
 		}
+
+		// Mostrar mensaje si no hay citas
+		if (modelo.getRowCount() == 0) {
+			if (esAdmin) {
+				modelo.addRow(new Object[] { "", "No hay citas en el sistema", "", "", "", "", "" });
+			} else {
+				modelo.addRow(new Object[] { "", "No tiene citas asignadas", "", "", "", "", "" });
+			}
+		}
 	}
 
 	private void manejarSeleccionCita() {
 		int filaSeleccionada = tableCitas.getSelectedRow();
 
-		if (filaSeleccionada == -1) {
+		if (filaSeleccionada == -1 || modelo.getRowCount() == 0) {
 			limpiarSeleccion();
 			return;
 		}
 
+		// Verificar que no sea la fila de "no hay citas"
 		String codigoCita = (String) modelo.getValueAt(filaSeleccionada, 0);
+		if (codigoCita == null || codigoCita.isEmpty()) {
+			limpiarSeleccion();
+			return;
+		}
+
 		citaSeleccionada = Clinica.getInstance().buscarCita(codigoCita);
 
 		if (citaSeleccionada != null) {
@@ -227,8 +272,10 @@ public class ListaCitas extends JDialog {
 			// Cambiar texto del botón Cancelar según estado
 			if (estado.equals("Cancelada")) {
 				btnCancelarCita.setText("Cita Cancelada");
+				btnCancelarCita.setEnabled(false);
 			} else if (estado.equals("Completada")) {
 				btnCancelarCita.setText("Consulta Realizada");
+				btnCancelarCita.setEnabled(false);
 			} else {
 				btnCancelarCita.setText("Cancelar Cita");
 			}
@@ -258,12 +305,28 @@ public class ListaCitas extends JDialog {
 
 	private void realizarConsulta() {
 		if (citaSeleccionada == null) {
-			JOptionPane.showMessageDialog(this, "Seleccione una cita", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Seleccione una cita válida", "Advertencia",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		// Verificar que el doctor logeado sea el mismo de la cita
+		Doctor doctorLogeado = Control.getDoctorLogeado();
+		if (doctorLogeado == null) {
+			JOptionPane.showMessageDialog(this, "No hay doctor logeado", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
 		if (!citaSeleccionada.estaPendiente()) {
 			JOptionPane.showMessageDialog(this, "Solo se pueden realizar consultas a citas pendientes", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		// Verificar que el doctor logeado sea el asignado a la cita
+		if (!citaSeleccionada.getDoctor().getNumeroLicencia().equals(doctorLogeado.getNumeroLicencia())) {
+			JOptionPane.showMessageDialog(this,
+					"No puede realizar esta consulta.\n" + "Esta cita está asignada a otro doctor.", "No autorizado",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}

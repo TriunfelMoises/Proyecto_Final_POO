@@ -34,7 +34,6 @@ public class Clinica implements Serializable {
 	private boolean primerIngresp = false;
 	private HashMap<String, Integer> reporteEnfermedades;
 
-
 	public static int contadorPacientes = 1;
 	public static int contadorDoctores = 1;
 	public static int contadorCitas = 1;
@@ -59,7 +58,7 @@ public class Clinica implements Serializable {
 		this.alergias = new ArrayList<>();
 		this.interesados = new ArrayList<>();
 		setarContadores();
-		
+
 		cargarReporteEnfermedades();///////////////////////////////
 
 	}
@@ -114,9 +113,9 @@ public class Clinica implements Serializable {
 	public ArrayList<Cita> getCitas() {
 		return citas;
 	}
-	
+
 	public HashMap<String, Integer> getReporteEnfermedades() {
-	    return reporteEnfermedades;
+		return reporteEnfermedades;
 	}
 
 	/**
@@ -780,53 +779,49 @@ public class Clinica implements Serializable {
 	}
 
 	// consultas
-	public Consulta registrarConsulta(String codigoCita, String sintomas, String diagnostico, 
-	        String codigoTratamiento, String notas, String codigoEnfermedad) {
+	public Consulta registrarConsulta(String codigoCita, String sintomas, String diagnostico, String codigoTratamiento,
+			String notas, String codigoEnfermedad) {
 
-	    Cita cita = buscarCita(codigoCita);
-	    if (cita == null) {
-	        return null;
-	    }
+		Cita cita = buscarCita(codigoCita);
+		if (cita == null) {
+			return null;
+		}
 
-	    Paciente paciente = cita.getPaciente();
-	    Doctor doctor = cita.getDoctor();
+		Paciente paciente = cita.getPaciente();
+		Doctor doctor = cita.getDoctor();
 
-	    Tratamiento tratamiento = buscarTratamientoPorCodigo(codigoTratamiento);
-	    if (tratamiento == null) {
-	        return null;
-	    }
+		Tratamiento tratamiento = buscarTratamientoPorCodigo(codigoTratamiento);
+		if (tratamiento == null) {
+			return null;
+		}
 
-	    Enfermedad enfermedad = null;
-	    if (codigoEnfermedad != null) {
-	        enfermedad = buscarEnfermedadPorCodigo(codigoEnfermedad);
-	    }
+		Enfermedad enfermedad = null;
+		if (codigoEnfermedad != null) {
+			enfermedad = buscarEnfermedadPorCodigo(codigoEnfermedad);
+		}
 
-	    String codigoConsulta = generarCodigoConsulta();
+		String codigoConsulta = generarCodigoConsulta();
 
-	    Consulta nuevaConsulta = new Consulta(
-	            codigoConsulta,
-	            paciente,
-	            doctor,
-	            cita,
-	            LocalDate.now(),
-	            sintomas,
-	            diagnostico,
-	            tratamiento,
-	            notas,
-	            enfermedad   
-	    );
+		Consulta nuevaConsulta = new Consulta(codigoConsulta, paciente, doctor, cita, LocalDate.now(), sintomas,
+				diagnostico, tratamiento, notas, enfermedad);
 
-	    if (enfermedad != null && enfermedad.isBajoVigilancia()) {
-	        nuevaConsulta.setEsEnfermedadVigilancia(true);
-	    }
+		if (enfermedad != null && enfermedad.isBajoVigilancia()) {
+			nuevaConsulta.setEsEnfermedadVigilancia(true);
 
-	    paciente.getHistoriaClinica().agregarConsulta(nuevaConsulta);
+			// ====== AÑADE ESTAS 3 LÍNEAS ======
+			// Agregar la enfermedad al reporte si no existe
+			agregarEnfermedadVigilancia(enfermedad.getNombre());
+			// Incrementar el contador de casos
+			agregarCasoEnfermedad(enfermedad.getNombre());
+			// ==================================
+		}
 
-	    cita.cambiarEstado("Completada");
+		paciente.getHistoriaClinica().agregarConsulta(nuevaConsulta);
 
-	    return nuevaConsulta;
+		cita.cambiarEstado("Completada");
+
+		return nuevaConsulta;
 	}
-
 
 	public Paciente asegurarPacienteRegistrado(Paciente p) {
 		if (p == null)
@@ -1392,72 +1387,198 @@ public class Clinica implements Serializable {
 
 		return null;
 	}
-	
+
 	private void cargarReporteEnfermedades() {
-	    try {
-	        File f = new File("reporteEnfermedades.dat");
+		try {
+			File f = new File("reporteEnfermedades.dat");
 
-	        if (f.exists()) {
-	            FileInputStream fis = new FileInputStream(f);
-	            ObjectInputStream ois = new ObjectInputStream(fis);
-	            reporteEnfermedades = (HashMap<String, Integer>) ois.readObject();
-	            ois.close();
-	            fis.close();
-	        } else {
-	            reporteEnfermedades = new HashMap<>();
-	            guardarReporteSerializado();
-	            guardarReporteTXT();
-	        }
+			if (f.exists()) {
+				FileInputStream fis = new FileInputStream(f);
+				ObjectInputStream ois = new ObjectInputStream(fis);
+				reporteEnfermedades = (HashMap<String, Integer>) ois.readObject();
+				ois.close();
+				fis.close();
+			} else {
+				reporteEnfermedades = new HashMap<>();
+				guardarReporteSerializado();
+				guardarReporteTXT();
+			}
 
-	    } catch (Exception e) {
-	        System.out.println("Error cargando reporte: " + e.getMessage());
-	        reporteEnfermedades = new HashMap<>();
-	    }
+		} catch (Exception e) {
+			System.out.println("Error cargando reporte: " + e.getMessage());
+			reporteEnfermedades = new HashMap<>();
+		}
 	}
-	
+
 	public void agregarEnfermedadVigilancia(String nombre) {
-	    if (!reporteEnfermedades.containsKey(nombre)) {
-	        reporteEnfermedades.put(nombre, 0);
-	        guardarReporteSerializado();
-	        guardarReporteTXT();
-	    }
+		if (!reporteEnfermedades.containsKey(nombre)) {
+			reporteEnfermedades.put(nombre, 0);
+			guardarReporteSerializado();
+			guardarReporteTXT();
+		}
 	}
-	
+
 	private void guardarReporteSerializado() {
-	    try {
-	        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("reporteEnfermedades.dat"));
-	        oos.writeObject(reporteEnfermedades);
-	        oos.close();
-	    } catch (Exception e) {
-	        System.out.println("Error guardando archivo serializado: " + e.getMessage());
-	    }
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("reporteEnfermedades.dat"));
+			oos.writeObject(reporteEnfermedades);
+			oos.close();
+		} catch (Exception e) {
+			System.out.println("Error guardando archivo serializado: " + e.getMessage());
+		}
 	}
-	
+
 	private void guardarReporteTXT() {
-	    try {
-	        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("reporteEnfermedades.txt")));
-	        pw.println("=== ENFERMEDADES BAJO VIGILANCIA ===\n");
+		try {
+			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("reporteEnfermedades.txt")));
+			pw.println("=== ENFERMEDADES BAJO VIGILANCIA ===\n");
 
-	        for (String enf : reporteEnfermedades.keySet()) {
-	            pw.println(enf + ": " + reporteEnfermedades.get(enf) + " casos");
-	        }
+			for (String enf : reporteEnfermedades.keySet()) {
+				pw.println(enf + ": " + reporteEnfermedades.get(enf) + " casos");
+			}
 
-	        pw.close();
+			pw.close();
 
-	    } catch (Exception e) {
-	        System.out.println("Error guardando TXT: " + e.getMessage());
-	    }
+		} catch (Exception e) {
+			System.out.println("Error guardando TXT: " + e.getMessage());
+		}
 	}
-	
+
 	public void agregarCasoEnfermedad(String nombre) {
-	    if (!reporteEnfermedades.containsKey(nombre)) {
-	        reporteEnfermedades.put(nombre, 0);
-	    }
+		if (!reporteEnfermedades.containsKey(nombre)) {
+			reporteEnfermedades.put(nombre, 0);
+		}
 
-	    reporteEnfermedades.put(nombre, reporteEnfermedades.get(nombre) + 1);
+		reporteEnfermedades.put(nombre, reporteEnfermedades.get(nombre) + 1);
 
-	    guardarReporteSerializado();
-	    guardarReporteTXT();
+		guardarReporteSerializado();
+		guardarReporteTXT();
+	}
+
+	/**
+	 * Busca un doctor por su nombre de usuario
+	 * 
+	 * @param usuario Nombre de usuario del doctor
+	 * @return El doctor con ese usuario, o null si no se encuentra
+	 */
+	public Doctor buscarDoctorPorUsuario(String usuario) {
+		if (usuario == null || usuario.trim().isEmpty()) {
+			return null;
+		}
+
+		for (Doctor doctor : doctores) {
+			if (doctor != null && usuario.equals(doctor.getUsuario())) {
+				return doctor;
+			}
+		}
+		return null;
+	}
+
+	// Agrega este método en Clinica.java:
+	public boolean existeUsuarioDoctor(String usuario) {
+		if (usuario == null || usuario.trim().isEmpty()) {
+			return false;
+		}
+
+		for (Doctor doctor : doctores) {
+			if (doctor.getUsuario() != null && doctor.getUsuario().equalsIgnoreCase(usuario.trim())) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// ========== AGREGAR ESTOS MÉTODOS AL FINAL DE Clinica.java ==========
+
+	/**
+	 * Lista los pacientes que un doctor puede ver: 1. Pacientes que él registró 2.
+	 * Todos los pacientes si es administrador
+	 */
+	public ArrayList<Paciente> listarPacientesVisiblesParaDoctor(String licenciaDoctor, boolean esAdmin) {
+		ArrayList<Paciente> pacientesVisibles = new ArrayList<>();
+
+		if (licenciaDoctor == null) {
+			return pacientesVisibles;
+		}
+
+		if (esAdmin) {
+			// Admin ve todos los pacientes
+			return new ArrayList<>(pacientes);
+		}
+
+		// Doctor normal solo ve los que él registró
+		for (Paciente p : pacientes) {
+			if (p.getDoctorRegistrador() != null && p.getDoctorRegistrador().equals(licenciaDoctor)) {
+				pacientesVisibles.add(p);
+			}
+		}
+
+		return pacientesVisibles;
+	}
+
+	/**
+	 * Lista consultas que un doctor puede ver según las reglas: 1. Sus propias
+	 * consultas 2. Consultas de enfermedades bajo vigilancia
+	 * (esEnfermedadVigilancia = true) 3. Admin ve TODO
+	 */
+	public ArrayList<Consulta> listarConsultasVisiblesParaDoctorV3(String licenciaDoctor, boolean esAdmin) {
+		ArrayList<Consulta> consultasVisibles = new ArrayList<>();
+
+		if (licenciaDoctor == null) {
+			return consultasVisibles;
+		}
+
+		for (Paciente p : pacientes) {
+			if (p.getHistoriaClinica() == null)
+				continue;
+
+			for (Consulta c : p.getHistoriaClinica().getConsultas()) {
+				if (c == null)
+					continue;
+
+				// ADMIN VE TODO
+				if (esAdmin) {
+					consultasVisibles.add(c);
+					continue;
+				}
+
+				// DOCTOR NORMAL
+				boolean puedeVer = false;
+
+				// 1. Si es consulta propia
+				if (c.getDoctor() != null && c.getDoctor().getNumeroLicencia().equals(licenciaDoctor)) {
+					puedeVer = true;
+				}
+
+				// 2. Si es enfermedad bajo vigilancia
+				else if (c.isEsEnfermedadVigilancia()) {
+					puedeVer = true;
+				}
+
+				// 3. Si está marcada para resumen (OPCIONAL, según tu requerimiento)
+				else if (c.isIncluidaEnResumen()) {
+					puedeVer = true;
+				}
+
+				if (puedeVer && !contieneConsultaPorCodigo(consultasVisibles, c.getCodigoConsulta())) {
+					consultasVisibles.add(c);
+				}
+			}
+		}
+
+		return consultasVisibles;
+	}
+
+	/**
+	 * Obtiene la licencia del doctor logeado actualmente
+	 */
+	public String getLicenciaDoctorLogeado() {
+		Doctor doctor = Control.getDoctorLogeado();
+		if (doctor != null) {
+			return doctor.getNumeroLicencia();
+		}
+		return null;
 	}
 
 }

@@ -53,7 +53,8 @@ public class AgendarCita extends JDialog {
 	private ArrayList<Doctor> doctoresActivos = new ArrayList<>();
 
 	public AgendarCita() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(AgendarCita.class.getResource("/javax/swing/plaf/metal/icons/ocean/menu.gif")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(AgendarCita.class.getResource("/javax/swing/plaf/metal/icons/ocean/menu.gif")));
 		setTitle("Agendar Cita");
 		setBounds(100, 100, 633, 600);
 		setLocationRelativeTo(null);
@@ -225,12 +226,30 @@ public class AgendarCita extends JDialog {
 	private void cargarDoctores() {
 		cbxDoctor.removeAllItems();
 		doctoresActivos = Clinica.getInstance().listarDoctoresActivos();
-		
-		Doctor doctor = Control.getInstance().buscarDocCredenciales(Control.getLoginUser());
 
-		String info = doctor.getNombre() + " " + doctor.getApellido() + " - " + doctor.getEspecialidad();
-		cbxDoctor.addItem(info);
-		
+		// Obtener doctor logeado
+		Doctor doctorLogeado = Control.getDoctorLogeado();
+
+		if (doctorLogeado == null) {
+			JOptionPane.showMessageDialog(this, "No hay doctor logeado", "Error", JOptionPane.ERROR_MESSAGE);
+			dispose();
+			return;
+		}
+
+		// Buscar el doctor logeado en la lista de activos
+		for (Doctor d : doctoresActivos) {
+			if (d.getNumeroLicencia().equals(doctorLogeado.getNumeroLicencia())) {
+				String info = d.getNombre() + " " + d.getApellido() + " - " + d.getEspecialidad();
+				cbxDoctor.addItem(info);
+				break;
+			}
+		}
+
+		// Habilitar el combo si encontramos al doctor
+		if (cbxDoctor.getItemCount() > 0) {
+			cbxDoctor.setEnabled(true);
+			actualizarHorariosDisponibles();
+		}
 	}
 
 	private void buscarPaciente() {
@@ -403,6 +422,14 @@ public class AgendarCita extends JDialog {
 			return;
 		}
 
+		// OBTENER DOCTOR LOGEADO CORRECTAMENTE
+		Doctor doctorLogeado = Control.getDoctorLogeado();
+		if (doctorLogeado == null) {
+			JOptionPane.showMessageDialog(this, "No hay doctor logeado en el sistema.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
 		// Validar datos del paciente (dependiendo de si es existente o nuevo)
 		if (pacienteSeleccionado == null) {
 			// Validar campos para nuevo paciente
@@ -439,7 +466,7 @@ public class AgendarCita extends JDialog {
 			}
 		}
 
-		// Validar doctor
+		// Validar doctor seleccionado en el combo
 		if (cbxDoctor.getSelectedIndex() == -1 || doctoresActivos.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Debe seleccionar un doctor", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
@@ -462,7 +489,7 @@ public class AgendarCita extends JDialog {
 
 		try {
 			// Obtener datos
-			Doctor doctor = doctoresActivos.get(cbxDoctor.getSelectedIndex());
+			Doctor doctorSeleccionado = doctoresActivos.get(cbxDoctor.getSelectedIndex());
 			Date fechaSeleccionada = (Date) spnFecha.getValue();
 			LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			String horaTexto = (String) cbxHora.getSelectedItem();
@@ -471,34 +498,44 @@ public class AgendarCita extends JDialog {
 
 			if (pacienteSeleccionado != null) {
 				// PACIENTE EXISTENTE - Agendar directamente
-				nuevaCita = Clinica.getInstance().agendarCita(pacienteSeleccionado, doctor.getCedula(), fecha, hora,
-						motivo);
+				nuevaCita = Clinica.getInstance().agendarCita(pacienteSeleccionado, doctorSeleccionado.getCedula(),
+						fecha, hora, motivo);
 			} else {
 				// NUEVO PACIENTE (interesado) - Crear primero como interesado
 				String telefonoLimpio = txtTelefonio.getText().replaceAll("[^0-9]", "");
+
+				// CORRECCIÓN: Constructor correcto con TODOS los parámetros
 				Paciente nuevoInteresado = new Paciente(cedulaLimpia, txtPaciente.getText().trim(),
-						txtApellido.getText().trim(), telefonoLimpio, "XX");
+						txtApellido.getText().trim(), telefonoLimpio,
+						"INT-" + Clinica.getInstance().getInteresados().size() + 1, // Código para interesado
+						doctorLogeado.getNumeroLicencia() // Licencia del doctor que lo registra
+				);
 
 				// Registrar como interesado
 				Clinica.getInstance().registarInteresados(nuevoInteresado);
 
 				// Agendar cita con el interesado
-				nuevaCita = Clinica.getInstance().agendarCita(nuevoInteresado, doctor.getCedula(), fecha, hora, motivo);
+				nuevaCita = Clinica.getInstance().agendarCita(nuevoInteresado, doctorSeleccionado.getCedula(), fecha,
+						hora, motivo);
 			}
 
 			if (nuevaCita != null) {
 				String tipoPaciente = (pacienteSeleccionado != null) ? "paciente registrado"
 						: "interesado (será registrado en consulta)";
 				JOptionPane.showMessageDialog(this,
-						"CITA AGENDADA EXITOSAMENTE\n\n" + "Código: " + nuevaCita.getCodigoCita() + "\n" + "Fecha: "
-								+ nuevaCita.getFechaCita() + "\n" + "Hora: " + nuevaCita.getHoraCita() + "\n"
-								+ "Doctor: " + doctor.getNombre() + " " + doctor.getApellido() + "\n" + "Paciente: "
-								+ txtPaciente.getText() + " " + txtApellido.getText() + "\n" + "Tipo: " + tipoPaciente,
+						"CITA AGENDADA EXITOSAMENTE\n\n" + "\n" + "Código: " + nuevaCita.getCodigoCita() + "\n"
+								+ "Fecha: " + nuevaCita.getFechaCita() + "\n" + "Hora: " + nuevaCita.getHoraCita()
+								+ "\n" + "Doctor: " + doctorSeleccionado.getNombre() + " "
+								+ doctorSeleccionado.getApellido() + "\n" + "Paciente: " + txtPaciente.getText() + " "
+								+ txtApellido.getText() + "\n" + "Tipo: " + tipoPaciente + "\n" + "",
 						"Éxito", JOptionPane.INFORMATION_MESSAGE);
 				dispose();
 			} else {
-				JOptionPane.showMessageDialog(this, "No se pudo agendar la cita. Verifique la disponibilidad.", "Error",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+						"No se pudo agendar la cita. Posibles causas:\n"
+								+ "• El doctor ya no está disponible en ese horario\n"
+								+ "• El doctor alcanzó el límite de citas del día\n" + "• Problema en el sistema",
+						"Error", JOptionPane.ERROR_MESSAGE);
 			}
 
 		} catch (Exception ex) {

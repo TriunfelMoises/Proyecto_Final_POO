@@ -12,6 +12,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.MaskFormatter;
 import logico.Alergia;
 import logico.Clinica;
+import logico.Control;
+import logico.Doctor;
 import logico.Paciente;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -497,8 +499,18 @@ public class regPaciente extends JDialog {
 					return;
 				}
 
+				// OBTENER DOCTOR QUE REGISTRA AL PACIENTE
+				Doctor doctorRegistrador = Control.getDoctorLogeado();
+				String licenciaDoctor = (doctorRegistrador != null) ? doctorRegistrador.getNumeroLicencia() : "Sistema";
+
+				// CORRECCIÓN: Constructor con TODOS los parámetros
 				Paciente nuevoPaciente = new Paciente(cedulaLimpia, txtNombre.getText().trim(),
-						txtApellido.getText().trim(), telefonoLimpio, txtCodigo.getText());
+						txtApellido.getText().trim(), telefonoLimpio, txtCodigo.getText(), licenciaDoctor // <--
+																											// PARÁMETRO
+																											// QUE
+																											// FALTABA
+				);
+
 				nuevoPaciente.setDireccion(txtdireccion.getText().trim());
 				nuevoPaciente.setFechaNacimiento(fechaNac);
 				nuevoPaciente.setSexo(sexo);
@@ -512,7 +524,8 @@ public class regPaciente extends JDialog {
 				}
 
 				if (Clinica.getInstance().registrarPaciente(nuevoPaciente)) {
-					int respuesta = JOptionPane.showConfirmDialog(this, "¿Registrar vacunas previas?", "Vacunas",
+					int respuesta = JOptionPane.showConfirmDialog(this,
+							"¿Desea registrar vacunas previas del paciente?", "Historial de Vacunas",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 					if (respuesta == JOptionPane.YES_OPTION) {
@@ -521,13 +534,19 @@ public class regPaciente extends JDialog {
 						dialogVacunas.setVisible(true);
 					}
 
-					JOptionPane.showMessageDialog(this, "Paciente registrado", "Éxito",
-							JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(this,
+							"PACIENTE REGISTRADO EXITOSAMENTE\n\n" + "Código: " + txtCodigo.getText() + "\n"
+									+ "Nombre: " + txtNombre.getText() + " " + txtApellido.getText() + "\n" + "Cédula: "
+									+ cedulaLimpia + "\n" + "Doctor registrador: "
+									+ (doctorRegistrador != null ? doctorRegistrador.getNombre() : "Sistema"),
+							"Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+
 					dispose();
 				}
 			}
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			ex.printStackTrace();
 		}
 	}
 

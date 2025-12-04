@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.awt.event.ActionListener;
@@ -23,22 +22,17 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
-import com.sun.corba.se.spi.activation.Server;
-
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import logico.Clinica;
 import logico.Control;
-import logico.Doctor;
+import logico.PersistenciaManager;
 import Server.Servidor;
-
 
 import javax.swing.JOptionPane;
 import java.awt.Color;
 import javax.swing.JButton;
-import javax.swing.JTextField;
 
 public class Principal extends JFrame {
 
@@ -46,14 +40,15 @@ public class Principal extends JFrame {
 	static Socket sfd;
 	static DataInputStream entradaSocket;
 	static DataOutputStream salidaSocket;
-	private final JButton button = new JButton("New button");
 
 	public static void main(String[] args) {
-	    Thread servidorThread = new Thread(() -> {
-	        Servidor.main(new String[] {});
-	    }, "ServidorAutoStarter");
-	    servidorThread.setDaemon(true); 
-	    servidorThread.start();
+		// Iniciar servidor en un thread separado
+		Thread servidorThread = new Thread(() -> {
+			Servidor.main(new String[] {});
+		}, "ServidorAutoStarter");
+		servidorThread.setDaemon(true);
+		servidorThread.start();
+
 		EventQueue.invokeLater(() -> {
 			try {
 				Principal frame = new Principal();
@@ -65,7 +60,8 @@ public class Principal extends JFrame {
 	}
 
 	public Principal() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Principal.class.getResource("/javax/swing/plaf/metal/icons/ocean/computer.gif")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(Principal.class.getResource("/javax/swing/plaf/metal/icons/ocean/computer.gif")));
 
 		setTitle("Clínica - Principal");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -197,21 +193,19 @@ public class Principal extends JFrame {
 			dialog.setVisible(true);
 		});
 		mnCitas.add(mntmListaCitas);
+
 		// ------------------ MENU CONSULTAS ------------------
 		JMenu mnConsultas = new JMenu("Consultas");
 		menuBar.add(mnConsultas);
 
 		JMenuItem mntmRegConsulta = new JMenuItem("Registrar consulta");
 		mntmRegConsulta.addActionListener(e -> {
-
 			regConsulta dialog = new regConsulta();
 			dialog.setLocationRelativeTo(Principal.this);
 			dialog.setVisible(true);
-
 		});
 		mnConsultas.add(mntmRegConsulta);
 
-		// ===== LISTAR CONSULTAS (YA SIN FILTROS) =====
 		JMenuItem mntmListarConsultas = new JMenuItem("Listar consultas");
 		mntmListarConsultas.addActionListener(e -> {
 			listConsulta dialog = new listConsulta();
@@ -219,16 +213,11 @@ public class Principal extends JFrame {
 			dialog.setVisible(true);
 		});
 		mnConsultas.add(mntmListarConsultas);
-		
-		
-
-		// ------------------ MENU TRATAMIENTOS ------------------
 
 		// ------------------ MENU ADMIN ------------------
-		JMenu mnAdministracion = new JMenu("Administracion");
+		JMenu mnAdministracion = new JMenu("Administración");
 		menuBar.add(mnAdministracion);
 
-		// ITEM REPORTES
 		JMenuItem mntmReportes = new JMenuItem("Reportes");
 		mntmReportes.addActionListener(e -> {
 			Reportes ventana = new Reportes();
@@ -243,82 +232,97 @@ public class Principal extends JFrame {
 			dialog.setVisible(true);
 		});
 		mnAdministracion.add(mntmRegistrarUsuarios);
-		
-		
-		JButton btnNewButton = new JButton("Cerrar sesión");
-		btnNewButton.setBackground(Color.WHITE);
-		menuBar.add(btnNewButton);
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				Servidor.detenerServidor();
-				dispose();
-				login inicio = new login();
-				inicio.setVisible(true);
-			}
-		});
 
-		if (Control.getLoginUser() != null && !"Administrador".equalsIgnoreCase(Control.getLoginUser().getTipo())) {
-			mnAdministracion.setVisible(false);
-			mnDoctores.setVisible(false);
-		} else {
-			mnPacientes.setVisible(false);
-			mnCitas.setVisible(false);
-			mnConsultas.setVisible(false);
-			mntmRegEnf.setVisible(false);
-			mntmRegVac.setVisible(false);
-			mntmAdminVac.setVisible(false);
+		// CONFIGURAR VISIBILIDAD DE MENÚS SEGÚN TIPO DE USUARIO
+		if (Control.getLoginUser() != null) {
+			String tipoUsuario = Control.getLoginUser().getTipo();
+
+			if ("Administrador".equals(tipoUsuario)) {
+				// ADMIN ve todo el sistema (todos los menús visibles)
+			} else if ("Doctor".equals(tipoUsuario)) {
+				// DOCTOR solo ve lo necesario para su trabajo
+				mnAdministracion.setVisible(false);
+				mnDoctores.setVisible(false);
+				// Los demás menús (Pacientes, Citas, Consultas) quedan visibles
+			} else {
+				// Otro tipo de usuario (si hay)
+				JOptionPane.showMessageDialog(this, "Tipo de usuario no reconocido: " + tipoUsuario, "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
 		}
 
+		// Panel de fondo
 		contentPane = new PanelFondo();
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		button.setBounds(10, 954, 1878, 29);
-		contentPane.add(button);
 		
-		
-		// Guardado y respaldo automático
+				// Botón de cerrar sesión
+				JButton btnCerrarSesion = new JButton("Cerrar sesión");
+				btnCerrarSesion.setBounds(1718, 937, 139, 43);
+				contentPane.add(btnCerrarSesion);
+				btnCerrarSesion.setBackground(new Color(240, 230, 140));
+				btnCerrarSesion.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						// Guardar datos antes de cerrar
+						PersistenciaManager.guardarDatos();
+
+						// Limpiar usuario logeado
+						Control.clearLoginUser();
+
+						// Cerrar ventana
+						dispose();
+
+						// Volver a login
+						login inicio = new login();
+						inicio.setVisible(true);
+					}
+				});
+
+		// Guardado y respaldo automático al cerrar
 		addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent e) {
-				guardarTodo();
-				try {
-					sfd = new Socket("127.0.0.1", 7000);
-					DataInputStream aux = new DataInputStream(new FileInputStream(new File("control.dat")));
-					salidaSocket = new DataOutputStream(sfd.getOutputStream());
-					int unByte;
-					try {
-						while ((unByte = aux.read()) != -1) {
-							salidaSocket.write(unByte);
-							salidaSocket.flush();
-						}
-					} catch (IOException ioe) {
-						System.out.println("Error: " + ioe);
-					}
-				} catch (UnknownHostException uhe) {
-					System.out.println("No se puede acceder al servidor");
-					System.exit(1);
-				} catch (IOException ioe) {
-					System.out.println("Comunicaci�n rechazada");
-					System.exit(1);
-				}
+				// Guardar datos del sistema
+				PersistenciaManager.guardarDatos();
+
+				// Hacer respaldo en servidor
+				realizarRespaldo();
+
+				// Detener servidor
 				Servidor.detenerServidor();
 			}
 		});
 	}
 
-	private void guardarTodo() {
+	private void realizarRespaldo() {
 		try {
-			FileOutputStream fileOut = new FileOutputStream("control.dat");
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(Control.getInstance());
-			out.close();
-			fileOut.close();
-			System.out.println("Datos guardados exitosamente");
-		} catch (Exception e) {
-			System.out.println("Error guardando datos: " + e.getMessage());
-			e.printStackTrace();
+			sfd = new Socket("127.0.0.1", 7000);
+			DataInputStream aux = new DataInputStream(new FileInputStream(new File("control.dat")));
+			salidaSocket = new DataOutputStream(sfd.getOutputStream());
+			int unByte;
+			try {
+				while ((unByte = aux.read()) != -1) {
+					salidaSocket.write(unByte);
+					salidaSocket.flush();
+				}
+			} catch (IOException ioe) {
+				System.out.println("Error en respaldo: " + ioe);
+			} finally {
+				try {
+					aux.close();
+					if (salidaSocket != null)
+						salidaSocket.close();
+					if (sfd != null)
+						sfd.close();
+				} catch (IOException ex) {
+					System.out.println("Error cerrando conexión: " + ex);
+				}
+			}
+		} catch (UnknownHostException uhe) {
+			System.out.println("No se puede acceder al servidor: " + uhe);
+		} catch (IOException ioe) {
+			System.out.println("Comunicación rechazada: " + ioe);
 		}
 	}
 }

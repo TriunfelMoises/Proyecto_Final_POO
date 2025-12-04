@@ -8,11 +8,11 @@ public class Control implements Serializable {
 	private ArrayList<User> misUsers;
 	private static Control control;
 	private static User loginUser;
-	private Clinica clinica; // AGREGAR ESTA LÍNEA
+	private static Doctor doctorLogeado; // NUEVO: Referencia al doctor logeado
 
 	private Control() {
 		misUsers = new ArrayList<>();
-		clinica = Clinica.getInstance(); // AGREGAR ESTA LÍNEA
+		doctorLogeado = null;
 	}
 
 	public static Control getInstance() {
@@ -30,39 +30,220 @@ public class Control implements Serializable {
 		return loginUser;
 	}
 
-	// AGREGAR ESTE GETTER
-	public Clinica getClinica() {
-		return clinica;
+	public static void clearLoginUser() {
+		loginUser = null;
+		doctorLogeado = null; // Limpiar también al doctor
 	}
 
-	public void regUser(User user) {
-		if (user != null) {
-			misUsers.add(user);
+	// ========== REGISTRO DE USUARIOS ==========
+
+	public boolean regUser(User user) {
+		if (user == null) {
+			return false;
 		}
-	}
 
-	public boolean confirmLogin(String text, String text2) {
-		boolean login = false;
-		for (User user : misUsers) {
-			if (user.getUserName().equals(text) && user.getPass().equals(text2)) {
-				loginUser = user;
-				login = true;
+		// Validar que el nombre de usuario no exista SOLO EN USUARIOS NORMALES
+		for (User u : misUsers) {
+			if (u.getUserName().equalsIgnoreCase(user.getUserName().trim())) {
+				return false;
 			}
 		}
-		return login;
+
+		misUsers.add(user);
+		return true;
 	}
 
-	public boolean confirmLoginAdmin(String text, String text2) {
-		boolean login = false;
+	public boolean existeUsuario(String nombreUsuario) {
+		if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
+			return false;
+		}
+
+		String usuarioBuscado = nombreUsuario.trim();
+
+		// Buscar en usuarios normales
 		for (User user : misUsers) {
-			if (user.getUserName().equals(text) && user.getPass().equals(text2)
+			if (user.getUserName().equalsIgnoreCase(usuarioBuscado)) {
+				return true;
+			}
+		}
+
+		// Buscar en doctores
+		for (Doctor doctor : Clinica.getInstance().getDoctores()) {
+			if (doctor.getUsuario() != null && doctor.getUsuario().equalsIgnoreCase(usuarioBuscado)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// ========== LOGIN MEJORADO ==========
+
+	/**
+	 * Login mejorado que almacena tanto el User como el Doctor (si aplica)
+	 */
+	public boolean confirmLogin(String username, String password) {
+		// Resetear usuario anterior
+		loginUser = null;
+		doctorLogeado = null;
+
+		if (username == null || password == null) {
+			return false;
+		}
+
+		String user = username.trim();
+		String pass = password.trim();
+
+		// 1. Buscar en usuarios normales (Admins, etc.)
+		for (User u : misUsers) {
+			if (u.getUserName().equals(user) && u.getPass().equals(pass)) {
+				loginUser = u;
+				System.out.println("Login exitoso: " + user + " (tipo: " + u.getTipo() + ")");
+				return true;
+			}
+		}
+
+		// 2. Buscar en doctores registrados
+		for (Doctor doctor : Clinica.getInstance().getDoctores()) {
+			if (doctor.getUsuario() != null && doctor.getUsuario().equals(user) && doctor.getContrasena() != null
+					&& doctor.getContrasena().equals(pass)) {
+
+				// Crear un User temporal tipo "Doctor"
+				loginUser = new User("Doctor", user, pass);
+				doctorLogeado = doctor; // ALMACENAR LA REFERENCIA AL DOCTOR
+
+				System.out.println("Login exitoso: " + user + " (Doctor: " + doctor.getNombre() + ")");
+				System.out.println("Licencia: " + doctor.getNumeroLicencia());
+				return true;
+			}
+		}
+
+		System.out.println("Login fallido para: " + user);
+		return false;
+	}
+
+	public boolean confirmLoginAdmin(String username, String password) {
+		for (User user : misUsers) {
+			if (user.getUserName().equals(username) && user.getPass().equals(password)
 					&& user.getTipo().equals("Administrador")) {
 				loginUser = user;
-				login = true;
+				doctorLogeado = null;
+				return true;
 			}
 		}
-		return login;
+		return false;
 	}
+
+	// ========== MÉTODOS DE VERIFICACIÓN DE TIPO ==========
+
+	public static boolean esAdministrador() {
+		return loginUser != null && "Administrador".equals(loginUser.getTipo());
+	}
+
+	public static boolean esDoctor() {
+		return loginUser != null && "Doctor".equals(loginUser.getTipo());
+	}
+
+	// ========== NUEVOS MÉTODOS MEJORADOS ==========
+
+	/**
+	 * Obtiene el objeto Doctor completo del usuario logeado Versión mejorada: Usa
+	 * la referencia almacenada
+	 */
+	public static Doctor getDoctorLogeado() {
+		// Si ya tenemos la referencia almacenada, devolverla
+		if (doctorLogeado != null) {
+			return doctorLogeado;
+		}
+
+		// Si no, buscarlo
+		if (!esDoctor()) {
+			return null;
+		}
+
+		String usuario = loginUser.getUserName();
+
+		// Buscar doctor que coincida con el usuario logeado
+		for (Doctor doctor : Clinica.getInstance().getDoctores()) {
+			if (doctor != null && doctor.getUsuario() != null && usuario.equals(doctor.getUsuario())) {
+				doctorLogeado = doctor; // Almacenar para futuras consultas
+				return doctor;
+			}
+		}
+
+		System.err.println("ERROR: No se encontró doctor para usuario: " + usuario);
+		return null;
+	}
+
+	/**
+	 * Obtiene la licencia del doctor logeado
+	 */
+	public static String getLicenciaDoctorLogeado() {
+		Doctor doctor = getDoctorLogeado();
+		if (doctor != null) {
+			return doctor.getNumeroLicencia();
+		}
+		return null;
+	}
+
+	/**
+	 * Verifica si el usuario actual puede ver un paciente - Admin: ve todos -
+	 * Doctor: solo ve pacientes que él registró
+	 */
+	public static boolean puedeVerPaciente(Paciente paciente) {
+		if (paciente == null)
+			return false;
+
+		// Admin ve todo
+		if (esAdministrador()) {
+			return true;
+		}
+
+		// Doctor solo ve sus pacientes
+		if (esDoctor()) {
+			Doctor doctor = getDoctorLogeado();
+			if (doctor != null && paciente.getDoctorRegistrador() != null) {
+				return paciente.getDoctorRegistrador().equals(doctor.getNumeroLicencia());
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Verifica si el usuario actual puede ver una consulta - Admin: ve todo -
+	 * Doctor: ve sus consultas + consultas de enfermedades vigiladas
+	 */
+	public static boolean puedeVerConsulta(Consulta consulta) {
+		if (consulta == null)
+			return false;
+
+		// Admin ve todo
+		if (esAdministrador()) {
+			return true;
+		}
+
+		// Doctor
+		if (esDoctor()) {
+			Doctor doctor = getDoctorLogeado();
+			if (doctor != null && consulta.getDoctor() != null) {
+				// 1. Si es consulta propia
+				boolean esPropia = consulta.getDoctor().getNumeroLicencia().equals(doctor.getNumeroLicencia());
+
+				// 2. Si es enfermedad bajo vigilancia
+				boolean esVigilancia = consulta.isEsEnfermedadVigilancia();
+
+				// 3. Si está marcada para resumen (opcional)
+				boolean enResumen = consulta.isIncluidaEnResumen();
+
+				return esPropia || esVigilancia || enResumen;
+			}
+		}
+
+		return false;
+	}
+
+	// ========== GETTERS Y SETTERS ==========
 
 	public ArrayList<User> getMisUsers() {
 		return misUsers;
@@ -70,16 +251,5 @@ public class Control implements Serializable {
 
 	public void setMisUsers(ArrayList<User> misUsers) {
 		this.misUsers = misUsers;
-	}
-	
-	public Doctor buscarDocCredenciales(User doctorActual) {
-		Doctor eldoc = null;
-		for (Doctor buscando : Clinica.getInstance().getDoctores()) {
-			if (buscando.getUsuario().equals(doctorActual.getUserName()) && buscando.getContrasena().equals(doctorActual.getPass())) {
-				eldoc = buscando;
-				return eldoc;
-			}
-		}
-		return eldoc;
 	}
 }

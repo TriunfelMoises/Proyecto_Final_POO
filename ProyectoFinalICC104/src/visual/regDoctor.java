@@ -1,42 +1,44 @@
 package visual;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
-import javax.swing.SpinnerNumberModel;
-import java.util.Date;
-import java.util.Calendar;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.awt.event.ActionEvent;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerListModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.text.MaskFormatter;
+
 import logico.Clinica;
 import logico.Control;
 import logico.Doctor;
 import logico.User;
-
-import javax.swing.ButtonGroup;
-import javax.swing.SpinnerListModel;
-import javax.swing.border.LineBorder;
-import java.awt.Color;
-import java.awt.Toolkit;
+import logico.PersistenciaManager;
 
 public class regDoctor extends JDialog {
 
@@ -59,16 +61,6 @@ public class regDoctor extends JDialog {
 	private JTextField txtUsuario;
 	private JTextField txtContrasena;
 
-	public static void main(String[] args) {
-		try {
-			regDoctor dialog = new regDoctor();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public regDoctor() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(regDoctor.class.getResource("/recursos/doc.jpg")));
 		setTitle("Registro de Doctores");
@@ -80,6 +72,11 @@ public class regDoctor extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
+		inicializarComponentes();
+		crearPanelBotones();
+	}
+
+	private void inicializarComponentes() {
 		// ========== CÓDIGO (esquina superior derecha) ==========
 		JLabel lblCodigo = new JLabel("Código:");
 		lblCodigo.setBounds(540, 15, 60, 20);
@@ -88,30 +85,49 @@ public class regDoctor extends JDialog {
 		txtCodigo = new JTextField();
 		txtCodigo.setEditable(false);
 		txtCodigo.setBounds(540, 38, 100, 26);
-		contentPanel.add(txtCodigo);
 		txtCodigo.setColumns(10);
-		txtCodigo.setText("DOC-" + Clinica.getInstance().contadorDoctores);
+		txtCodigo.setText("DOC-" + Clinica.contadorDoctores);
+		contentPanel.add(txtCodigo);
 
-		// ========== FILA 1: NOMBRE Y APELLIDO ==========
-		JLabel lblNombre = new JLabel("Nombre(s):");
+		// ========== NOMBRE Y APELLIDO (parte superior) ==========
+		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setBounds(15, 15, 100, 20);
 		contentPanel.add(lblNombre);
 
 		txtNombre = new JTextField();
 		txtNombre.setBounds(15, 38, 250, 26);
-		contentPanel.add(txtNombre);
 		txtNombre.setColumns(10);
+		contentPanel.add(txtNombre);
 
-		JLabel lblApellido = new JLabel("Apellido(s):");
+		JLabel lblApellido = new JLabel("Apellido:");
 		lblApellido.setBounds(280, 15, 100, 20);
 		contentPanel.add(lblApellido);
 
 		txtApellido = new JTextField();
-		txtApellido.setBounds(280, 38, 245, 26);
-		contentPanel.add(txtApellido);
+		txtApellido.setBounds(280, 38, 250, 26);
 		txtApellido.setColumns(10);
+		contentPanel.add(txtApellido);
 
-		// ========== FILA 2: CÉDULA Y TELÉFONO CON MÁSCARAS ==========
+		// ========== RESTO DE COMPONENTES ==========
+		crearCamposCedulaTelefono();
+		crearCamposSexoYNacimiento();
+		crearCampoDireccion();
+		crearCamposEspecialidadYCitas();
+		crearCampoLicencia();
+		crearCamposHorarios();
+		crearPanelCredenciales();
+
+		chckbxActivo = new JCheckBox("Doctor Activo");
+		chckbxActivo.setSelected(true);
+		chckbxActivo.setBounds(15, 440, 150, 29);
+		contentPanel.add(chckbxActivo);
+
+		JLabel lblInfo = new JLabel("Nota: Todos los campos son obligatorios");
+		lblInfo.setBounds(15, 480, 400, 20);
+		contentPanel.add(lblInfo);
+	}
+
+	private void crearCamposCedulaTelefono() {
 		JLabel lblCedula = new JLabel("Cédula:");
 		lblCedula.setBounds(15, 80, 100, 20);
 		contentPanel.add(lblCedula);
@@ -139,8 +155,9 @@ public class regDoctor extends JDialog {
 		}
 		txtTelefono.setBounds(210, 103, 180, 26);
 		contentPanel.add(txtTelefono);
+	}
 
-		// ========== FILA 3: SEXO Y FECHA DE NACIMIENTO ==========
+	private void crearCamposSexoYNacimiento() {
 		JLabel lblSexo = new JLabel("Sexo:");
 		lblSexo.setBounds(405, 80, 50, 20);
 		contentPanel.add(lblSexo);
@@ -154,7 +171,6 @@ public class regDoctor extends JDialog {
 		rdbtnMujer.setBounds(470, 100, 55, 29);
 		contentPanel.add(rdbtnMujer);
 
-		// ButtonGroup para que solo se seleccione uno
 		ButtonGroup grupoSexo = new ButtonGroup();
 		grupoSexo.add(rdbtnHombre);
 		grupoSexo.add(rdbtnMujer);
@@ -169,8 +185,9 @@ public class regDoctor extends JDialog {
 		spnFechaNacimiento.setEditor(editor);
 		spnFechaNacimiento.setBounds(15, 168, 150, 26);
 		contentPanel.add(spnFechaNacimiento);
+	}
 
-		// ========== DIRECCIÓN (TEXTAREA) ==========
+	private void crearCampoDireccion() {
 		JLabel lblDireccion = new JLabel("Dirección:");
 		lblDireccion.setBounds(180, 145, 100, 20);
 		contentPanel.add(lblDireccion);
@@ -181,8 +198,9 @@ public class regDoctor extends JDialog {
 		JScrollPane scrollDireccion = new JScrollPane(txtDireccion);
 		scrollDireccion.setBounds(180, 168, 460, 60);
 		contentPanel.add(scrollDireccion);
+	}
 
-		// ========== FILA 4: ESPECIALIDAD Y CITAS POR DÍA ==========
+	private void crearCamposEspecialidadYCitas() {
 		JLabel lblEspecialidad = new JLabel("Especialidad:");
 		lblEspecialidad.setBounds(15, 245, 100, 20);
 		contentPanel.add(lblEspecialidad);
@@ -206,38 +224,38 @@ public class regDoctor extends JDialog {
 		JLabel lblInfoCitas = new JLabel("(Máximo 20)");
 		lblInfoCitas.setBounds(400, 245, 100, 20);
 		contentPanel.add(lblInfoCitas);
+	}
 
-		// ========== FILA 5: NÚMERO DE LICENCIA ==========
+	private void crearCampoLicencia() {
 		JLabel lblNumeroLicencia = new JLabel("Número de Licencia Médica:");
 		lblNumeroLicencia.setBounds(15, 310, 200, 20);
 		contentPanel.add(lblNumeroLicencia);
 
 		try {
-			// Ejemplo de máscara básica con 4 letras + guion + 5 dígitos
 			MaskFormatter licenciaMask = new MaskFormatter("UUUU-#####");
 			licenciaMask.setPlaceholderCharacter('_');
 			txtNumeroLicencia = new JFormattedTextField(licenciaMask);
 		} catch (Exception e) {
-			txtNumeroLicencia = new JFormattedTextField();
+			txtNumeroLicencia = new JTextField();
 		}
 
 		txtNumeroLicencia.setBounds(15, 333, 250, 26);
-		contentPanel.add(txtNumeroLicencia);
 		txtNumeroLicencia.setColumns(10);
+		contentPanel.add(txtNumeroLicencia);
 
-		JLabel lblInfoLicencia = new JLabel("(Ej: EXQM-12345 o similar)");
+		JLabel lblInfoLicencia = new JLabel("(Ej: EXQM-12345)");
 		lblInfoLicencia.setBounds(270, 336, 200, 20);
 		contentPanel.add(lblInfoLicencia);
+	}
 
-		// ========== FILA 6: HORARIOS CON SPINNERS ==========
+	private void crearCamposHorarios() {
 		JLabel lblHorarioInicio = new JLabel("Horario Inicio:");
 		lblHorarioInicio.setBounds(15, 375, 120, 20);
 		contentPanel.add(lblHorarioInicio);
 
-		// Crear modelo para horas (de 6:00 AM a 10:00 PM en intervalos de 30 minutos)
 		String[] horasDisponibles = generarHorasDisponibles();
 		spnHorarioInicio = new JSpinner(new SpinnerListModel(horasDisponibles));
-		spnHorarioInicio.setValue("08:00"); // Valor por defecto
+		spnHorarioInicio.setValue("08:00");
 		spnHorarioInicio.setBounds(15, 398, 100, 26);
 		contentPanel.add(spnHorarioInicio);
 
@@ -250,118 +268,96 @@ public class regDoctor extends JDialog {
 		contentPanel.add(lblHorarioFin);
 
 		spnHorarioFin = new JSpinner(new SpinnerListModel(horasDisponibles));
-		spnHorarioFin.setValue("17:00"); // Valor por defecto
+		spnHorarioFin.setValue("17:00");
 		spnHorarioFin.setBounds(200, 398, 100, 26);
 		contentPanel.add(spnHorarioFin);
 
 		JLabel lblFormatoFin = new JLabel("(HH:MM)");
 		lblFormatoFin.setBounds(310, 401, 60, 20);
 		contentPanel.add(lblFormatoFin);
+	}
 
-		// ========== ACTIVO ==========
-		chckbxActivo = new JCheckBox("Doctor Activo");
-		chckbxActivo.setSelected(true);
-		chckbxActivo.setBounds(15, 440, 150, 29);
-		contentPanel.add(chckbxActivo);
-
-		// ========== INFORMACIÓN ADICIONAL ==========
-		JLabel lblInfo = new JLabel("Nota: Todos los campos son obligatorios");
-		lblInfo.setBounds(15, 480, 400, 20);
-		contentPanel.add(lblInfo);
-		
+	private void crearPanelCredenciales() {
 		JPanel panel = new JPanel();
 		panel.setBorder(new LineBorder(Color.GRAY, 1, true));
 		panel.setBounds(385, 386, 255, 153);
 		contentPanel.add(panel);
 		panel.setLayout(null);
-		
-		JLabel lblNewLabel = new JLabel("Credenciales de acceso:");
-		lblNewLabel.setBounds(15, 0, 180, 20);
-		panel.add(lblNewLabel);
-		
-		JLabel lblNewLabel_1 = new JLabel("Usuario:");
-		lblNewLabel_1.setBounds(15, 41, 69, 20);
-		panel.add(lblNewLabel_1);
-		
-		JLabel lblNewLabel_2 = new JLabel("Contrase\u00F1a:");
-		lblNewLabel_2.setBounds(15, 78, 85, 20);
-		panel.add(lblNewLabel_2);
-		
+
+		JLabel lblCredenciales = new JLabel("Credenciales de acceso:");
+		lblCredenciales.setBounds(15, 0, 180, 20);
+		panel.add(lblCredenciales);
+
+		JLabel lblUsuario = new JLabel("Usuario:");
+		lblUsuario.setBounds(15, 41, 69, 20);
+		panel.add(lblUsuario);
+
+		JLabel lblContrasena = new JLabel("Contraseña:");
+		lblContrasena.setBounds(15, 78, 85, 20);
+		panel.add(lblContrasena);
+
 		txtUsuario = new JTextField();
 		txtUsuario.setBounds(106, 38, 139, 26);
-		panel.add(txtUsuario);
 		txtUsuario.setColumns(10);
-		
+		panel.add(txtUsuario);
+
 		txtContrasena = new JTextField();
 		txtContrasena.setBounds(106, 75, 139, 26);
-		panel.add(txtContrasena);
 		txtContrasena.setColumns(10);
-		
-		JLabel lblNewLabel_3 = new JLabel("Nota: El usuario y la contrase\u00F1a ");
-		lblNewLabel_3.setBounds(15, 114, 230, 20);
-		panel.add(lblNewLabel_3);
-		
-		JLabel lblNewLabel_4 = new JLabel("no podr\u00E1n ser modificados.");
-		lblNewLabel_4.setBounds(15, 133, 225, 20);
-		panel.add(lblNewLabel_4);
+		panel.add(txtContrasena);
 
-		// ========== PANEL DE BOTONES ==========
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("Registrar");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						registrarDoctor();
-					}
-				});
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton btnLimpiar = new JButton("Limpiar");
-				btnLimpiar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						limpiarCampos();
-					}
-				});
-				buttonPane.add(btnLimpiar);
-			}
-			{
-				JButton cancelButton = new JButton("Cancelar");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						dispose();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
-		}
+		JLabel lblNota1 = new JLabel("Nota: El usuario y la contraseña ");
+		lblNota1.setBounds(15, 114, 230, 20);
+		panel.add(lblNota1);
+
+		JLabel lblNota2 = new JLabel("no podrán ser modificados.");
+		lblNota2.setBounds(15, 133, 225, 20);
+		panel.add(lblNota2);
 	}
 
-	/**
-	 * Genera un array de horas disponibles en formato HH:MM desde las 6:00 AM hasta
-	 * las 10:00 PM en intervalos de 30 minutos
-	 */
+	private void crearPanelBotones() {
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton btnRegistrar = new JButton("Registrar");
+		btnRegistrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				registrarDoctor();
+			}
+		});
+		buttonPane.add(btnRegistrar);
+		getRootPane().setDefaultButton(btnRegistrar);
+
+		JButton btnLimpiar = new JButton("Limpiar");
+		btnLimpiar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				limpiarCampos();
+			}
+		});
+		buttonPane.add(btnLimpiar);
+
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+			}
+		});
+		buttonPane.add(btnCancelar);
+	}
+
 	private String[] generarHorasDisponibles() {
 		java.util.List<String> horas = new java.util.ArrayList<>();
-
 		for (int hora = 6; hora <= 22; hora++) {
 			for (int minuto = 0; minuto < 60; minuto += 30) {
 				String horaStr = String.format("%02d:%02d", hora, minuto);
 				horas.add(horaStr);
 			}
 		}
-
 		return horas.toArray(new String[0]);
 	}
 
 	private boolean validarNombre(String texto, String campo) {
-		// Solo letras, espacios y tildes
 		if (!texto.matches("[a-záéíóúñüA-ZÁÉÍÓÚÑÜ ]+")) {
 			JOptionPane.showMessageDialog(this,
 					campo + " solo puede contener letras y espacios.\nNo se permiten números ni caracteres especiales.",
@@ -381,11 +377,13 @@ public class regDoctor extends JDialog {
 		if (txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty()
 				|| cedulaLimpia.length() != 11 || telefonoLimpio.length() != 10
 				|| txtDireccion.getText().trim().isEmpty() || licenciaTexto.isEmpty() || licenciaTexto.length() < 4
-				|| cbxEspecialidad.getSelectedIndex() == 0 || txtUsuario.getText().isEmpty() || txtContrasena.getText().isEmpty()) {
+				|| cbxEspecialidad.getSelectedIndex() == 0 || txtUsuario.getText().isEmpty()
+				|| txtContrasena.getText().isEmpty()) {
 
 			JOptionPane.showMessageDialog(this,
 					"Complete todos los campos correctamente.\n\n" + "Verifique:\n" + "• Cédula: 11 dígitos\n"
-							+ "• Teléfono: 10 dígitos\n" + "• Licencia: al menos 4 caracteres",
+							+ "• Teléfono: 10 dígitos\n" + "• Licencia: al menos 4 caracteres\n"
+							+ "• Usuario y contraseña son obligatorios",
 					"Campos incompletos", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
@@ -412,9 +410,8 @@ public class regDoctor extends JDialog {
 		// ========== 4. VALIDAR TELÉFONO DUPLICADO ==========
 		if (Clinica.getInstance().isTelefonoRegistrado(telefonoLimpio)) {
 			JOptionPane.showMessageDialog(this,
-					"Este teléfono ya está registrado en el sistema.\n" + "Teléfono: " + txtTelefono.getText() + "\n"
-							+ "Por favor ingrese un teléfono diferente.",
-					"Teléfono duplicado", JOptionPane.ERROR_MESSAGE);
+					"Este teléfono ya está registrado en el sistema.\n" + "Teléfono: " + txtTelefono.getText(),
+					"Teléfono duplicado", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
@@ -427,11 +424,38 @@ public class regDoctor extends JDialog {
 			return;
 		}
 
-		// ========== 6. DETERMINAR SEXO ==========
-		char sexo = rdbtnHombre.isSelected() ? 'M' : 'F';
+		// ========== 6. VALIDAR USUARIO DUPLICADO ==========
+		String usuario = txtUsuario.getText().trim();
+
+		if (Control.getInstance().existeUsuario(usuario)) {
+			JOptionPane.showMessageDialog(this,
+					"El nombre de usuario '" + usuario + "' ya está en uso.\n"
+							+ "Por favor, elija otro nombre de usuario para el doctor.",
+					"Usuario duplicado", JOptionPane.ERROR_MESSAGE);
+			txtUsuario.requestFocus();
+			return;
+		}
+
+		if (Clinica.getInstance().existeUsuarioDoctor(usuario)) {
+			JOptionPane.showMessageDialog(this,
+					"El nombre de usuario '" + usuario + "' ya está en uso por otro doctor.\n"
+							+ "Por favor, elija otro nombre de usuario.",
+					"Usuario duplicado", JOptionPane.ERROR_MESSAGE);
+			txtUsuario.requestFocus();
+			return;
+		}
+
+		// ========== 7. VALIDAR CONTRASEÑA ==========
+		String contrasena = txtContrasena.getText().trim();
+		if (contrasena.length() < 4) {
+			JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos 4 caracteres.",
+					"Contraseña muy corta", JOptionPane.WARNING_MESSAGE);
+			txtContrasena.requestFocus();
+			return;
+		}
 
 		try {
-			// ========== 7. FECHA DE NACIMIENTO ==========
+			// ========== 8. FECHA DE NACIMIENTO ==========
 			Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
 			LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -441,7 +465,7 @@ public class regDoctor extends JDialog {
 				return;
 			}
 
-			// ========== 8. HORARIOS ==========
+			// ========== 9. HORARIOS ==========
 			String horarioInicioStr = (String) spnHorarioInicio.getValue();
 			String horarioFinStr = (String) spnHorarioFin.getValue();
 
@@ -454,50 +478,55 @@ public class regDoctor extends JDialog {
 				return;
 			}
 
-			// Validar que haya al menos 1 hora de diferencia
-			if (horarioInicio.plusHours(1).isAfter(horarioFin)) {
-				JOptionPane.showMessageDialog(
-						this, "El horario laboral debe ser de al menos 1 hora.\n" + "Horario actual: "
-								+ horarioInicioStr + " - " + horarioFinStr,
-						"Horario muy corto", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-
-			// ========== 9. CREAR DOCTOR ==========
+			// ========== 10. CREAR DOCTOR ==========
+			char sexo = rdbtnHombre.isSelected() ? 'M' : 'F';
 			String especialidad = cbxEspecialidad.getSelectedItem().toString();
 			int citasPorDia = (Integer) spnCitasPorDia.getValue();
 			boolean activo = chckbxActivo.isSelected();
 
 			Doctor nuevoDoctor = new Doctor(cedulaLimpia, txtNombre.getText().trim(), txtApellido.getText().trim(),
 					telefonoLimpio, txtDireccion.getText().trim(), fechaNac, sexo, txtCodigo.getText(), especialidad,
-					licenciaCompleta, citasPorDia, horarioInicio, horarioFin, activo, txtUsuario.getText(), txtContrasena.getText());
-			User doc = new User("Doctor", txtUsuario.getText(), txtContrasena.getText());
+					licenciaCompleta, citasPorDia, horarioInicio, horarioFin, activo, usuario, contrasena);
 
-			// ========== 10. REGISTRAR ==========
-			if (Clinica.getInstance().registrarDoctor(nuevoDoctor)) {
-				Control.getInstance().regUser(doc);
+			// ========== 11. CREAR USUARIO ==========
+			User usuarioDoctor = new User("Doctor", usuario, contrasena);
+
+			// ========== 12. REGISTRAR DOCTOR ==========
+			boolean doctorRegistrado = Clinica.getInstance().registrarDoctor(nuevoDoctor);
+			boolean usuarioRegistrado = Control.getInstance().regUser(usuarioDoctor);
+
+			if (doctorRegistrado && usuarioRegistrado) {
+				PersistenciaManager.guardarDatos();
+
 				JOptionPane.showMessageDialog(this,
-						"Doctor registrado exitosamente\n\n" + "Código: " + txtCodigo.getText() + "\n" + "Nombre: "
-								+ nuevoDoctor.getNombre() + " " + nuevoDoctor.getApellido() + "\n" + "Licencia: "
-								+ nuevoDoctor.getNumeroLicencia() + "\n" + "Horario: " + horarioInicioStr + " - "
-								+ horarioFinStr,
-						"Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+						"DOCTOR REGISTRADO EXITOSAMENTE\n\n" + "Código: " + txtCodigo.getText() + "\n" + "Nombre: "
+								+ nuevoDoctor.getNombre() + " " + nuevoDoctor.getApellido() + "\n" + "Especialidad: "
+								+ especialidad + "\n" + "Licencia: " + licenciaCompleta + "\n" + "Horario: "
+								+ horarioInicioStr + " - " + horarioFinStr + "\n" + "Citas por día: " + citasPorDia
+								+ "\n" + "Usuario: " + usuario + "\n" + "Contraseña: ******",
+						"REGISTRO EXITOSO", JOptionPane.INFORMATION_MESSAGE);
 				limpiarCampos();
 			} else {
-				JOptionPane.showMessageDialog(this,
-						"Error: No se pudo registrar el doctor.\n" + "Verifique que no existan duplicados.", "Error",
-						JOptionPane.ERROR_MESSAGE);
+				String mensajeError = "Error al registrar doctor:\n\n";
+				if (!doctorRegistrado) {
+					mensajeError += "• No se pudo registrar el doctor\n";
+				}
+				if (!usuarioRegistrado) {
+					mensajeError += "• No se pudo registrar el usuario\n";
+				}
+				mensajeError += "\nVerifique que no existan duplicados.";
+
+				JOptionPane.showMessageDialog(this, mensajeError, "Error de registro", JOptionPane.ERROR_MESSAGE);
 				Clinica.getInstance().recalcularContadorDoctores();
 			}
 
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Error al registrar:\n" + ex.getMessage(), "Error",
+			JOptionPane.showMessageDialog(this, "Error al registrar doctor:\n" + ex.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
 			Clinica.getInstance().recalcularContadorDoctores();
 		}
 	}
 
-	// ========== MÉTODO PARA LIMPIAR CAMPOS ==========
 	private void limpiarCampos() {
 		txtNombre.setText("");
 		txtApellido.setText("");
@@ -507,7 +536,7 @@ public class regDoctor extends JDialog {
 		txtNumeroLicencia.setText("");
 		spnHorarioInicio.setValue("08:00");
 		spnHorarioFin.setValue("17:00");
-		txtCodigo.setText("DOC-" + Clinica.getInstance().contadorDoctores);
+		txtCodigo.setText("DOC-" + Clinica.contadorDoctores);
 		rdbtnHombre.setSelected(true);
 		chckbxActivo.setSelected(true);
 		cbxEspecialidad.setSelectedIndex(0);

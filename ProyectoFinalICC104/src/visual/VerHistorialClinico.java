@@ -20,6 +20,7 @@ import javax.swing.text.MaskFormatter;
 import javax.swing.border.TitledBorder;
 import logico.Clinica;
 import logico.Control;
+import logico.Doctor;
 import logico.Paciente;
 import logico.Consulta;
 import logico.Vacuna;
@@ -331,17 +332,49 @@ public class VerHistorialClinico extends JDialog {
 		}
 	}
 
+	// Modifica el método cargarConsultas() para filtrar según el doctor logeado
 	private void cargarConsultas() {
 		modeloConsultas.setRowCount(0);
 		if (pacienteActual == null)
 			return;
 
 		ArrayList<Consulta> consultas = pacienteActual.getHistoriaClinica().getConsultas();
+		Doctor doctorLogeado = Control.getDoctorLogeado();
+		boolean esAdmin = Control.esAdministrador();
+
 		for (Consulta c : consultas) {
-			Object[] fila = { c.getCodigoConsulta(), c.getFechaConsulta().toString(),
-					c.getDoctor().getNombre() + " " + c.getDoctor().getApellido(), c.getDiagnostico(),
-					c.isIncluidaEnResumen() ? "Sí" : "No", c.isEsEnfermedadVigilancia() ? "Sí" : "No" };
-			modeloConsultas.addRow(fila);
+			// LÓGICA DE VISIBILIDAD:
+			// 1. Admin ve TODO
+			// 2. Doctor ve: consultas propias O consultas con enfermedad bajo vigilancia
+			// 3. Si no es doctor ni admin, no ve nada (no debería pasar)
+
+			boolean puedeVer = false;
+
+			if (esAdmin) {
+				puedeVer = true; // Admin ve todo
+			} else if (doctorLogeado != null) {
+				// Doctor ve si:
+				// a) Es SU consulta (la hizo él)
+				// b) Es consulta de enfermedad bajo vigilancia
+				boolean esSuConsulta = c.getDoctor().getNumeroLicencia().equals(doctorLogeado.getNumeroLicencia());
+				boolean esVigilancia = c.isEsEnfermedadVigilancia();
+				puedeVer = esSuConsulta || esVigilancia;
+			}
+
+			if (puedeVer) {
+				Object[] fila = { c.getCodigoConsulta(), c.getFechaConsulta().toString(),
+						c.getDoctor().getNombre() + " " + c.getDoctor().getApellido(), c.getDiagnostico(),
+						c.isIncluidaEnResumen() ? "Sí" : "No", c.isEsEnfermedadVigilancia() ? "Sí" : "No" };
+				modeloConsultas.addRow(fila);
+			}
+		}
+
+		// Si no hay consultas visibles, mostrar mensaje
+		if (modeloConsultas.getRowCount() == 0 && !esAdmin && doctorLogeado != null) {
+			JOptionPane.showMessageDialog(this,
+					"No tiene acceso a las consultas de este paciente.\n"
+							+ "Solo puede ver consultas que usted realizó o de enfermedades bajo vigilancia.",
+					"Acceso restringido", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 

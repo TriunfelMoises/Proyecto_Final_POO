@@ -33,7 +33,8 @@ public class regConsulta extends JDialog {
 	// Constructor sin parámetros
 	public regConsulta() {
 		super((Frame) null, "Registrar consulta", true);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(regConsulta.class.getResource("/javax/swing/plaf/metal/icons/ocean/file.gif")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(regConsulta.class.getResource("/javax/swing/plaf/metal/icons/ocean/file.gif")));
 		inicializar();
 	}
 
@@ -185,12 +186,36 @@ public class regConsulta extends JDialog {
 	private void cargarCitasPendientes() {
 		cbCitas.removeAllItems();
 		citasPendientes = Clinica.getInstance().listarCitasPendientes();
-		Doctor eldoc= Control.getInstance().buscarDocCredenciales(Control.getLoginUser());
+
+		// Obtener doctor logeado
+		Doctor doctorLogeado = Control.getDoctorLogeado();
+
 		cbCitas.addItem("<Seleccione>");
+
+		if (doctorLogeado == null) {
+			JOptionPane.showMessageDialog(this, "No hay doctor logeado en el sistema.", "Error de sesión",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		String licenciaDoctorLogeado = doctorLogeado.getNumeroLicencia();
+		boolean tieneCitas = false;
+
 		for (Cita c : citasPendientes) {
-			if (c.getDoctor()==eldoc) {
+			// Verificar que el doctor de la cita sea el mismo que está logeado
+			if (c.getDoctor() != null && c.getDoctor().getNumeroLicencia().equals(licenciaDoctorLogeado)) {
+
 				cbCitas.addItem(c.getCodigoCita() + " - " + c.getPaciente().getNombre());
+				tieneCitas = true;
 			}
+		}
+
+		// Si no hay citas para este doctor
+		if (!tieneCitas) {
+			cbCitas.addItem("No tiene citas pendientes");
+			cbCitas.setEnabled(false);
+			JOptionPane.showMessageDialog(this, "No tiene citas pendientes asignadas.", "Sin citas",
+					JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 

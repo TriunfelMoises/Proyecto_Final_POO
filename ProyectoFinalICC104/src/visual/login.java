@@ -2,20 +2,10 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import logico.Clinica;
 import logico.Control;
-import logico.User;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -31,23 +21,20 @@ public class login extends JFrame {
 	private JTextField textField;
 	private JPasswordField textField_1;
 
-	private FileInputStream empresa;
-	private FileOutputStream empresa2;
-	private ObjectInputStream empresaRead;
-	private ObjectOutputStream empresaWrite;
-
 	public static void main(String[] args) {
-	    new Thread(() -> {
-	        Server.Servidor.main(new String[] {});
-	    }, "ServidorAutoStarter").start();
-	    EventQueue.invokeLater(() -> {
-	        try {
-	            login frame = new login();
-	            frame.setVisible(true);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    });
+		// Iniciar servidor de respaldo
+		new Thread(() -> {
+			Server.Servidor.main(new String[] {});
+		}, "ServidorAutoStarter").start();
+
+		EventQueue.invokeLater(() -> {
+			try {
+				login frame = new login();
+				frame.setVisible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	public login() {
@@ -56,6 +43,7 @@ public class login extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 340, 260);
 		setLocationRelativeTo(null);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
@@ -80,9 +68,16 @@ public class login extends JFrame {
 		JButton btnLogin = new JButton("Iniciar sesión");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String u = textField.getText();
-				String p = new String(textField_1.getPassword());
-				if (Control.getInstance().confirmLogin(u, p)) {
+				String usuario = textField.getText().trim();
+				String password = new String(textField_1.getPassword()).trim();
+
+				if (usuario.isEmpty() || password.isEmpty()) {
+					JOptionPane.showMessageDialog(login.this, "Ingrese usuario y contraseña", "Campos vacíos",
+							JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+
+				if (Control.getInstance().confirmLogin(usuario, password)) {
 					Principal frame = new Principal();
 					dispose();
 					frame.setVisible(true);
@@ -96,7 +91,7 @@ public class login extends JFrame {
 		contentPane.add(btnLogin);
 
 		JButton btnSalir = new JButton("Salir");
-		btnSalir.addActionListener(e -> dispose());
+		btnSalir.addActionListener(e -> System.exit(0));
 		btnSalir.setBounds(165, 160, 135, 28);
 		contentPane.add(btnSalir);
 
@@ -104,42 +99,12 @@ public class login extends JFrame {
 	}
 
 	private void cargarPersistenciaOSembrarAdmin() {
-		try {
-			// Intentar cargar datos guardados
-			empresa = new FileInputStream("control.dat");
-			empresaRead = new ObjectInputStream(empresa);
-			Control temp = (Control) empresaRead.readObject();
-			Control.setControl(temp);
-
-			// AGREGAR ESTAS LÍNEAS para restaurar Clinica
-			Clinica.setInstance(temp.getClinica());
-			Clinica.getInstance().setarContadores();
-
-			empresaRead.close();
-			empresa.close();
-
-			System.out.println("Datos cargados exitosamente");
-
-		} catch (FileNotFoundException fnf) {
-			// No existe el archivo, crear admin por defecto
-			try {
-				empresa2 = new FileOutputStream("control.dat");
-				empresaWrite = new ObjectOutputStream(empresa2);
-				User aux = new User("Administrador", "Admin", "Admin");
-				Control.getInstance().regUser(aux);
-				empresaWrite.writeObject(Control.getInstance());
-				empresaWrite.close();
-				empresa2.close();
-
-				System.out.println("Archivo creado con admin por defecto");
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		// Intentar cargar datos existentes
+		if (logico.PersistenciaManager.cargarDatos()) {
+			System.out.println("Sistema cargado desde archivo");
+		} else {
+			// No hay archivo o error, crear admin por defecto
+			logico.PersistenciaManager.crearAdminPorDefecto();
 		}
 	}
-
 }
-///

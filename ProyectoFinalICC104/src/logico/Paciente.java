@@ -19,8 +19,9 @@ public class Paciente extends Persona {
 	private boolean activo;
 	private float peso;
 	private float estatura;
+	private String doctorRegistrador;
 
-	public Paciente(String cedula, String nombre, String apellido, String telefono, String codigoPaciente) {
+	public Paciente(String cedula, String nombre, String apellido, String telefono, String codigoPaciente, String doctorRegistrador) {
 	    super(cedula, nombre, apellido, telefono, "", LocalDate.now(), 'M'); 
 	    this.codigoPaciente = codigoPaciente;
 	    this.tipoSangre = "";
@@ -32,6 +33,15 @@ public class Paciente extends Persona {
 	    this.activo = true;
 	    this.peso = 0f;
 	    this.estatura = 0f;
+	    this.doctorRegistrador = doctorRegistrador;
+	}
+	
+	public String getDoctorRegistrador() {
+	    return doctorRegistrador;
+	}
+
+	public void setDoctorRegistrador(String doctorRegistrador) {
+	    this.doctorRegistrador = doctorRegistrador;
 	}
 
 	public String getTipoSangre() {

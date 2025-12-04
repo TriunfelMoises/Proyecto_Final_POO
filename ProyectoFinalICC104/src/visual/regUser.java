@@ -148,35 +148,45 @@ public class regUser extends JDialog {
 
 	private void registrarUsuario() {
 		String user = txtUserName.getText().trim();
-		String pass = new String(txtPass.getPassword());
+		String pass = new String(txtPass.getPassword()).trim();
 
 		// Validar campos vacíos
 		if (user.isEmpty() || pass.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Datos Incompletos",
+			JOptionPane.showMessageDialog(this, "Complete todos los campos.", "Datos incompletos",
 					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		// Validar si el usuario ya existe
+		if (Control.getInstance().existeUsuario(user)) {
+			JOptionPane.showMessageDialog(this,
+					"El nombre de usuario '" + user + "' ya está en uso.\n"
+							+ "Por favor, elija otro nombre de usuario.",
+					"Usuario duplicado", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
 		// Validar longitud mínima de contraseña
 		if (pass.length() < 4) {
 			JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos 4 caracteres.",
-					"Contraseña Inválida", JOptionPane.WARNING_MESSAGE);
+					"Contraseña muy corta", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		try {
-			// Registrar usuario
-			User nuevo = new User("Administrador", user, pass);
-			Control.getInstance().regUser(nuevo);
+		// Crear y registrar usuario
+		User nuevo = new User("Administrador", user, pass);
+		boolean registrado = Control.getInstance().regUser(nuevo);
 
-			JOptionPane.showMessageDialog(this, "¡Usuario registrado exitosamente!", "Registro Exitoso",
+		if (registrado) {
+			// Guardar los datos
+			logico.PersistenciaManager.guardarDatos();
+
+			JOptionPane.showMessageDialog(this, "Usuario administrador registrado exitosamente.", "Registro exitoso",
 					JOptionPane.INFORMATION_MESSAGE);
-
-			limpiarCampos();
 			dispose();
-
-		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Error al registrar el usuario: " + ex.getMessage(), "Error",
+		} else {
+			JOptionPane.showMessageDialog(this,
+					"No se pudo registrar el usuario.\n" + "El nombre de usuario ya existe.", "Error de registro",
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
