@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -147,6 +148,7 @@ public class Clinica implements Serializable {
 
 		doctores.add(doctor);
 		contadorDoctores++;
+		PersistenciaManager.guardarDatos();
 		return true;
 	}
 
@@ -1579,6 +1581,33 @@ public class Clinica implements Serializable {
 			return doctor.getNumeroLicencia();
 		}
 		return null;
+	}
+	
+	
+	// AGREGAR este método a Clinica.java
+
+	/**
+	 * Actualiza todas las citas de un paciente interesado para que apunten al paciente real
+	 * @param cedulaPaciente Cédula del paciente
+	 * @param pacienteReal Objeto Paciente real registrado
+	 */
+	public void actualizarCitasDeInteresado(String cedulaPaciente, Paciente pacienteReal) {
+	    if (cedulaPaciente == null || pacienteReal == null) {
+	        return;
+	    }
+	    
+	    // Buscar todas las citas que pertenecen a este paciente (por cédula)
+	    for (Cita cita : citas) {
+	        if (cita != null && cita.getPaciente() != null 
+	            && cita.getPaciente().getCedula().equals(cedulaPaciente)) {
+	            
+	            // Actualizar la referencia al paciente real
+	            cita.setPaciente(pacienteReal);
+	            
+	            System.out.println("Cita " + cita.getCodigoCita() + " actualizada: " 
+	                + "Interesado -> Paciente Real (" + pacienteReal.getCodigoPaciente() + ")");
+	        }
+	    }
 	}
 
 }

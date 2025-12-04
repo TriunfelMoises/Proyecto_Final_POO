@@ -36,6 +36,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.ButtonGroup;
 import java.awt.Toolkit;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class regPaciente extends JDialog {
 
@@ -63,6 +65,7 @@ public class regPaciente extends JDialog {
 	private String direccionOriginal = "";
 	private float pesoOriginal = 0;
 	private float estaturaOriginal = 0;
+	private boolean esInteresado = false;
 
 	public static void main(String[] args) {
 		try {
@@ -78,8 +81,10 @@ public class regPaciente extends JDialog {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(regPaciente.class.getResource("/recursos/pac.jpg")));
 		pacienteCar = elpaci;
 		esModificacion = (pacienteCar != null && !pacienteCar.getCodigoPaciente().equals("XX"));
+		esInteresado = (pacienteCar != null && pacienteCar.getCodigoPaciente().startsWith("INT-"));
 
-		setTitle(esModificacion ? "Modificar Paciente" : "Registro de Pacientes");
+		setTitle(esInteresado ? "Registrar Paciente (Completar Datos)"
+				: esModificacion ? "Modificar Paciente" : "Registro de Pacientes");
 		setBounds(100, 100, 600, 650);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -94,7 +99,7 @@ public class regPaciente extends JDialog {
 			cargarPaciente();
 		}
 
-		if (esModificacion) {
+		if (esModificacion && !esInteresado) {
 			configurarDeteccionCambios();
 		}
 	}
@@ -109,7 +114,13 @@ public class regPaciente extends JDialog {
 		txtCodigo.setBounds(111, 21, 120, 25);
 		contentPanel.add(txtCodigo);
 		txtCodigo.setColumns(10);
-		txtCodigo.setText("PAC-" + Clinica.getInstance().contadorPacientes);
+
+		// Determinar código inicial
+		if (esInteresado) {
+			txtCodigo.setText("PAC-" + Clinica.getInstance().contadorPacientes);
+		} else {
+			txtCodigo.setText("PAC-" + Clinica.getInstance().contadorPacientes);
+		}
 
 		JLabel lblNombre = new JLabel("Nombre(s)");
 		lblNombre.setBounds(15, 57, 80, 20);
@@ -232,6 +243,15 @@ public class regPaciente extends JDialog {
 
 		chckbxAlergias = new JCheckBox("Sí, padezco de alergias");
 		chckbxAlergias.setBounds(222, 349, 200, 25);
+		chckbxAlergias.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (chckbxAlergias.isSelected()) {
+					tomarAlergias();
+				} else {
+					alegecitas = null;
+				}
+			}
+		});
 		contentPanel.add(chckbxAlergias);
 
 		JLabel lblFecha = new JLabel("Fecha Registro");
@@ -250,7 +270,7 @@ public class regPaciente extends JDialog {
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-		btnModificar = new JButton(esModificacion ? "Modificar" : "Continuar");
+		btnModificar = new JButton(esInteresado ? "Registrar Paciente" : esModificacion ? "Modificar" : "Registrar");
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				procesarPaciente();
@@ -271,7 +291,40 @@ public class regPaciente extends JDialog {
 	}
 
 	private void configurarModoEdicion() {
-		if (esModificacion) {
+		if (esInteresado) {
+			// ========== INTERESADO -> Registro completo ==========
+			setTitle("Registrar Paciente (Completar Datos)");
+			btnModificar.setText("Registrar Paciente");
+
+			// Mostrar mensaje informativo
+			JOptionPane.showMessageDialog(this,
+					"Este paciente está registrado como INTERESADO.\n"
+							+ "Complete TODOS los datos para registrarlo como paciente completo en el sistema.",
+					"Completar Registro de Paciente", JOptionPane.INFORMATION_MESSAGE);
+
+			// Campos bloqueados (ya vienen de la cita)
+			txtCedula.setEnabled(false);
+			txtNombre.setEnabled(false);
+			txtApellido.setEnabled(false);
+			txtTelefono.setEnabled(false); // Teléfono también viene de la cita
+
+			// HABILITAR todos los demás campos
+			cbxTipoSangre.setEnabled(true);
+			txtdireccion.setEnabled(true);
+			spnFechaNacimiento.setEnabled(true);
+			rdbtnHombre.setEnabled(true);
+			rdbtnMujer.setEnabled(true);
+			spnPeso.setEnabled(true);
+			spnEstatura.setEnabled(true);
+			chckbxAlergias.setEnabled(true);
+			chckbxAlergias.setVisible(true);
+
+		} else if (esModificacion) {
+			// ========== PACIENTE REAL -> Modificación limitada ==========
+			setTitle("Modificar Paciente");
+			btnModificar.setText("Modificar");
+
+			// Campos NO editables
 			txtCedula.setEnabled(false);
 			txtNombre.setEnabled(false);
 			txtApellido.setEnabled(false);
@@ -279,24 +332,33 @@ public class regPaciente extends JDialog {
 			rdbtnHombre.setEnabled(false);
 			rdbtnMujer.setEnabled(false);
 			cbxTipoSangre.setEnabled(false);
+			chckbxAlergias.setEnabled(false);
 			chckbxAlergias.setVisible(false);
 
-			for (int i = 0; i < contentPanel.getComponentCount(); i++) {
-				if (contentPanel.getComponent(i) instanceof JLabel) {
-					JLabel label = (JLabel) contentPanel.getComponent(i);
-					if ("¿Padece de alguna alergia?".equals(label.getText())) {
-						label.setVisible(false);
-						break;
-					}
-				}
-			}
+			JOptionPane
+					.showMessageDialog(this,
+							"Para pacientes ya registrados solo puede modificar:\n" + "• Teléfono\n" + "• Dirección\n"
+									+ "• Peso\n" + "• Estatura",
+							"Modificación Limitada", JOptionPane.INFORMATION_MESSAGE);
+
 		} else if (pacienteCar != null && pacienteCar.getCodigoPaciente().equals("XX")) {
+			// Caso especial antiguo
 			JOptionPane.showMessageDialog(this, "Complete los datos del paciente", "Información",
 					JOptionPane.INFORMATION_MESSAGE);
 			txtCedula.setEnabled(false);
 			txtNombre.setEnabled(false);
 			txtApellido.setEnabled(false);
 			txtTelefono.setEnabled(false);
+			chckbxAlergias.setEnabled(true);
+			chckbxAlergias.setVisible(true);
+
+		} else {
+			// ========== NUEVO PACIENTE desde cero ==========
+			setTitle("Registro de Nuevo Paciente");
+			btnModificar.setText("Registrar");
+			// Todos los campos habilitados por defecto
+			chckbxAlergias.setEnabled(true);
+			chckbxAlergias.setVisible(true);
 		}
 	}
 
@@ -325,7 +387,7 @@ public class regPaciente extends JDialog {
 	}
 
 	private void verificarCambios() {
-		if (!esModificacion)
+		if (!esModificacion || esInteresado)
 			return;
 
 		String telefonoActual = txtTelefono.getText().replaceAll("[^0-9]", "");
@@ -347,7 +409,10 @@ public class regPaciente extends JDialog {
 		txtApellido.setText(pacienteCar.getApellido() != null ? pacienteCar.getApellido() : "");
 		txtCedula.setText(pacienteCar.getCedula() != null ? pacienteCar.getCedula() : "");
 
-		if (pacienteCar.getCodigoPaciente().equals("XX")) {
+		// Para pacientes interesados, generar código PAC- nuevo
+		if (esInteresado) {
+			txtCodigo.setText("PAC-" + Clinica.getInstance().contadorPacientes);
+		} else if (pacienteCar.getCodigoPaciente().equals("XX")) {
 			txtCodigo.setText("PAC-" + Clinica.getInstance().contadorPacientes);
 		} else {
 			txtCodigo.setText(pacienteCar.getCodigoPaciente());
@@ -378,7 +443,7 @@ public class regPaciente extends JDialog {
 
 		if (pacienteCar.getSexo() == 'M') {
 			rdbtnHombre.setSelected(true);
-		} else {
+		} else if (pacienteCar.getSexo() == 'F') {
 			rdbtnMujer.setSelected(true);
 		}
 
@@ -393,9 +458,10 @@ public class regPaciente extends JDialog {
 
 		if (pacienteCar.getAlergias() != null && !pacienteCar.getAlergias().isEmpty()) {
 			alegecitas = pacienteCar.getAlergias();
+			chckbxAlergias.setSelected(true);
 		}
 
-		telefonoOriginal = pacienteCar.getTelefono().replaceAll("[^0-9]", "");
+		telefonoOriginal = pacienteCar.getTelefono() != null ? pacienteCar.getTelefono().replaceAll("[^0-9]", "") : "";
 		direccionOriginal = pacienteCar.getDireccion() != null ? pacienteCar.getDireccion() : "";
 		pesoOriginal = pacienteCar.getPeso();
 		estaturaOriginal = pacienteCar.getEstatura();
@@ -410,10 +476,27 @@ public class regPaciente extends JDialog {
 		return true;
 	}
 
+	private void tomarAlergias() {
+		TomaAlergias dialogAlergias = new TomaAlergias();
+		dialogAlergias.setModal(true);
+		dialogAlergias.setVisible(true);
+		alegecitas = dialogAlergias.AlergiasSeleccionadas();
+
+		if (alegecitas == null || alegecitas.isEmpty()) {
+			chckbxAlergias.setSelected(false);
+			alegecitas = null;
+		}
+		
+		else {
+			chckbxAlergias.setSelected(true);
+		}
+	}
+
 	private void procesarPaciente() {
 		String cedulaLimpia = txtCedula.getText().replaceAll("[^0-9]", "");
 		String telefonoLimpio = txtTelefono.getText().replaceAll("[^0-9]", "");
 
+		// Validaciones básicas
 		if (txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty()
 				|| cedulaLimpia.length() != 11 || telefonoLimpio.length() != 10
 				|| txtdireccion.getText().trim().isEmpty() || cbxTipoSangre.getSelectedIndex() == 0) {
@@ -432,11 +515,15 @@ public class regPaciente extends JDialog {
 			return;
 		}
 
-		if (!esModificacion && Clinica.getInstance().isCedulaRegistrada(cedulaLimpia)) {
-			JOptionPane.showMessageDialog(this, "Cédula ya registrada", "Duplicado", JOptionPane.ERROR_MESSAGE);
-			return;
+		// Validar duplicados para nuevo paciente o interesado
+		if (!esModificacion || esInteresado) {
+			if (Clinica.getInstance().isCedulaRegistrada(cedulaLimpia)) {
+				JOptionPane.showMessageDialog(this, "Cédula ya registrada", "Duplicado", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 		}
 
+		// Validar teléfono duplicado
 		if (!telefonoLimpio.equals(telefonoOriginal)) {
 			if (Clinica.getInstance().isTelefonoRegistrado(telefonoLimpio, cedulaLimpia)) {
 				JOptionPane.showMessageDialog(this, "Teléfono ya registrado", "Duplicado", JOptionPane.ERROR_MESSAGE);
@@ -459,12 +546,9 @@ public class regPaciente extends JDialog {
 
 		char sexo = rdbtnHombre.isSelected() ? 'M' : 'F';
 
-		if (!esModificacion && chckbxAlergias.isSelected()) {
-			TomaAlergias dialogAlergias = new TomaAlergias();
-			dialogAlergias.setModal(true);
-			dialogAlergias.setVisible(true);
-			alegecitas = dialogAlergias.AlergiasSeleccionadas();
-
+		// Procesar alergias para nuevo paciente o interesado
+		if ((!esModificacion || esInteresado) && chckbxAlergias.isSelected() && alegecitas == null) {
+			tomarAlergias();
 			if (alegecitas == null) {
 				int confirmacion = JOptionPane.showConfirmDialog(this, "¿Continuar sin alergias?", "Sin alergias",
 						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -472,24 +556,12 @@ public class regPaciente extends JDialog {
 				if (confirmacion == JOptionPane.NO_OPTION) {
 					return;
 				}
-
-				alegecitas = new ArrayList<>();
 			}
 		}
 
 		try {
-			if (esModificacion) {
-				pacienteCar.setDireccion(txtdireccion.getText().trim());
-				pacienteCar.setTelefono(telefonoLimpio);
-				pacienteCar.setEstatura(estatura);
-				pacienteCar.setPeso(peso);
-
-				if (Clinica.getInstance().modificarPaciente(pacienteCar)) {
-					JOptionPane.showMessageDialog(this, "Paciente modificado", "Éxito",
-							JOptionPane.INFORMATION_MESSAGE);
-					dispose();
-				}
-			} else {
+			if (esInteresado) {
+				// ========== CONVERSIÓN DE INTERESADO A PACIENTE REAL ==========
 				Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
 				LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -503,13 +575,66 @@ public class regPaciente extends JDialog {
 				Doctor doctorRegistrador = Control.getDoctorLogeado();
 				String licenciaDoctor = (doctorRegistrador != null) ? doctorRegistrador.getNumeroLicencia() : "Sistema";
 
-				// CORRECCIÓN: Constructor con TODOS los parámetros
+				// Crear nuevo paciente REAL
 				Paciente nuevoPaciente = new Paciente(cedulaLimpia, txtNombre.getText().trim(),
-						txtApellido.getText().trim(), telefonoLimpio, txtCodigo.getText(), licenciaDoctor // <--
-																											// PARÁMETRO
-																											// QUE
-																											// FALTABA
-				);
+						txtApellido.getText().trim(), telefonoLimpio, txtCodigo.getText(), licenciaDoctor);
+
+				// Configurar datos adicionales
+				nuevoPaciente.setDireccion(txtdireccion.getText().trim());
+				nuevoPaciente.setFechaNacimiento(fechaNac);
+				nuevoPaciente.setSexo(sexo);
+				nuevoPaciente.setTipoSangre(cbxTipoSangre.getSelectedItem().toString());
+				nuevoPaciente.setPeso(peso);
+				nuevoPaciente.setEstatura(estatura);
+				nuevoPaciente.setAlergias(alegecitas != null ? alegecitas : new ArrayList<>());
+
+				// Registrar paciente
+				if (Clinica.getInstance().registrarPaciente(nuevoPaciente)) {
+					// Actualizar citas del interesado para que apunten al paciente real
+					Clinica.getInstance().actualizarCitasDeInteresado(cedulaLimpia, nuevoPaciente);
+
+					// Mostrar mensaje de confirmación
+					String mensaje = "¡PACIENTE REGISTRADO EXITOSAMENTE!\n\n" + "• Código: " + txtCodigo.getText()
+							+ "\n" + "• Nombre: " + txtNombre.getText() + " " + txtApellido.getText() + "\n"
+							+ "• Cédula: " + cedulaLimpia + "\n" + "• Doctor registrador: "
+							+ (doctorRegistrador != null ? doctorRegistrador.getNombre() : "Sistema") + "\n\n"
+							+ "Se han actualizado todas las citas asociadas a este paciente.";
+
+					JOptionPane.showMessageDialog(this, mensaje, "Conversión Exitosa", JOptionPane.INFORMATION_MESSAGE);
+
+					dispose();
+				}
+
+			} else if (esModificacion) {
+				// ========== MODIFICACIÓN DE PACIENTE REAL ==========
+				pacienteCar.setDireccion(txtdireccion.getText().trim());
+				pacienteCar.setTelefono(telefonoLimpio);
+				pacienteCar.setEstatura(estatura);
+				pacienteCar.setPeso(peso);
+
+				if (Clinica.getInstance().modificarPaciente(pacienteCar)) {
+					JOptionPane.showMessageDialog(this, "Paciente modificado", "Éxito",
+							JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+				}
+			} else {
+				// ========== NUEVO PACIENTE DESDE CERO ==========
+				Date fechaNacDate = (Date) spnFechaNacimiento.getValue();
+				LocalDate fechaNac = fechaNacDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				if (fechaNac.isAfter(LocalDate.now())) {
+					JOptionPane.showMessageDialog(this, "Fecha no puede ser futura", "Error",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+				// OBTENER DOCTOR QUE REGISTRA AL PACIENTE
+				Doctor doctorRegistrador = Control.getDoctorLogeado();
+				String licenciaDoctor = (doctorRegistrador != null) ? doctorRegistrador.getNumeroLicencia() : "Sistema";
+
+				// Crear nuevo paciente
+				Paciente nuevoPaciente = new Paciente(cedulaLimpia, txtNombre.getText().trim(),
+						txtApellido.getText().trim(), telefonoLimpio, txtCodigo.getText(), licenciaDoctor);
 
 				nuevoPaciente.setDireccion(txtdireccion.getText().trim());
 				nuevoPaciente.setFechaNacimiento(fechaNac);
@@ -517,13 +642,10 @@ public class regPaciente extends JDialog {
 				nuevoPaciente.setTipoSangre(cbxTipoSangre.getSelectedItem().toString());
 				nuevoPaciente.setPeso(peso);
 				nuevoPaciente.setEstatura(estatura);
-				nuevoPaciente.setAlergias(alegecitas);
-
-				if (pacienteCar != null && pacienteCar.getCodigoPaciente().equals("XX")) {
-					pacienteCar.setCodigoPaciente(txtCodigo.getText());
-				}
+				nuevoPaciente.setAlergias(alegecitas != null ? alegecitas : new ArrayList<>());
 
 				if (Clinica.getInstance().registrarPaciente(nuevoPaciente)) {
+					// Preguntar por vacunas
 					int respuesta = JOptionPane.showConfirmDialog(this,
 							"¿Desea registrar vacunas previas del paciente?", "Historial de Vacunas",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);

@@ -235,17 +235,28 @@ public class regConsulta extends JDialog {
 		if (p == null)
 			return;
 
-		boolean esPre = p.getCodigoPaciente().equals("XX");
-		btnRegistrarPaciente.setVisible(esPre);
+		// VERIFICAR SI EL PACIENTE ESTÁ REGISTRADO EN EL SISTEMA
+		Paciente pacienteRegistrado = Clinica.getInstance().buscarPacientePorCedula(p.getCedula());
+		boolean estaRegistrado = (pacienteRegistrado != null);
 
-		if (p.getAlergias() == null || p.getAlergias().isEmpty()) {
-			txtAlergias.setText("No tiene alergias.");
+		// Mostrar botón solo si NO está registrado
+		btnRegistrarPaciente.setVisible(!estaRegistrado);
+
+		// Mostrar alergias del paciente (si existe en el sistema, usar ese)
+		Paciente pacienteParaMostrar = estaRegistrado ? pacienteRegistrado : p;
+
+		if (pacienteParaMostrar.getAlergias() == null || pacienteParaMostrar.getAlergias().isEmpty()) {
+			txtAlergias.setText("No tiene alergias registradas.");
 		} else {
 			StringBuilder sb = new StringBuilder();
-			for (Alergia al : p.getAlergias()) {
-				sb.append(al.getNombre()).append(", ");
+			for (Alergia al : pacienteParaMostrar.getAlergias()) {
+				sb.append("- ").append(al.getNombre());
+				if (al.getTipo() != null && !al.getTipo().isEmpty()) {
+					sb.append(" (").append(al.getTipo()).append(")");
+				}
+				sb.append("\n");
 			}
-			txtAlergias.setText(sb.substring(0, sb.length() - 2));
+			txtAlergias.setText(sb.toString());
 		}
 	}
 
@@ -308,23 +319,24 @@ public class regConsulta extends JDialog {
 	}
 
 	private void registrarNuevoPaciente() {
-		Cita c = getCitaSeleccionada();
-		if (c == null)
-			return;
+	    Cita c = getCitaSeleccionada();
+	    if (c == null)
+	        return;
 
-		Paciente pre = c.getPaciente();
+	    Paciente pre = c.getPaciente();
 
-		regPaciente win = new regPaciente(pre);
-		win.setModal(true);
-		win.setVisible(true);
+	    // Crear una instancia especial para registrar
+	    regPaciente win = new regPaciente(pre);  // <-- true = es interesado
+	    win.setModal(true);
+	    win.setVisible(true);
 
-		Paciente real = Clinica.getInstance().buscarPacientePorCedula(pre.getCedula());
+	    Paciente real = Clinica.getInstance().buscarPacientePorCedula(pre.getCedula());
 
-		if (real != null) {
-			c.setPaciente(real);
-		}
+	    if (real != null) {
+	        c.setPaciente(real);
+	    }
 
-		actualizarDatosCita();
+	    actualizarDatosCita();
 	}
 
 	private void registrarConsulta() {

@@ -21,27 +21,36 @@ public class Paciente extends Persona {
 	private float estatura;
 	private String doctorRegistrador;
 
-	public Paciente(String cedula, String nombre, String apellido, String telefono, String codigoPaciente, String doctorRegistrador) {
-	    super(cedula, nombre, apellido, telefono, "", LocalDate.now(), 'M'); 
-	    this.codigoPaciente = codigoPaciente;
-	    this.tipoSangre = "";
-	    this.alergias = new ArrayList<>();
-	    this.fechaRegistro = LocalDate.now();
-	    this.historiaClinica = new HistoriaClinica(this, this.fechaRegistro);
-	    this.registrosVacunas = new ArrayList<>();
-	    this.vacunasViejas = new ArrayList<>();
-	    this.activo = true;
-	    this.peso = 0f;
-	    this.estatura = 0f;
-	    this.doctorRegistrador = doctorRegistrador;
+	public Paciente(String cedula, String nombre, String apellido, String telefono, String codigoPaciente,
+			String doctorRegistrador) {
+		super(cedula, nombre, apellido, telefono, "", LocalDate.now(), 'M');
+		this.codigoPaciente = codigoPaciente;
+		this.tipoSangre = "";
+		this.alergias = new ArrayList<>();
+		this.fechaRegistro = LocalDate.now();
+		this.historiaClinica = new HistoriaClinica(this, this.fechaRegistro);
+		this.registrosVacunas = new ArrayList<>();
+		this.vacunasViejas = new ArrayList<>();
+		this.activo = true;
+		this.peso = 0f;
+		this.estatura = 0f;
+		this.doctorRegistrador = doctorRegistrador;
 	}
-	
+
+	/**
+	 * Constructor simplificado para crear pacientes interesados (Solo con datos
+	 * básicos desde agendar cita)
+	 */
+	public Paciente(String cedula, String nombre, String apellido, String telefono, String codigoPaciente) {
+		this(cedula, nombre, apellido, telefono, codigoPaciente, null);
+	}
+
 	public String getDoctorRegistrador() {
-	    return doctorRegistrador;
+		return doctorRegistrador;
 	}
 
 	public void setDoctorRegistrador(String doctorRegistrador) {
-	    this.doctorRegistrador = doctorRegistrador;
+		this.doctorRegistrador = doctorRegistrador;
 	}
 
 	public String getTipoSangre() {
@@ -175,7 +184,7 @@ public class Paciente extends Persona {
 	public void setVacunasViejas(ArrayList<VacunaVieja> vacunasViejas) {
 		this.vacunasViejas = vacunasViejas;
 	}
-	
+
 	public void crearVacunaVieja(VacunaVieja vacu) {
 		vacunasViejas.add(vacu);
 	}

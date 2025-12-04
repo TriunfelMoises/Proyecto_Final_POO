@@ -1,235 +1,254 @@
 package visual;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionEvent;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
-import logico.Clinica;
-import logico.Doctor;
-import logico.Paciente;
-import java.awt.Toolkit;
+import java.awt.*;
+import java.util.ArrayList;
+import logico.*;
 
 public class listPacientes extends JDialog {
+
 	private final JPanel contentPanel = new JPanel();
 	private JTable table;
-	private static DefaultTableModel model;
-	private static Object[] row;
-	private JTextField txtBuscar;
+	private DefaultTableModel modelo;
 	private JButton btnModificar;
-	private Paciente pacienteSeleccionado = null;
+	private JButton btnVerHistorial;
 
-	public static void main(String[] args) {
-		try {
-			listPacientes dialog = new listPacientes();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
+	public listPacientes() {
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(listPacientes.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
+
+		setTitle("Lista de Pacientes - " + (Control.esAdministrador() ? "TODOS" : "MIS PACIENTES"));
+
+		setBounds(100, 100, 1000, 600);
+		setLocationRelativeTo(null);
+		setModal(true);
+
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new BorderLayout(0, 0));
+
+		// ===== PANEL INFORMACIÓN =====
+		JPanel panelInfo = new JPanel();
+		panelInfo.setLayout(new FlowLayout(FlowLayout.LEFT));
+		contentPanel.add(panelInfo, BorderLayout.NORTH);
+
+		JLabel lblInfo = new JLabel();
+		if (Control.esAdministrador()) {
+			lblInfo.setText("Mostrando TODOS los pacientes del sistema");
+			lblInfo.setForeground(new Color(0, 102, 204));
+		} else if (Control.esDoctor()) {
+			Doctor doctor = Control.getDoctorLogeado();
+			lblInfo.setText("Mostrando pacientes registrados por: "
+					+ (doctor != null ? doctor.getNombre() + " " + doctor.getApellido() : "Usted"));
+			lblInfo.setForeground(new Color(0, 128, 0));
+		}
+		lblInfo.setFont(new Font("Tahoma", Font.BOLD, 12));
+		panelInfo.add(lblInfo);
+
+		// ===== TABLA =====
+		String[] columnas = { "Código", "Cédula", "Nombre", "Apellido", "Teléfono", "Tipo Sangre", "Estado",
+				"Registrado por" };
+
+		modelo = new DefaultTableModel(columnas, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+
+		table = new JTable(modelo);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		JScrollPane scrollPane = new JScrollPane(table);
+		contentPanel.add(scrollPane, BorderLayout.CENTER);
+
+		// ===== BOTONES =====
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		btnModificar = new JButton("Modificar");
+		btnModificar.setEnabled(false);
+		btnModificar.addActionListener(e -> modificarPaciente());
+		buttonPane.add(btnModificar);
+
+		btnVerHistorial = new JButton("Ver Historial");
+		btnVerHistorial.setEnabled(false);
+		btnVerHistorial.addActionListener(e -> verHistorial());
+		buttonPane.add(btnVerHistorial);
+
+		JButton btnActualizar = new JButton("Actualizar");
+		btnActualizar.addActionListener(e -> cargarPacientes());
+		buttonPane.add(btnActualizar);
+
+		JButton btnCerrar = new JButton("Cerrar");
+		btnCerrar.addActionListener(e -> dispose());
+		buttonPane.add(btnCerrar);
+
+		// Listener para habilitar botones
+		table.getSelectionModel().addListSelectionListener(e -> {
+			boolean seleccionado = table.getSelectedRow() != -1;
+			btnModificar.setEnabled(seleccionado && puedeModificarSeleccion());
+			btnVerHistorial.setEnabled(seleccionado);
+		});
+
+		// ===== CARGAR DATOS =====
+		cargarPacientes();
+	}
+
+	private void cargarPacientes() {
+		modelo.setRowCount(0);
+
+		// Obtener pacientes visibles según permisos
+		ArrayList<Paciente> pacientesVisibles = obtenerPacientesVisibles();
+
+		if (pacientesVisibles == null || pacientesVisibles.isEmpty()) {
+			String mensaje = Control.esAdministrador() ? "No hay pacientes registrados en el sistema"
+					: "No ha registrado pacientes aún";
+
+			modelo.addRow(new Object[] { "", mensaje, "", "", "", "", "", "" });
+			return;
+		}
+
+		// Cargar pacientes en la tabla
+		for (Paciente p : pacientesVisibles) {
+			String estado = p.isActivo() ? "Activo" : "Inactivo";
+			String registrador = obtenerNombreRegistrador(p.getDoctorRegistrador());
+
+			Object[] fila = { p.getCodigoPaciente(), p.getCedula(), p.getNombre(), p.getApellido(), p.getTelefono(),
+					p.getTipoSangre(), estado, registrador };
+			modelo.addRow(fila);
 		}
 	}
 
-	public listPacientes() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(listPacientes.class.getResource("/recursos/pac.jpg")));
-		setTitle("Listado de pacientes");
-		setBounds(100, 100, 748, 489);
-		setLocationRelativeTo(null);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new BorderLayout(0, 0));
-		
-		// ========== PANEL DE BÚSQUEDA ==========
-		JPanel panelBusqueda = new JPanel();
-		panelBusqueda.setBorder(new TitledBorder(null, "Búsqueda", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		contentPanel.add(panelBusqueda, BorderLayout.NORTH);
-		panelBusqueda.setLayout(new FlowLayout(FlowLayout.LEFT));
-		
-		JLabel lblBuscar = new JLabel("Buscar por nombre o cédula:");
-		panelBusqueda.add(lblBuscar);
-		
-		txtBuscar = new JTextField();
-		txtBuscar.setColumns(30);
-		panelBusqueda.add(txtBuscar);
-		
-		// Búsqueda en tiempo real
-		txtBuscar.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				buscarPacientes(txtBuscar.getText());
+	private ArrayList<Paciente> obtenerPacientesVisibles() {
+		ArrayList<Paciente> resultado = new ArrayList<>();
+
+		if (Control.esAdministrador()) {
+			// ADMIN ve TODOS los pacientes
+			resultado.addAll(Clinica.getInstance().getPacientes());
+		} else if (Control.esDoctor()) {
+			// DOCTOR solo ve pacientes que ÉL registró
+			Doctor doctorLogeado = Control.getDoctorLogeado();
+
+			if (doctorLogeado == null) {
+				JOptionPane.showMessageDialog(this, "Error: No se pudo identificar al doctor logeado",
+						"Error de sesión", JOptionPane.ERROR_MESSAGE);
+				return resultado;
 			}
-		});
-		
-		JButton btnBuscar = new JButton("Buscar");
-		btnBuscar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				buscarPacientes(txtBuscar.getText());
-			}
-		});
-		panelBusqueda.add(btnBuscar);
-		
-		JButton btnMostrarTodos = new JButton("Mostrar Todos");
-		btnMostrarTodos.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				txtBuscar.setText("");
-				cargarPacientes();
-			}
-		});
-		panelBusqueda.add(btnMostrarTodos);
-		
-		// ========== PANEL DE TABLA ==========
-		{
-			JPanel panel = new JPanel();
-			panel.setBorder(new TitledBorder(null, "Pacientes Registrados", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			contentPanel.add(panel, BorderLayout.CENTER);
-			panel.setLayout(new BorderLayout(0, 0));
-			{
-				JScrollPane scrollPane = new JScrollPane();
-				panel.add(scrollPane, BorderLayout.CENTER);
-				{
-					model = new DefaultTableModel() {
-						// Hacer que la tabla no sea editable
-						@Override
-						public boolean isCellEditable(int row, int column) {
-							return false;
-						}
-					};
-					table = new JTable();
-					table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-					String[] headers = {"Código", "Cédula", "Nombre Completo", "Sexo", "Sangre", "Teléfono"};
-					model.setColumnIdentifiers(headers);
-					table.setModel(model);
-					scrollPane.setViewportView(table);
-					
-					// Ajustar anchos de columnas
-					table.getColumnModel().getColumn(0).setPreferredWidth(80);  
-					table.getColumnModel().getColumn(1).setPreferredWidth(110); 
-					table.getColumnModel().getColumn(2).setPreferredWidth(200); 
-					table.getColumnModel().getColumn(3).setPreferredWidth(10); 
-					table.getColumnModel().getColumn(4).setPreferredWidth(50);  
-					table.getColumnModel().getColumn(5).setPreferredWidth(70); 
-					
-					// Listener para selección
-					table.getSelectionModel().addListSelectionListener(e -> {
-						if (!e.getValueIsAdjusting() && table.getSelectedRow() != -1) {
-							int index = table.getSelectedRow();
-							String codigo = model.getValueAt(index, 0).toString();
-							pacienteSeleccionado = Clinica.getInstance().buscarPacientePorCodigo(codigo);
-							
-							// Habilitar botones
-							btnModificar.setEnabled(true);
-							
-						}
-					});
+
+			String licenciaDoctor = doctorLogeado.getNumeroLicencia();
+
+			for (Paciente p : Clinica.getInstance().getPacientes()) {
+				if (p.getDoctorRegistrador() != null && p.getDoctorRegistrador().equals(licenciaDoctor)) {
+					resultado.add(p);
 				}
 			}
 		}
-		
-		// ========== PANEL DE BOTONES ==========
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			
-			{
-				btnModificar = new JButton("Modificar");
-				btnModificar.setEnabled(false);
-				btnModificar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						if (pacienteSeleccionado != null) {
-							regPaciente dialog = new regPaciente(pacienteSeleccionado);
-							dialog.setModal(true);
-							dialog.setVisible(true);
-							cargarPacientes(); // Recargar tabla después de modificar
-							pacienteSeleccionado = null;
-							btnModificar.setEnabled(false);
-						} else {
-							JOptionPane.showMessageDialog(listPacientes.this, 
-								"Seleccione un paciente de la lista", 
-								"Aviso", 
-								JOptionPane.WARNING_MESSAGE);
-						}
-					}
-				});
-				buttonPane.add(btnModificar);
-			}
-			
-			{
-				JButton btnCerrar = new JButton("Cerrar");
-				btnCerrar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				});
-				btnCerrar.setActionCommand("Cancel");
-				buttonPane.add(btnCerrar);
+
+		return resultado;
+	}
+
+	private String obtenerNombreRegistrador(String licencia) {
+		if (licencia == null || licencia.equals("Sistema")) {
+			return "Sistema";
+		}
+
+		Doctor doctor = Clinica.getInstance().buscarDoctorPorNumeroLicencia(licencia);
+		if (doctor != null) {
+			return "Dr. " + doctor.getNombre() + " " + doctor.getApellido();
+		}
+
+		return "Desconocido";
+	}
+
+	private boolean puedeModificarSeleccion() {
+		int filaSeleccionada = table.getSelectedRow();
+		if (filaSeleccionada == -1) {
+			return false;
+		}
+
+		String codigo = (String) modelo.getValueAt(filaSeleccionada, 0);
+		if (codigo == null || codigo.isEmpty()) {
+			return false;
+		}
+
+		Paciente paciente = Clinica.getInstance().buscarPacientePorCodigo(codigo);
+		if (paciente == null) {
+			return false;
+		}
+
+		// ADMIN puede modificar todos
+		if (Control.esAdministrador()) {
+			return true;
+		}
+
+		// DOCTOR solo puede modificar sus pacientes
+		if (Control.esDoctor()) {
+			Doctor doctorLogeado = Control.getDoctorLogeado();
+			if (doctorLogeado != null && paciente.getDoctorRegistrador() != null) {
+				return paciente.getDoctorRegistrador().equals(doctorLogeado.getNumeroLicencia());
 			}
 		}
-		
-		cargarPacientes();
+
+		return false;
 	}
-	
-	// ========== MÉTODO PARA CARGAR TODOS LOS DOCTORES ==========
-	public static void cargarPacientes() {
-		model.setRowCount(0);
-		row = new Object[model.getColumnCount()];
-		for (Paciente elpac : Clinica.getInstance().getPacientes()) {
-			row[0] = elpac.getCodigoPaciente();
-			row[1] = elpac.getCedula();
-			row[2] = elpac.getNombre() + " " + elpac.getApellido();
-			row[3] = elpac.getSexo();
-			row[4] = elpac.getTipoSangre();
-			row[5] = elpac.getTelefono();
-			model.addRow(row);
-		}
-	}
-	
-	// ========== MÉTODO PARA BUSCAR DOCTORES ==========
-	private void buscarPacientes(String criterio) {
-		model.setRowCount(0);
-		row = new Object[model.getColumnCount()];
-		
-		if (criterio.trim().isEmpty()) {
-			cargarPacientes();
+
+	private void modificarPaciente() {
+		int filaSeleccionada = table.getSelectedRow();
+		if (filaSeleccionada == -1) {
+			JOptionPane.showMessageDialog(this, "Seleccione un paciente", "Advertencia", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		
-		String criterioLower = criterio.toLowerCase().trim();
-		
-		for (Paciente elEnfermo : Clinica.getInstance().getPacientes()) {
-			String nombreCompleto = (elEnfermo.getNombre() + " " + elEnfermo.getApellido()).toLowerCase();
-			String cedula = elEnfermo.getCedula().toLowerCase();
-			
-			if (nombreCompleto.contains(criterioLower) || cedula.contains(criterioLower)) {
-				row[0] = elEnfermo.getCodigoPaciente();
-				row[1] = elEnfermo.getCedula();
-				row[2] = elEnfermo.getNombre() + " " + elEnfermo.getApellido();
-				row[3] = elEnfermo.getSexo();
-				row[4] = elEnfermo.getTipoSangre();
-				row[5] = elEnfermo.getTelefono();
-				model.addRow(row);
-			}
+
+		String codigo = (String) modelo.getValueAt(filaSeleccionada, 0);
+		Paciente paciente = Clinica.getInstance().buscarPacientePorCodigo(codigo);
+
+		if (paciente == null) {
+			JOptionPane.showMessageDialog(this, "Paciente no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
-		
-		if (model.getRowCount() == 0) {
-			JOptionPane.showMessageDialog(this, 
-				"No se encontraron pacientes con ese criterio de búsqueda", 
-				"Sin resultados", 
-				JOptionPane.INFORMATION_MESSAGE);
+
+		// Verificar permisos
+		if (!puedeModificarSeleccion()) {
+			JOptionPane.showMessageDialog(this,
+					"No tiene permisos para modificar este paciente.\n"
+							+ "Solo puede modificar pacientes que usted registró.",
+					"Acceso denegado", JOptionPane.WARNING_MESSAGE);
+			return;
 		}
+
+		// Abrir ventana de modificación
+		regPaciente dialog = new regPaciente(paciente);
+		dialog.setModal(true);
+		dialog.setVisible(true);
+
+		// Recargar lista
+		cargarPacientes();
+	}
+
+	private void verHistorial() {
+		int filaSeleccionada = table.getSelectedRow();
+		if (filaSeleccionada == -1) {
+			JOptionPane.showMessageDialog(this, "Seleccione un paciente", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		String codigo = (String) modelo.getValueAt(filaSeleccionada, 0);
+		Paciente paciente = Clinica.getInstance().buscarPacientePorCodigo(codigo);
+
+		if (paciente == null) {
+			JOptionPane.showMessageDialog(this, "Paciente no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		// Abrir historial (con filtros de consultas según permisos)
+		VerHistorialClinico dialog = new VerHistorialClinico();
+		dialog.setModal(true);
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 }

@@ -5,44 +5,33 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.awt.event.ActionListener;
-
-import javax.swing.JFormattedTextField;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.MaskFormatter;
-
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
+import logico.Clinica;
 import logico.Control;
 import logico.PersistenciaManager;
 import Server.Servidor;
 
-import javax.swing.JOptionPane;
 import java.awt.Color;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import javax.swing.Timer;
 
 public class Principal extends JFrame {
 
 	private JPanel contentPane;
-	static Socket sfd;
-	static DataInputStream entradaSocket;
-	static DataOutputStream salidaSocket;
+	private Timer autoGuardado;
 
 	public static void main(String[] args) {
-		// Iniciar servidor en un thread separado
+		// Iniciar servidor en thread separado
 		Thread servidorThread = new Thread(() -> {
 			Servidor.main(new String[] {});
 		}, "ServidorAutoStarter");
@@ -63,19 +52,35 @@ public class Principal extends JFrame {
 		setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(Principal.class.getResource("/javax/swing/plaf/metal/icons/ocean/computer.gif")));
 
-		setTitle("Clínica - Principal");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle(
+				"Clínica - Principal ("
+						+ (Control.esAdministrador() ? "ADMINISTRADOR"
+								: Control.esDoctor() ? "DOCTOR: " + Control.getDoctorLogeado().getNombre() : "USUARIO")
+						+ ")");
+
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(screen);
 		setLocationRelativeTo(null);
 		setResizable(true);
 
+		// ===== CONFIGURAR GUARDADO AUTOMÁTICO =====
+		configurarAutoGuardado();
+
+		// ===== CONFIGURAR CIERRE DE VENTANA =====
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				cerrarAplicacion();
+			}
+		});
+
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setBackground(new Color(255, 250, 205));
 		setJMenuBar(menuBar);
 
-		// ------------------ MENU PACIENTES ------------------
+		// ========== MENÚ PACIENTES ==========
 		JMenu mnPacientes = new JMenu("Pacientes");
 		menuBar.add(mnPacientes);
 
@@ -84,6 +89,7 @@ public class Principal extends JFrame {
 			regPaciente dialog = new regPaciente(null);
 			dialog.setModal(true);
 			dialog.setVisible(true);
+			guardarDatosDespuesDeAccion();
 		});
 		mnPacientes.add(mntmRegPac);
 
@@ -95,7 +101,7 @@ public class Principal extends JFrame {
 		});
 		mnPacientes.add(mntmListPac);
 
-		JMenuItem mntmVerHistorial = new JMenuItem("Ver Historial Clinico");
+		JMenuItem mntmVerHistorial = new JMenuItem("Ver Historial Clínico");
 		mntmVerHistorial.addActionListener(e -> {
 			VerHistorialClinico dialog = new VerHistorialClinico();
 			dialog.setModal(true);
@@ -104,7 +110,7 @@ public class Principal extends JFrame {
 		});
 		mnPacientes.add(mntmVerHistorial);
 
-		// ------------------ MENU DOCTORES ------------------
+		// ========== MENÚ DOCTORES ==========
 		JMenu mnDoctores = new JMenu("Doctores");
 		menuBar.add(mnDoctores);
 
@@ -113,6 +119,7 @@ public class Principal extends JFrame {
 			regDoctor dialog = new regDoctor();
 			dialog.setModal(true);
 			dialog.setVisible(true);
+			guardarDatosDespuesDeAccion();
 		});
 		mnDoctores.add(mntmRegDoc);
 
@@ -124,7 +131,7 @@ public class Principal extends JFrame {
 		});
 		mnDoctores.add(mntmListDoc);
 
-		// ------------------ MENU ENFERMEDADES ------------------
+		// ========== MENÚ ENFERMEDADES ==========
 		JMenu mnEnfermedades = new JMenu("Enfermedades");
 		menuBar.add(mnEnfermedades);
 
@@ -134,6 +141,7 @@ public class Principal extends JFrame {
 			dialog.setModal(true);
 			dialog.setLocationRelativeTo(Principal.this);
 			dialog.setVisible(true);
+			guardarDatosDespuesDeAccion();
 		});
 		mnEnfermedades.add(mntmRegEnf);
 
@@ -146,7 +154,7 @@ public class Principal extends JFrame {
 		});
 		mnEnfermedades.add(mntmListEnf);
 
-		// ------------------ MENU VACUNAS ------------------
+		// ========== MENÚ VACUNAS ==========
 		JMenu mnVacunas = new JMenu("Vacunas");
 		menuBar.add(mnVacunas);
 
@@ -155,6 +163,7 @@ public class Principal extends JFrame {
 			regVacuna vacunacion = new regVacuna();
 			vacunacion.setModal(true);
 			vacunacion.setVisible(true);
+			guardarDatosDespuesDeAccion();
 		});
 		mnVacunas.add(mntmRegVac);
 
@@ -171,10 +180,11 @@ public class Principal extends JFrame {
 			adminVacuna vacu = new adminVacuna();
 			vacu.setModal(true);
 			vacu.setVisible(true);
+			guardarDatosDespuesDeAccion();
 		});
 		mnVacunas.add(mntmAdminVac);
 
-		// ------------------ MENU CITAS ------------------
+		// ========== MENÚ CITAS ==========
 		JMenu mnCitas = new JMenu("Citas");
 		menuBar.add(mnCitas);
 
@@ -183,6 +193,7 @@ public class Principal extends JFrame {
 			AgendarCita dialog = new AgendarCita();
 			dialog.setModal(true);
 			dialog.setVisible(true);
+			guardarDatosDespuesDeAccion();
 		});
 		mnCitas.add(mntmAgendarCita);
 
@@ -194,7 +205,7 @@ public class Principal extends JFrame {
 		});
 		mnCitas.add(mntmListaCitas);
 
-		// ------------------ MENU CONSULTAS ------------------
+		// ========== MENÚ CONSULTAS ==========
 		JMenu mnConsultas = new JMenu("Consultas");
 		menuBar.add(mnConsultas);
 
@@ -203,6 +214,7 @@ public class Principal extends JFrame {
 			regConsulta dialog = new regConsulta();
 			dialog.setLocationRelativeTo(Principal.this);
 			dialog.setVisible(true);
+			guardarDatosDespuesDeAccion();
 		});
 		mnConsultas.add(mntmRegConsulta);
 
@@ -214,7 +226,7 @@ public class Principal extends JFrame {
 		});
 		mnConsultas.add(mntmListarConsultas);
 
-		// ------------------ MENU ADMIN ------------------
+		// ========== MENÚ ADMINISTRACIÓN ==========
 		JMenu mnAdministracion = new JMenu("Administración");
 		menuBar.add(mnAdministracion);
 
@@ -230,99 +242,153 @@ public class Principal extends JFrame {
 			regUser dialog = new regUser();
 			dialog.setModal(true);
 			dialog.setVisible(true);
+			guardarDatosDespuesDeAccion();
 		});
 		mnAdministracion.add(mntmRegistrarUsuarios);
 
-		// CONFIGURAR VISIBILIDAD DE MENÚS SEGÚN TIPO DE USUARIO
-		if (Control.getLoginUser() != null) {
-			String tipoUsuario = Control.getLoginUser().getTipo();
-
-			if ("Administrador".equals(tipoUsuario)) {
-				// ADMIN ve todo el sistema (todos los menús visibles)
-			} else if ("Doctor".equals(tipoUsuario)) {
-				// DOCTOR solo ve lo necesario para su trabajo
-				mnAdministracion.setVisible(false);
-				mnDoctores.setVisible(false);
-				// Los demás menús (Pacientes, Citas, Consultas) quedan visibles
-			} else {
-				// Otro tipo de usuario (si hay)
-				JOptionPane.showMessageDialog(this, "Tipo de usuario no reconocido: " + tipoUsuario, "Error",
-						JOptionPane.ERROR_MESSAGE);
-			}
-		}
+		// ===== CONFIGURAR VISIBILIDAD SEGÚN USUARIO =====
+		// Después de crear todos los menús y sus items, llamar:
+		configurarMenusSegunUsuario(mnDoctores, mnAdministracion, mnPacientes, mnEnfermedades, mnVacunas, mnCitas,
+				mnConsultas);
 
 		// Panel de fondo
 		contentPane = new PanelFondo();
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
-				// Botón de cerrar sesión
-				JButton btnCerrarSesion = new JButton("Cerrar sesión");
-				btnCerrarSesion.setBounds(1718, 937, 139, 43);
-				contentPane.add(btnCerrarSesion);
-				btnCerrarSesion.setBackground(new Color(240, 230, 140));
-				btnCerrarSesion.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						// Guardar datos antes de cerrar
-						PersistenciaManager.guardarDatos();
 
-						// Limpiar usuario logeado
-						Control.clearLoginUser();
+		// Botón de cerrar sesión
+		JButton btnCerrarSesion = new JButton("Cerrar sesión");
+		btnCerrarSesion.setBounds(1718, 937, 139, 43);
+		contentPane.add(btnCerrarSesion);
+		btnCerrarSesion.setBackground(new Color(240, 230, 140));
+		btnCerrarSesion.addActionListener(e -> cerrarSesion());
+	}
 
-						// Cerrar ventana
-						dispose();
-
-						// Volver a login
-						login inicio = new login();
-						inicio.setVisible(true);
-					}
-				});
-
-		// Guardado y respaldo automático al cerrar
-		addWindowListener(new java.awt.event.WindowAdapter() {
-			@Override
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				// Guardar datos del sistema
-				PersistenciaManager.guardarDatos();
-
-				// Hacer respaldo en servidor
-				realizarRespaldo();
-
-				// Detener servidor
-				Servidor.detenerServidor();
-			}
+	// ===== MÉTODOS DE GUARDADO =====
+	private void configurarAutoGuardado() {
+		// Guardar automáticamente cada 2 minutos
+		autoGuardado = new Timer(120000, e -> {
+			PersistenciaManager.guardarDatos();
+			System.out.println("[AUTO-GUARDADO] Datos guardados automáticamente");
 		});
+		autoGuardado.start();
+	}
+
+	private void guardarDatosDespuesDeAccion() {
+		PersistenciaManager.guardarDatos();
+		System.out.println("[GUARDADO] Datos guardados después de acción");
+	}
+
+	private void configurarMenusSegunUsuario(JMenu mnDoctores, JMenu mnAdministracion, JMenu mnPacientes,
+			JMenu mnEnfermedades, JMenu mnVacunas, JMenu mnCitas, JMenu mnConsultas) {
+
+		if (Control.getLoginUser() != null) {
+			if (Control.esAdministrador()) {
+				// ADMINISTRADOR: Solo ve Doctores y Administración
+				mnDoctores.setVisible(true);
+				mnAdministracion.setVisible(true);
+
+				// Ocultar menús que el admin NO debe ver
+				mnPacientes.setVisible(false);
+				mnEnfermedades.setVisible(false);
+				mnVacunas.setVisible(false);
+				mnCitas.setVisible(false);
+				mnConsultas.setVisible(false);
+
+				System.out.println("Usuario ADMINISTRADOR logeado");
+
+			} else if (Control.esDoctor()) {
+				// DOCTOR: Solo ve lo necesario para su trabajo
+				mnPacientes.setVisible(true);
+				mnEnfermedades.setVisible(true);
+				mnVacunas.setVisible(true);
+				mnCitas.setVisible(true);
+				mnConsultas.setVisible(true);
+
+				// Ocultar menús de administración
+				mnDoctores.setVisible(false);
+				mnAdministracion.setVisible(false);
+
+				System.out.println("Usuario DOCTOR logeado");
+
+			} else {
+				JOptionPane.showMessageDialog(this, "Tipo de usuario no reconocido", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+
+	private void cerrarSesion() {
+		int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de cerrar sesión?",
+				"Confirmar cierre de sesión", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+		if (confirmacion == JOptionPane.YES_OPTION) {
+			// Detener auto-guardado
+			if (autoGuardado != null) {
+				autoGuardado.stop();
+			}
+
+			// Guardar datos
+			PersistenciaManager.guardarDatos();
+			System.out.println("[CIERRE SESIÓN] Datos guardados");
+
+			// Limpiar usuario
+			Control.clearLoginUser();
+
+			// Cerrar ventana
+			dispose();
+
+			// Volver a login
+			login inicio = new login();
+			inicio.setVisible(true);
+		}
+	}
+
+	private void cerrarAplicacion() {
+		int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de salir de la aplicación?",
+				"Confirmar salida", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+		if (confirmacion == JOptionPane.YES_OPTION) {
+			// Detener auto-guardado
+			if (autoGuardado != null) {
+				autoGuardado.stop();
+			}
+
+			// Guardar datos
+			PersistenciaManager.guardarDatos();
+			System.out.println("[CIERRE] Datos guardados");
+
+			// Realizar respaldo
+			realizarRespaldo();
+
+			// Detener servidor
+			Servidor.detenerServidor();
+
+			// Salir
+			System.exit(0);
+		}
 	}
 
 	private void realizarRespaldo() {
 		try {
-			sfd = new Socket("127.0.0.1", 7000);
-			DataInputStream aux = new DataInputStream(new FileInputStream(new File("control.dat")));
-			salidaSocket = new DataOutputStream(sfd.getOutputStream());
+			java.net.Socket sfd = new java.net.Socket("127.0.0.1", 7000);
+			java.io.DataInputStream aux = new java.io.DataInputStream(
+					new java.io.FileInputStream(new java.io.File("control.dat")));
+			java.io.DataOutputStream salidaSocket = new java.io.DataOutputStream(sfd.getOutputStream());
+
 			int unByte;
-			try {
-				while ((unByte = aux.read()) != -1) {
-					salidaSocket.write(unByte);
-					salidaSocket.flush();
-				}
-			} catch (IOException ioe) {
-				System.out.println("Error en respaldo: " + ioe);
-			} finally {
-				try {
-					aux.close();
-					if (salidaSocket != null)
-						salidaSocket.close();
-					if (sfd != null)
-						sfd.close();
-				} catch (IOException ex) {
-					System.out.println("Error cerrando conexión: " + ex);
-				}
+			while ((unByte = aux.read()) != -1) {
+				salidaSocket.write(unByte);
+				salidaSocket.flush();
 			}
-		} catch (UnknownHostException uhe) {
-			System.out.println("No se puede acceder al servidor: " + uhe);
-		} catch (IOException ioe) {
-			System.out.println("Comunicación rechazada: " + ioe);
+
+			aux.close();
+			salidaSocket.close();
+			sfd.close();
+			System.out.println("[RESPALDO] Respaldo completado");
+		} catch (Exception e) {
+			System.err.println("Error en respaldo: " + e.getMessage());
 		}
 	}
 }
