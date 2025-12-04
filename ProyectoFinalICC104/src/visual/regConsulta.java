@@ -30,7 +30,7 @@ public class regConsulta extends JDialog {
 	private ArrayList<Tratamiento> tratamientos;
 	private ArrayList<Enfermedad> enfermedades;
 
-	// Constructor sin parámetros
+	// Constructor sin parÃ¡metros
 	public regConsulta() {
 		super((Frame) null, "Registrar consulta", true);
 		setIconImage(Toolkit.getDefaultToolkit()
@@ -38,7 +38,7 @@ public class regConsulta extends JDialog {
 		inicializar();
 	}
 
-	// Constructor con parámetro
+	// Constructor con parÃ¡metro
 	public regConsulta(Cita citaSeleccionada) {
 		super((Frame) null, "Registrar consulta", true);
 		inicializar();
@@ -193,7 +193,7 @@ public class regConsulta extends JDialog {
 		cbCitas.addItem("<Seleccione>");
 
 		if (doctorLogeado == null) {
-			JOptionPane.showMessageDialog(this, "No hay doctor logeado en el sistema.", "Error de sesión",
+			JOptionPane.showMessageDialog(this, "No hay doctor logeado en el sistema.", "Error de sesiÃ³n",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
@@ -202,7 +202,7 @@ public class regConsulta extends JDialog {
 		boolean tieneCitas = false;
 
 		for (Cita c : citasPendientes) {
-			// Verificar que el doctor de la cita sea el mismo que está logeado
+			// Verificar que el doctor de la cita sea el mismo que estÃ¡ logeado
 			if (c.getDoctor() != null && c.getDoctor().getNumeroLicencia().equals(licenciaDoctorLogeado)) {
 
 				cbCitas.addItem(c.getCodigoCita() + " - " + c.getPaciente().getNombre());
@@ -235,11 +235,11 @@ public class regConsulta extends JDialog {
 		if (p == null)
 			return;
 
-		// VERIFICAR SI EL PACIENTE ESTÁ REGISTRADO EN EL SISTEMA
+		// VERIFICAR SI EL PACIENTE ESTÃ� REGISTRADO EN EL SISTEMA
 		Paciente pacienteRegistrado = Clinica.getInstance().buscarPacientePorCedula(p.getCedula());
 		boolean estaRegistrado = (pacienteRegistrado != null);
 
-		// Mostrar botón solo si NO está registrado
+		// Mostrar botÃ³n solo si NO estÃ¡ registrado
 		btnRegistrarPaciente.setVisible(!estaRegistrado);
 
 		// Mostrar alergias del paciente (si existe en el sistema, usar ese)

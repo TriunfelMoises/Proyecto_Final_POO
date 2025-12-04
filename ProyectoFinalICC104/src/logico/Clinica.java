@@ -120,10 +120,10 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Recalcula el contador de cÃƒÂ³digos de tratamientos en base a la cantidad
-	 * actual de tratamientos predefinidos. ÃƒÅ¡til cuando se abriÃƒÂ³ la ventana de
-	 * registrar tratamiento pero no se llegÃƒÂ³ a guardar ninguno, para que no se
-	 * "salte" un cÃƒÂ³digo TRA-000X.
+	 * Recalcula el contador de cÃƒÆ’Ã‚Â³digos de tratamientos en base a la cantidad
+	 * actual de tratamientos predefinidos. ÃƒÆ’Ã…Â¡til cuando se abriÃƒÆ’Ã‚Â³ la ventana de
+	 * registrar tratamiento pero no se llegÃƒÆ’Ã‚Â³ a guardar ninguno, para que no se
+	 * "salte" un cÃƒÆ’Ã‚Â³digo TRA-000X.
 	 */
 	public void recalcularContadorTratamientos() {
 		this.contadorTratamientos = tratamientos.size() + 1;
@@ -136,7 +136,7 @@ public class Clinica implements Serializable {
 			return false;
 		}
 
-		// Validar cédula duplicada
+		// Validar cÃ©dula duplicada
 		if (isCedulaRegistrada(doctor.getCedula())) {
 			return false;
 		}
@@ -171,11 +171,11 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Busca un doctor por su nÃƒÂºmero de licencia (no por el cÃƒÂ³digo interno).
+	 * Busca un doctor por su nÃƒÆ’Ã‚Âºmero de licencia (no por el cÃƒÆ’Ã‚Â³digo interno).
 	 * 
-	 * @param numeroLicencia NÃƒÂºmero de licencia del doctor (por ejemplo
+	 * @param numeroLicencia NÃƒÆ’Ã‚Âºmero de licencia del doctor (por ejemplo
 	 *                       EXQM-12345).
-	 * @return El doctor que tiene ese nÃƒÂºmero de licencia, o null si no se
+	 * @return El doctor que tiene ese nÃƒÆ’Ã‚Âºmero de licencia, o null si no se
 	 *         encuentra.
 	 */
 	public Doctor buscarDoctorPorNumeroLicencia(String numeroLicencia) {
@@ -194,9 +194,9 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Recalcula el contador de cÃƒÂ³digos de doctores en base a la cantidad actual.
-	 * ÃƒÅ¡til cuando se abriÃƒÂ³ la ventana de registro pero no se llegÃƒÂ³ a
-	 * guardar ningÃƒÂºn doctor, para que no se "salte" un cÃƒÂ³digo DOC-000X.
+	 * Recalcula el contador de cÃƒÆ’Ã‚Â³digos de doctores en base a la cantidad actual.
+	 * ÃƒÆ’Ã…Â¡til cuando se abriÃƒÆ’Ã‚Â³ la ventana de registro pero no se llegÃƒÆ’Ã‚Â³ a
+	 * guardar ningÃƒÆ’Ã‚Âºn doctor, para que no se "salte" un cÃƒÆ’Ã‚Â³digo DOC-000X.
 	 */
 	public void recalcularContadorDoctores() {
 		this.contadorDoctores = doctores.size() + 1; // ajusta doctores al nombre real
@@ -552,7 +552,7 @@ public class Clinica implements Serializable {
 
 		int citasDelDia = contarCitasDelDia(cedulaDoctor, fecha);
 		if (citasDelDia >= doctor.getCitasPorDia()) {
-			return null; // Doctor ya llegÃƒÂ³ al lÃƒÂ­mite de citas
+			return null; // Doctor ya llegÃƒÆ’Ã‚Â³ al lÃƒÆ’Ã‚Â­mite de citas
 		}
 
 		if (!doctor.puedeAtenderEnHorario(hora)) {
@@ -574,7 +574,7 @@ public class Clinica implements Serializable {
 			return false;
 		}
 
-		// Verificar que la hora estÃƒÂ© dentro del horario del doctor
+		// Verificar que la hora estÃƒÆ’Ã‚Â© dentro del horario del doctor
 		if (!doctor.puedeAtenderEnHorario(hora)) {
 			return false;
 		}
@@ -606,7 +606,7 @@ public class Clinica implements Serializable {
 	}
 
 	// Obtiene una lista de horarios disponibles para un doctor en una fecha
-	// especÃƒÂ­fica
+	// especÃƒÆ’Ã‚Â­fica
 
 	public ArrayList<LocalTime> obtenerHorariosDisponibles(String cedulaDoctor, LocalDate fecha) {
 		ArrayList<LocalTime> horariosDisponibles = new ArrayList<>();
@@ -616,7 +616,7 @@ public class Clinica implements Serializable {
 			return horariosDisponibles;
 		}
 
-		// Verificar que el doctor no haya alcanzado el lÃƒÂ­mite de citas
+		// Verificar que el doctor no haya alcanzado el lÃƒÆ’Ã‚Â­mite de citas
 		int citasDelDia = contarCitasDelDia(cedulaDoctor, fecha);
 		if (citasDelDia >= doctor.getCitasPorDia()) {
 			return horariosDisponibles; // Ya no hay cupos
@@ -640,7 +640,7 @@ public class Clinica implements Serializable {
 		return horariosDisponibles;
 	}
 
-	// Obtiene una representaciÃƒÂ³n en texto del doctor para mostrar en ComboBox
+	// Obtiene una representaciÃƒÆ’Ã‚Â³n en texto del doctor para mostrar en ComboBox
 
 	public String obtenerInfoDoctorParaCombo(Doctor doctor) {
 		return doctor.getNombre() + " " + doctor.getApellido() + " - " + doctor.getEspecialidad();
@@ -662,7 +662,7 @@ public class Clinica implements Serializable {
 		return contador;
 	}
 
-	// Obtiene cuÃƒÂ¡ntas citas le quedan disponibles a un doctor en una fecha
+	// Obtiene cuÃƒÆ’Ã‚Â¡ntas citas le quedan disponibles a un doctor en una fecha
 
 	public String obtenerCitasDisponiblesTexto(String cedulaDoctor, LocalDate fecha) {
 		Doctor doctor = buscarDoctorPorCedula(cedulaDoctor);
@@ -745,7 +745,7 @@ public class Clinica implements Serializable {
 			if (estado == null)
 				continue;
 
-			// Normalizamos para evitar errores invisibles (espacios, mayúsculas, etc.)
+			// Normalizamos para evitar errores invisibles (espacios, mayÃºsculas, etc.)
 			estado = estado.trim().toLowerCase();
 
 			if (estado.equals("pendiente")) {
@@ -810,7 +810,7 @@ public class Clinica implements Serializable {
 		if (enfermedad != null && enfermedad.isBajoVigilancia()) {
 			nuevaConsulta.setEsEnfermedadVigilancia(true);
 
-			// ====== AÑADE ESTAS 3 LÍNEAS ======
+			// ====== AÃ‘ADE ESTAS 3 LÃ�NEAS ======
 			// Agregar la enfermedad al reporte si no existe
 			agregarEnfermedadVigilancia(enfermedad.getNombre());
 			// Incrementar el contador de casos
@@ -832,13 +832,13 @@ public class Clinica implements Serializable {
 		Paciente real = buscarPacientePorCedula(p.getCedula());
 
 		if (real != null) {
-			return real; // Ya existe → usar el paciente real
+			return real; // Ya existe â†’ usar el paciente real
 		}
 
-		// NO existe → registrarlo como paciente normal
+		// NO existe â†’ registrarlo como paciente normal
 		registrarPaciente(p);
 
-		return p; // ya está agregado a la lista
+		return p; // ya estÃ¡ agregado a la lista
 	}
 
 	public Consulta buscarConsulta(String codigoConsulta) {
@@ -913,8 +913,8 @@ public class Clinica implements Serializable {
 				}
 
 				// CONSULTA VISIBLE SI:
-				// - la enfermedad estÃƒÂ¡ bajo vigilancia (pÃƒÂºblica)
-				// - O el doctor que la hizo tiene ese nÃƒÂºmero de licencia
+				// - la enfermedad estÃƒÆ’Ã‚Â¡ bajo vigilancia (pÃƒÆ’Ã‚Âºblica)
+				// - O el doctor que la hizo tiene ese nÃƒÆ’Ã‚Âºmero de licencia
 				if (c.isEsEnfermedadVigilancia()
 						|| c.getDoctor().getNumeroLicencia().equalsIgnoreCase(numLicenciaDoctor)) {
 
@@ -933,7 +933,7 @@ public class Clinica implements Serializable {
 			return visibles;
 		}
 
-		// 1) Agregar TODAS las consultas pÃƒÂºblicas (enfermedad bajo vigilancia)
+		// 1) Agregar TODAS las consultas pÃƒÆ’Ã‚Âºblicas (enfermedad bajo vigilancia)
 		for (Paciente p : pacientes) { // <--- ajusta "pacientes" si tiene otro nombre
 			if (p.getHistoriaClinica() == null) {
 				continue;
@@ -950,7 +950,7 @@ public class Clinica implements Serializable {
 				}
 
 				if (c.isEsEnfermedadVigilancia()) {
-					// evitar duplicados por cÃƒÂ³digo de consulta
+					// evitar duplicados por cÃƒÆ’Ã‚Â³digo de consulta
 					if (!contieneConsultaPorCodigo(visibles, c.getCodigoConsulta())) {
 						visibles.add(c);
 					}
@@ -958,7 +958,7 @@ public class Clinica implements Serializable {
 			}
 		}
 
-		// 2) Agregar las consultas propias del doctor (aunque no estÃƒÂ©n bajo
+		// 2) Agregar las consultas propias del doctor (aunque no estÃƒÆ’Ã‚Â©n bajo
 		// vigilancia)
 		ArrayList<Consulta> propias = listarConsultasPorDoctor(numLicenciaDoctor);
 		for (Consulta c : propias) {
@@ -1142,12 +1142,12 @@ public class Clinica implements Serializable {
 	}
 
 	// ============================================================
-	// MÉTODOS DE VALIDACIÓN - Agregar estos métodos a Clinica.java
-	// Reemplazar el método isCedulaRegistrada existente y agregar los nuevos
+	// MÃ‰TODOS DE VALIDACIÃ“N - Agregar estos mÃ©todos a Clinica.java
+	// Reemplazar el mÃ©todo isCedulaRegistrada existente y agregar los nuevos
 	// ============================================================
 
 	/**
-	 * Verifica si una cédula ya está registrada (pacientes + doctores)
+	 * Verifica si una cÃ©dula ya estÃ¡ registrada (pacientes + doctores)
 	 */
 	public boolean isCedulaRegistrada(String cedula) {
 		if (cedula == null || cedula.trim().isEmpty()) {
@@ -1183,7 +1183,7 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Verifica si una licencia médica ya está registrada
+	 * Verifica si una licencia mÃ©dica ya estÃ¡ registrada
 	 */
 	public boolean isLicenciaRegistrada(String numeroLicencia) {
 		if (numeroLicencia == null || numeroLicencia.trim().isEmpty()) {
@@ -1209,8 +1209,8 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Verifica si una licencia está registrada, excluyendo un doctor específico
-	 * (útil para modificaciones)
+	 * Verifica si una licencia estÃ¡ registrada, excluyendo un doctor especÃ­fico
+	 * (Ãºtil para modificaciones)
 	 */
 	public boolean isLicenciaRegistrada(String numeroLicencia, String cedulaExcluir) {
 		if (numeroLicencia == null || numeroLicencia.trim().isEmpty()) {
@@ -1238,8 +1238,8 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Verifica si un teléfono ya está registrado en el sistema (Útil pero no
-	 * crítico - puede haber familias con mismo teléfono)
+	 * Verifica si un telÃ©fono ya estÃ¡ registrado en el sistema (Ãštil pero no
+	 * crÃ­tico - puede haber familias con mismo telÃ©fono)
 	 */
 	public boolean isTelefonoRegistrado(String telefono) {
 		if (telefono == null || telefono.trim().isEmpty()) {
@@ -1275,7 +1275,7 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Verifica si un teléfono está registrado, excluyendo una cédula específica
+	 * Verifica si un telÃ©fono estÃ¡ registrado, excluyendo una cÃ©dula especÃ­fica
 	 * (Para modificaciones)
 	 */
 
@@ -1318,10 +1318,10 @@ public class Clinica implements Serializable {
 		return false;
 	}
 
-	// ========== MÉTODOS PARA VACUNAS ==========
+	// ========== MÃ‰TODOS PARA VACUNAS ==========
 
 	/**
-	 * Verifica si un número de lote ya está registrado
+	 * Verifica si un nÃºmero de lote ya estÃ¡ registrado
 	 */
 	public boolean isLoteRegistrado(String numeroLote) {
 		if (numeroLote == null || numeroLote.trim().isEmpty()) {
@@ -1343,7 +1343,7 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Verifica si un lote está registrado, excluyendo una vacuna específica (para
+	 * Verifica si un lote estÃ¡ registrado, excluyendo una vacuna especÃ­fica (para
 	 * modificaciones)
 	 */
 	public boolean isLoteRegistrado(String numeroLote, String codigoExcluir) {
@@ -1369,7 +1369,7 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Busca vacuna por número de lote
+	 * Busca vacuna por nÃºmero de lote
 	 */
 	public Vacuna buscarVacunaPorLote(String numeroLote) {
 		if (numeroLote == null || numeroLote.trim().isEmpty()) {
@@ -1420,7 +1420,7 @@ public class Clinica implements Serializable {
 		}
 	}
 
-	private void guardarReporteSerializado() {
+	public void guardarReporteSerializado() {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("reporteEnfermedades.dat"));
 			oos.writeObject(reporteEnfermedades);
@@ -1430,7 +1430,7 @@ public class Clinica implements Serializable {
 		}
 	}
 
-	private void guardarReporteTXT() {
+	public void guardarReporteTXT() {
 		try {
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("reporteEnfermedades.txt")));
 			pw.println("=== ENFERMEDADES BAJO VIGILANCIA ===\n");
@@ -1476,7 +1476,7 @@ public class Clinica implements Serializable {
 		return null;
 	}
 
-	// Agrega este método en Clinica.java:
+	// Agrega este mÃ©todo en Clinica.java:
 	public boolean existeUsuarioDoctor(String usuario) {
 		if (usuario == null || usuario.trim().isEmpty()) {
 			return false;
@@ -1491,10 +1491,10 @@ public class Clinica implements Serializable {
 		return false;
 	}
 
-	// ========== AGREGAR ESTOS MÉTODOS AL FINAL DE Clinica.java ==========
+	// ========== AGREGAR ESTOS MÃ‰TODOS AL FINAL DE Clinica.java ==========
 
 	/**
-	 * Lista los pacientes que un doctor puede ver: 1. Pacientes que él registró 2.
+	 * Lista los pacientes que un doctor puede ver: 1. Pacientes que Ã©l registrÃ³ 2.
 	 * Todos los pacientes si es administrador
 	 */
 	public ArrayList<Paciente> listarPacientesVisiblesParaDoctor(String licenciaDoctor, boolean esAdmin) {
@@ -1509,7 +1509,7 @@ public class Clinica implements Serializable {
 			return new ArrayList<>(pacientes);
 		}
 
-		// Doctor normal solo ve los que él registró
+		// Doctor normal solo ve los que Ã©l registrÃ³
 		for (Paciente p : pacientes) {
 			if (p.getDoctorRegistrador() != null && p.getDoctorRegistrador().equals(licenciaDoctor)) {
 				pacientesVisibles.add(p);
@@ -1520,7 +1520,7 @@ public class Clinica implements Serializable {
 	}
 
 	/**
-	 * Lista consultas que un doctor puede ver según las reglas: 1. Sus propias
+	 * Lista consultas que un doctor puede ver segÃºn las reglas: 1. Sus propias
 	 * consultas 2. Consultas de enfermedades bajo vigilancia
 	 * (esEnfermedadVigilancia = true) 3. Admin ve TODO
 	 */
@@ -1558,7 +1558,7 @@ public class Clinica implements Serializable {
 					puedeVer = true;
 				}
 
-				// 3. Si está marcada para resumen (OPCIONAL, según tu requerimiento)
+				// 3. Si estÃ¡ marcada para resumen (OPCIONAL, segÃºn tu requerimiento)
 				else if (c.isIncluidaEnResumen()) {
 					puedeVer = true;
 				}
@@ -1584,11 +1584,11 @@ public class Clinica implements Serializable {
 	}
 	
 	
-	// AGREGAR este método a Clinica.java
+	// AGREGAR este mÃ©todo a Clinica.java
 
 	/**
 	 * Actualiza todas las citas de un paciente interesado para que apunten al paciente real
-	 * @param cedulaPaciente Cédula del paciente
+	 * @param cedulaPaciente CÃ©dula del paciente
 	 * @param pacienteReal Objeto Paciente real registrado
 	 */
 	public void actualizarCitasDeInteresado(String cedulaPaciente, Paciente pacienteReal) {
@@ -1596,7 +1596,7 @@ public class Clinica implements Serializable {
 	        return;
 	    }
 	    
-	    // Buscar todas las citas que pertenecen a este paciente (por cédula)
+	    // Buscar todas las citas que pertenecen a este paciente (por cÃ©dula)
 	    for (Cita cita : citas) {
 	        if (cita != null && cita.getPaciente() != null 
 	            && cita.getPaciente().getCedula().equals(cedulaPaciente)) {
