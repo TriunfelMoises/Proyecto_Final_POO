@@ -28,6 +28,7 @@ public class regUser extends JDialog {
 	private JPasswordField txtPass;
 
 	public regUser() {
+		getContentPane().setBackground(new Color(224, 255, 255));
 		configurarVentana();
 		crearComponentes();
 	}
@@ -42,6 +43,7 @@ public class regUser extends JDialog {
 	}
 
 	private void crearComponentes() {
+		contentPanel.setBackground(new Color(224, 255, 255));
 		// Panel principal con borde
 		contentPanel.setBorder(new EmptyBorder(20, 30, 20, 30));
 		contentPanel.setLayout(null);
@@ -49,6 +51,7 @@ public class regUser extends JDialog {
 
 		// ===== SECCIÓN DATOS DEL USUARIO =====
 		JPanel panelDatos = new JPanel();
+		panelDatos.setBackground(new Color(240, 255, 255));
 		panelDatos.setBorder(new TitledBorder(null, "Datos del Usuario", TitledBorder.LEADING, TitledBorder.TOP,
 				new Font("Tahoma", Font.BOLD, 13), new Color(0, 0, 0)));
 		panelDatos.setBounds(20, 20, 490, 140);
@@ -79,6 +82,7 @@ public class regUser extends JDialog {
 
 		// ===== SECCIÓN TIPO DE USUARIO =====
 		JPanel panelTipo = new JPanel();
+		panelTipo.setBackground(new Color(240, 255, 255));
 		panelTipo.setBorder(new TitledBorder(null, "Tipo de Usuario", TitledBorder.LEADING, TitledBorder.TOP,
 				new Font("Tahoma", Font.BOLD, 13), new Color(0, 0, 0)));
 		panelTipo.setBounds(20, 180, 230, 90);
@@ -93,6 +97,7 @@ public class regUser extends JDialog {
 
 		// ===== SECCIÓN INFORMACIÓN =====
 		JPanel panelInfo = new JPanel();
+		panelInfo.setBackground(new Color(240, 255, 255));
 		panelInfo.setBorder(new TitledBorder(null, "Información", TitledBorder.LEADING, TitledBorder.TOP,
 				new Font("Tahoma", Font.BOLD, 13), new Color(0, 0, 0)));
 		panelInfo.setBounds(270, 180, 240, 90);
@@ -121,6 +126,7 @@ public class regUser extends JDialog {
 
 	private void crearBotones() {
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(224, 255, 255));
 		buttonPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT, 15, 10));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);

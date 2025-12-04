@@ -38,6 +38,7 @@ import javax.swing.ButtonGroup;
 import java.awt.Toolkit;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.Color;
 
 public class regPaciente extends JDialog {
 
@@ -87,6 +88,7 @@ public class regPaciente extends JDialog {
 				: esModificacion ? "Modificar Paciente" : "Registro de Pacientes");
 		setBounds(100, 100, 600, 558);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(220, 220, 220));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -110,6 +112,7 @@ public class regPaciente extends JDialog {
 		contentPanel.add(lblCodigo);
 
 		txtCodigo = new JTextField();
+		txtCodigo.setBackground(new Color(224, 255, 255));
 		txtCodigo.setEnabled(false);
 		txtCodigo.setBounds(111, 21, 120, 25);
 		contentPanel.add(txtCodigo);
@@ -212,11 +215,13 @@ public class regPaciente extends JDialog {
 		contentPanel.add(lblSexo);
 
 		rdbtnHombre = new JRadioButton("Masculino");
+		rdbtnHombre.setBackground(new Color(220, 220, 220));
 		rdbtnHombre.setSelected(true);
 		rdbtnHombre.setBounds(388, 212, 94, 25);
 		contentPanel.add(rdbtnHombre);
 
 		rdbtnMujer = new JRadioButton("Femenino");
+		rdbtnMujer.setBackground(new Color(220, 220, 220));
 		rdbtnMujer.setBounds(483, 212, 91, 25);
 		contentPanel.add(rdbtnMujer);
 
@@ -242,6 +247,7 @@ public class regPaciente extends JDialog {
 		contentPanel.add(lblAlergias);
 
 		chckbxAlergias = new JCheckBox("Sí, padezco de alergias");
+		chckbxAlergias.setBackground(new Color(220, 220, 220));
 		chckbxAlergias.setBounds(222, 349, 200, 25);
 		contentPanel.add(chckbxAlergias);
 
@@ -258,10 +264,12 @@ public class regPaciente extends JDialog {
 		contentPanel.add(spnFechaActual);
 
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(220, 220, 220));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		btnModificar = new JButton(esInteresado ? "Registrar Paciente" : esModificacion ? "Modificar" : "Registrar");
+		btnModificar.setBackground(new Color(224, 255, 255));
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				procesarPaciente();
@@ -272,6 +280,7 @@ public class regPaciente extends JDialog {
 		getRootPane().setDefaultButton(btnModificar);
 
 		JButton cancelButton = new JButton("Cancelar");
+		cancelButton.setBackground(new Color(255, 228, 181));
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();

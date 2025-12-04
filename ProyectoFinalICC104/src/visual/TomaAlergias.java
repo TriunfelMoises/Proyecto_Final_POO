@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class TomaAlergias extends JDialog {
 
@@ -46,6 +47,7 @@ public class TomaAlergias extends JDialog {
 		setBounds(100, 100, 450, 500);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(255, 250, 205));
 		contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -85,6 +87,7 @@ public class TomaAlergias extends JDialog {
 
 		// ========== PANEL DE CHECKBOXES ==========
 		panelChecks = new JPanel();
+		panelChecks.setBackground(new Color(255, 245, 238));
 		panelChecks.setBorder(new TitledBorder(null, "Alergias Disponibles", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelChecks.setLayout(new javax.swing.BoxLayout(panelChecks, javax.swing.BoxLayout.Y_AXIS));
 
@@ -112,6 +115,7 @@ public class TomaAlergias extends JDialog {
 
 		// ========== PANEL DE BOTONES ==========
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(224, 255, 255));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -125,6 +129,7 @@ public class TomaAlergias extends JDialog {
 		getRootPane().setDefaultButton(btnSeleccionar);
 
 		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setBackground(new Color(240, 248, 255));
 		btnCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				alergiasSeleccionadas = null;

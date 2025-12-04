@@ -23,6 +23,7 @@ import logico.Doctor;
 import logico.Paciente;
 import logico.Vacuna;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class listVacuna extends JDialog {
 	private final JPanel contentPanel = new JPanel();
@@ -49,12 +50,14 @@ public class listVacuna extends JDialog {
 		setBounds(100, 100, 833, 489);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(224, 255, 255));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
 		// ========== PANEL DE BÚSQUEDA ==========
 		JPanel panelBusqueda = new JPanel();
+		panelBusqueda.setBackground(new Color(224, 255, 255));
 		panelBusqueda.setBorder(new TitledBorder(null, "Búsqueda", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		contentPanel.add(panelBusqueda, BorderLayout.NORTH);
 		panelBusqueda.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -94,6 +97,7 @@ public class listVacuna extends JDialog {
 		// ========== PANEL DE TABLA ==========
 		{
 			JPanel panel = new JPanel();
+			panel.setBackground(new Color(224, 255, 255));
 			panel.setBorder(
 					new TitledBorder(null, "Vacunas Registradas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			contentPanel.add(panel, BorderLayout.CENTER);
@@ -140,12 +144,14 @@ public class listVacuna extends JDialog {
 		// ========== PANEL DE BOTONES ==========
 		{
 			JPanel buttonPane = new JPanel();
+			buttonPane.setBackground(new Color(255, 239, 213));
 			buttonPane.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 			{
 				JButton btnCerrar = new JButton("Cerrar");
+				btnCerrar.setBackground(new Color(224, 255, 255));
 				btnCerrar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();

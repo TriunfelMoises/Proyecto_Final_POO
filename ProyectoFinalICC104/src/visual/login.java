@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class login extends JFrame {
 
@@ -50,6 +51,7 @@ public class login extends JFrame {
 		setLocationRelativeTo(null);
 
 		contentPane = new JPanel();
+		contentPane.setBackground(new Color(211, 211, 211));
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -71,6 +73,7 @@ public class login extends JFrame {
 		contentPane.add(textField_1);
 
 		JButton btnLogin = new JButton("Iniciar sesión");
+		btnLogin.setBackground(new Color(240, 230, 140));
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				realizarLogin();
@@ -80,6 +83,7 @@ public class login extends JFrame {
 		contentPane.add(btnLogin);
 
 		JButton btnSalir = new JButton("Salir");
+		btnSalir.setBackground(new Color(255, 239, 213));
 		btnSalir.addActionListener(e -> System.exit(0));
 		btnSalir.setBounds(165, 160, 135, 28);
 		contentPane.add(btnSalir);

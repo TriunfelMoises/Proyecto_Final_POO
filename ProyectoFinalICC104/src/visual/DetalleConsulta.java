@@ -21,6 +21,7 @@ import logico.Tratamiento;
 import logico.Medicamento;
 import java.util.ArrayList;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class DetalleConsulta extends JDialog {
 
@@ -65,6 +66,7 @@ public class DetalleConsulta extends JDialog {
 		setLocationRelativeTo(null);
 		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(255, 228, 225));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -74,6 +76,7 @@ public class DetalleConsulta extends JDialog {
 
 		// ========== INFORMACIÓN BÁSICA ==========
 		JPanel panelBasico = new JPanel();
+		panelBasico.setBackground(new Color(250, 240, 230));
 		panelBasico.setBorder(
 				new TitledBorder(null, "Información Básica", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelBasico.setBounds(10, 10, 864, 150);
@@ -150,12 +153,14 @@ public class DetalleConsulta extends JDialog {
 		panelBasico.add(lblInfoResumen);
 
 		chkIncluidaResumen = new JCheckBox("Incluida en Resumen");
+		chkIncluidaResumen.setBackground(new Color(250, 240, 230));
 		chkIncluidaResumen.setFont(valueFont);
 		chkIncluidaResumen.setEnabled(false);
 		chkIncluidaResumen.setBounds(200, 115, 150, 20);
 		panelBasico.add(chkIncluidaResumen);
 
 		chkEnfermedadVigilada = new JCheckBox("Enfermedad Vigilada");
+		chkEnfermedadVigilada.setBackground(new Color(250, 240, 230));
 		chkEnfermedadVigilada.setFont(valueFont);
 		chkEnfermedadVigilada.setEnabled(false);
 		chkEnfermedadVigilada.setBounds(360, 115, 150, 20);
@@ -163,6 +168,7 @@ public class DetalleConsulta extends JDialog {
 
 		// ========== SÍNTOMAS ==========
 		JPanel panelSintomas = new JPanel();
+		panelSintomas.setBackground(new Color(250, 240, 230));
 		panelSintomas.setBorder(
 				new TitledBorder(null, "Síntomas Reportados", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelSintomas.setBounds(10, 170, 864, 100);
@@ -179,6 +185,7 @@ public class DetalleConsulta extends JDialog {
 
 		// ========== DIAGNÓSTICO ==========
 		JPanel panelDiagnostico = new JPanel();
+		panelDiagnostico.setBackground(new Color(250, 240, 230));
 		panelDiagnostico
 				.setBorder(new TitledBorder(null, "Diagnóstico", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelDiagnostico.setBounds(10, 280, 864, 100);
@@ -195,6 +202,7 @@ public class DetalleConsulta extends JDialog {
 
 		// ========== TRATAMIENTO ==========
 		JPanel panelTratamiento = new JPanel();
+		panelTratamiento.setBackground(new Color(250, 240, 230));
 		panelTratamiento.setBorder(
 				new TitledBorder(null, "Tratamiento Prescrito", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelTratamiento.setBounds(10, 390, 864, 200);
@@ -211,6 +219,7 @@ public class DetalleConsulta extends JDialog {
 
 		// ========== NOTAS MÉDICAS ==========
 		JPanel panelNotas = new JPanel();
+		panelNotas.setBackground(new Color(250, 240, 230));
 		panelNotas.setBorder(new TitledBorder(null, "Notas Médicas Adicionales", TitledBorder.LEADING, TitledBorder.TOP,
 				null, null));
 		panelNotas.setBounds(10, 600, 864, 100);
@@ -227,6 +236,7 @@ public class DetalleConsulta extends JDialog {
 
 		// ========== BOTONES ==========
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(255, 228, 225));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -237,6 +247,7 @@ public class DetalleConsulta extends JDialog {
 		buttonPane.add(btnGestionResumen);
 
 		JButton btnCerrar = new JButton("Cerrar");
+		btnCerrar.setBackground(new Color(224, 255, 255));
 		btnCerrar.addActionListener(e -> dispose());
 		buttonPane.add(btnCerrar);
 	}

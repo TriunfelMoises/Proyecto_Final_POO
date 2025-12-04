@@ -68,6 +68,7 @@ public class regDoctor extends JDialog {
 		setBounds(100, 100, 680, 650);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(245, 255, 250));
 		contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -83,6 +84,7 @@ public class regDoctor extends JDialog {
 		contentPanel.add(lblCodigo);
 
 		txtCodigo = new JTextField();
+		txtCodigo.setBackground(new Color(224, 255, 255));
 		txtCodigo.setEditable(false);
 		txtCodigo.setBounds(540, 38, 100, 26);
 		txtCodigo.setColumns(10);
@@ -118,6 +120,7 @@ public class regDoctor extends JDialog {
 		crearPanelCredenciales();
 
 		chckbxActivo = new JCheckBox("Doctor Activo");
+		chckbxActivo.setBackground(new Color(245, 245, 245));
 		chckbxActivo.setSelected(true);
 		chckbxActivo.setBounds(15, 440, 150, 29);
 		contentPanel.add(chckbxActivo);
@@ -163,11 +166,13 @@ public class regDoctor extends JDialog {
 		contentPanel.add(lblSexo);
 
 		rdbtnHombre = new JRadioButton("M");
+		rdbtnHombre.setBackground(new Color(240, 248, 255));
 		rdbtnHombre.setSelected(true);
 		rdbtnHombre.setBounds(405, 100, 60, 29);
 		contentPanel.add(rdbtnHombre);
 
 		rdbtnMujer = new JRadioButton("F");
+		rdbtnMujer.setBackground(new Color(240, 255, 255));
 		rdbtnMujer.setBounds(470, 100, 55, 29);
 		contentPanel.add(rdbtnMujer);
 
@@ -279,6 +284,7 @@ public class regDoctor extends JDialog {
 
 	private void crearPanelCredenciales() {
 		JPanel panel = new JPanel();
+		panel.setBackground(new Color(255, 240, 245));
 		panel.setBorder(new LineBorder(Color.GRAY, 1, true));
 		panel.setBounds(385, 386, 255, 153);
 		contentPanel.add(panel);
@@ -317,10 +323,12 @@ public class regDoctor extends JDialog {
 
 	private void crearPanelBotones() {
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(224, 255, 255));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		JButton btnRegistrar = new JButton("Registrar");
+		btnRegistrar.setBackground(new Color(245, 255, 250));
 		btnRegistrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				registrarDoctor();
@@ -338,6 +346,7 @@ public class regDoctor extends JDialog {
 		buttonPane.add(btnLimpiar);
 
 		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setBackground(new Color(255, 239, 213));
 		btnCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				dispose();

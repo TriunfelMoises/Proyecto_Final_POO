@@ -13,6 +13,7 @@ import logico.Paciente;
 import logico.Doctor;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.awt.Color;
 
 public class listConsulta extends JDialog {
 
@@ -23,6 +24,7 @@ public class listConsulta extends JDialog {
 	private DefaultTableModel modelo;
 
 	public listConsulta() {
+		getContentPane().setBackground(new Color(250, 240, 230));
 		setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(listConsulta.class.getResource("/com/sun/java/swing/plaf/windows/icons/DetailsView.gif")));
 		setTitle("Listado de consultas");
@@ -31,6 +33,7 @@ public class listConsulta extends JDialog {
 		setModal(true);
 
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(250, 240, 230));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.NORTH);
 		contentPanel.setLayout(null);
@@ -55,6 +58,7 @@ public class listConsulta extends JDialog {
 
 		// ===== BOTONES =====
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(255, 228, 181));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 10));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -67,6 +71,7 @@ public class listConsulta extends JDialog {
 		buttonPane.add(btnActualizar);
 
 		JButton btnCerrar = new JButton("Cerrar");
+		btnCerrar.setBackground(new Color(240, 248, 255));
 		btnCerrar.addActionListener(e -> dispose());
 		buttonPane.add(btnCerrar);
 

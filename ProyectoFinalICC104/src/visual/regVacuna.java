@@ -32,6 +32,7 @@ public class regVacuna extends JDialog {
 		setResizable(false);
 
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(230, 230, 250));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -49,6 +50,7 @@ public class regVacuna extends JDialog {
 
 		// Información
 		lblInfo = new JLabel("Campos obligatorios. Seleccione la enfermedad contra la que protege la vacuna.");
+		lblInfo.setBackground(new Color(230, 230, 250));
 		lblInfo.setFont(infoFont);
 		lblInfo.setForeground(Color.BLACK);
 		lblInfo.setBounds(20, 35, 450, 15);
@@ -63,7 +65,7 @@ public class regVacuna extends JDialog {
 		txtCodigo = new JTextField();
 		txtCodigo.setEditable(false);
 		txtCodigo.setBounds(350, 75, 120, 25);
-		txtCodigo.setBackground(new Color(240, 240, 240));
+		txtCodigo.setBackground(new Color(224, 255, 255));
 		contentPanel.add(txtCodigo);
 
 		// Nombre
@@ -139,14 +141,17 @@ public class regVacuna extends JDialog {
 
 		// Panel de botones
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(255, 250, 205));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		btnRegistrar = new JButton("Registrar");
+		btnRegistrar.setBackground(new Color(211, 211, 211));
 		btnRegistrar.addActionListener(e -> registrarVacuna());
 		buttonPane.add(btnRegistrar);
 
 		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setBackground(new Color(255, 228, 196));
 		btnCancelar.addActionListener(e -> dispose());
 		buttonPane.add(btnCancelar);
 

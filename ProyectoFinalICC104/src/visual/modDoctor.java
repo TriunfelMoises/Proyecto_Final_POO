@@ -34,6 +34,7 @@ import logico.Doctor;
 import javax.swing.ButtonGroup;
 import javax.swing.SpinnerListModel;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class modDoctor extends JDialog {
 
@@ -83,6 +84,7 @@ public class modDoctor extends JDialog {
 		setBounds(100, 100, 680, 650);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(245, 255, 250));
 		contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -377,10 +379,12 @@ public class modDoctor extends JDialog {
 
 	private void crearBotones() {
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(224, 255, 255));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		btnGuardar = new JButton("Guardar Cambios");
+		btnGuardar.setBackground(new Color(255, 239, 213));
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				modificarDoctor();
@@ -389,6 +393,7 @@ public class modDoctor extends JDialog {
 		buttonPane.add(btnGuardar);
 
 		JButton cancelButton = new JButton("Cancelar");
+		cancelButton.setBackground(new Color(230, 230, 250));
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();

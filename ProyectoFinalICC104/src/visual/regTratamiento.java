@@ -25,6 +25,7 @@ import logico.Clinica;
 import logico.Tratamiento;
 import logico.Medicamento;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class regTratamiento extends JDialog {
 
@@ -58,6 +59,7 @@ public class regTratamiento extends JDialog {
         });
 
         getContentPane().setLayout(new BorderLayout());
+        contentPanel.setBackground(new Color(220, 220, 220));
         contentPanel.setBorder(new EmptyBorder(12, 12, 12, 12));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
@@ -71,6 +73,7 @@ public class regTratamiento extends JDialog {
         contentPanel.add(lblCodigo);
 
         txtCodigo = new JTextField();
+        txtCodigo.setBackground(new Color(224, 255, 255));
         txtCodigo.setBounds(140, 20, 180, 22);
         txtCodigo.setEditable(false);
         contentPanel.add(txtCodigo);
@@ -100,6 +103,7 @@ public class regTratamiento extends JDialog {
 
         // PANEL MEDICAMENTOS DINAMICO
         JPanel panelMedicamentos = new JPanel();
+        panelMedicamentos.setBackground(new Color(220, 220, 220));
         panelMedicamentos.setBorder(new TitledBorder(null, "Medicamentos", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panelMedicamentos.setBounds(20, 175, 690, 180);
         panelMedicamentos.setLayout(null);
@@ -160,6 +164,7 @@ public class regTratamiento extends JDialog {
 
         // BOTONES
         JPanel buttonPane = new JPanel();
+        buttonPane.setBackground(new Color(224, 255, 255));
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -168,6 +173,7 @@ public class regTratamiento extends JDialog {
         buttonPane.add(btnRegistrar);
 
         JButton btnCancelar = new JButton("Cancelar");
+        btnCancelar.setBackground(new Color(255, 239, 213));
         btnCancelar.addActionListener(e -> {
             Clinica.getInstance().recalcularContadorTratamientos();
             dispose();

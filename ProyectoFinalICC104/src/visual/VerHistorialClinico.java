@@ -29,6 +29,7 @@ import logico.RegistroVacuna;
 import logico.Alergia;
 import java.util.ArrayList;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class VerHistorialClinico extends JDialog {
 
@@ -60,6 +61,7 @@ public class VerHistorialClinico extends JDialog {
 		setLocationRelativeTo(null);
 		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(240, 248, 255));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -72,6 +74,7 @@ public class VerHistorialClinico extends JDialog {
 
 	private void crearPanelBusqueda() {
 		JPanel panelBusqueda = new JPanel();
+		panelBusqueda.setBackground(new Color(240, 255, 255));
 		panelBusqueda.setBorder(
 				new TitledBorder(null, "Buscar Paciente", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelBusqueda.setBounds(10, 11, 964, 80);
@@ -79,6 +82,7 @@ public class VerHistorialClinico extends JDialog {
 		contentPanel.add(panelBusqueda);
 
 		JLabel lblBuscar = new JLabel("Cédula:");
+		lblBuscar.setBackground(new Color(255, 239, 213));
 		lblBuscar.setBounds(52, 30, 120, 22);
 		panelBusqueda.add(lblBuscar);
 
@@ -86,6 +90,7 @@ public class VerHistorialClinico extends JDialog {
 			MaskFormatter cedulaMask = new MaskFormatter("###-#######-#");
 			cedulaMask.setPlaceholderCharacter('_');
 			txtBusqueda = new JFormattedTextField(cedulaMask);
+			txtBusqueda.setBackground(new Color(255, 245, 238));
 		} catch (Exception e) {
 			txtBusqueda = new JFormattedTextField();
 		}
@@ -93,6 +98,7 @@ public class VerHistorialClinico extends JDialog {
 		panelBusqueda.add(txtBusqueda);
 
 		JButton btnBuscar = new JButton("Buscar");
+		btnBuscar.setBackground(new Color(245, 255, 250));
 		btnBuscar.setBounds(350, 29, 100, 24);
 		btnBuscar.addActionListener(e -> buscarPaciente());
 		panelBusqueda.add(btnBuscar);
@@ -100,6 +106,7 @@ public class VerHistorialClinico extends JDialog {
 
 	private void crearPanelInformacionPaciente() {
 		JPanel panelInfo = new JPanel();
+		panelInfo.setBackground(new Color(240, 255, 255));
 		panelInfo.setBorder(
 				new TitledBorder(null, "Información del Paciente", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelInfo.setBounds(10, 102, 964, 150);
@@ -151,6 +158,7 @@ public class VerHistorialClinico extends JDialog {
 		panelInfo.add(spAlergias);
 
 		txtAlergias = new JTextArea();
+		txtAlergias.setBackground(new Color(253, 245, 230));
 		txtAlergias.setEditable(false);
 		txtAlergias.setLineWrap(true);
 		txtAlergias.setWrapStyleWord(true);
@@ -186,6 +194,7 @@ public class VerHistorialClinico extends JDialog {
 		tabConsultas.add(spConsultas, BorderLayout.CENTER);
 
 		JPanel panelBotones = new JPanel();
+		panelBotones.setBackground(new Color(240, 248, 255));
 		panelBotones.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		tabConsultas.add(panelBotones, BorderLayout.SOUTH);
 
@@ -269,10 +278,12 @@ public class VerHistorialClinico extends JDialog {
 
 	private void crearBotonCerrar() {
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(240, 248, 255));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		JButton btnCerrar = new JButton("Cerrar");
+		btnCerrar.setBackground(new Color(255, 245, 238));
 		btnCerrar.addActionListener(e -> dispose());
 		buttonPane.add(btnCerrar);
 	}

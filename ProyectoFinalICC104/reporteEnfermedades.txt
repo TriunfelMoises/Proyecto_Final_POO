@@ -1,2 +1,3 @@
 === ENFERMEDADES BAJO VIGILANCIA ===
 
+edred: 1 casos

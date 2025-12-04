@@ -26,12 +26,14 @@ public class listPacientes extends JDialog {
 		setModal(true);
 
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(255, 250, 205));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
 		// ===== PANEL INFORMACIÓN =====
 		JPanel panelInfo = new JPanel();
+		panelInfo.setBackground(new Color(255, 250, 205));
 		panelInfo.setLayout(new FlowLayout(FlowLayout.LEFT));
 		contentPanel.add(panelInfo, BorderLayout.NORTH);
 
@@ -67,6 +69,7 @@ public class listPacientes extends JDialog {
 
 		// ===== BOTONES =====
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(220, 220, 220));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 10));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -85,6 +88,7 @@ public class listPacientes extends JDialog {
 		buttonPane.add(btnActualizar);
 
 		JButton btnCerrar = new JButton("Cerrar");
+		btnCerrar.setBackground(new Color(255, 239, 213));
 		btnCerrar.addActionListener(e -> dispose());
 		buttonPane.add(btnCerrar);
 

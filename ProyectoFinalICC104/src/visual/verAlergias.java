@@ -20,6 +20,7 @@ import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class verAlergias extends JDialog {
 
@@ -47,6 +48,7 @@ public class verAlergias extends JDialog {
 		setTitle("Visualizar alergias");
 		setBounds(100, 100, 321, 300);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(255, 250, 205));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -61,6 +63,7 @@ public class verAlergias extends JDialog {
 		contentPanel.add(lblNewLabel);
 		
 		txtPaciente = new JTextField();
+		txtPaciente.setBackground(new Color(245, 255, 250));
 		txtPaciente.setEnabled(false);
 		txtPaciente.setBounds(87, 11, 197, 26);
 		contentPanel.add(txtPaciente);
@@ -68,6 +71,7 @@ public class verAlergias extends JDialog {
 		txtPaciente.setText(alergico.getNombre()+alergico.getApellido());
 		
 		JTextArea txtAlergias = new JTextArea();
+		txtAlergias.setBackground(new Color(255, 245, 238));
 		txtAlergias.setEnabled(false);
 		panel.setLayout(new BorderLayout());
 		panel.add(new JScrollPane(txtAlergias), BorderLayout.CENTER);
@@ -87,6 +91,7 @@ public class verAlergias extends JDialog {
 		
 		{
 			JPanel buttonPane = new JPanel();
+			buttonPane.setBackground(new Color(245, 255, 250));
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{

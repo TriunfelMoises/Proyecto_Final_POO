@@ -65,6 +65,7 @@ public class regConsulta extends JDialog {
 		setLocationRelativeTo(null);
 
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(230, 230, 250));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 
@@ -173,11 +174,13 @@ public class regConsulta extends JDialog {
 
 		// BOTONES FINALES
 		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setBackground(new Color(255, 228, 196));
 		btnCancelar.setBounds(520, 510, 100, 30);
 		btnCancelar.addActionListener(e -> dispose());
 		contentPanel.add(btnCancelar);
 
 		JButton btnRegistrar = new JButton("Registrar");
+		btnRegistrar.setBackground(new Color(255, 239, 213));
 		btnRegistrar.setBounds(630, 510, 100, 30);
 		btnRegistrar.addActionListener(e -> registrarConsulta());
 		contentPanel.add(btnRegistrar);

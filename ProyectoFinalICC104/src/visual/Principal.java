@@ -77,11 +77,12 @@ public class Principal extends JFrame {
 		});
 
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBackground(new Color(255, 250, 205));
+		menuBar.setBackground(new Color(220, 220, 220));
 		setJMenuBar(menuBar);
 
 		// ========== MENÚ PACIENTES ==========
 		JMenu mnPacientes = new JMenu("Pacientes");
+		mnPacientes.setBackground(new Color(220, 220, 220));
 		menuBar.add(mnPacientes);
 
 		JMenuItem mntmRegPac = new JMenuItem("Registrar");
@@ -112,6 +113,7 @@ public class Principal extends JFrame {
 
 		// ========== MENÚ DOCTORES ==========
 		JMenu mnDoctores = new JMenu("Doctores");
+		mnDoctores.setBackground(new Color(220, 220, 220));
 		menuBar.add(mnDoctores);
 
 		JMenuItem mntmRegDoc = new JMenuItem("Registrar");
@@ -133,6 +135,7 @@ public class Principal extends JFrame {
 
 		// ========== MENÚ ENFERMEDADES ==========
 		JMenu mnEnfermedades = new JMenu("Enfermedades");
+		mnEnfermedades.setBackground(new Color(220, 220, 220));
 		menuBar.add(mnEnfermedades);
 
 		JMenuItem mntmRegEnf = new JMenuItem("Registrar");
@@ -156,6 +159,7 @@ public class Principal extends JFrame {
 
 		// ========== MENÚ VACUNAS ==========
 		JMenu mnVacunas = new JMenu("Vacunas");
+		mnVacunas.setBackground(new Color(220, 220, 220));
 		menuBar.add(mnVacunas);
 
 		JMenuItem mntmRegVac = new JMenuItem("Registrar");
@@ -186,6 +190,7 @@ public class Principal extends JFrame {
 
 		// ========== MENÚ CITAS ==========
 		JMenu mnCitas = new JMenu("Citas");
+		mnCitas.setBackground(new Color(220, 220, 220));
 		menuBar.add(mnCitas);
 
 		JMenuItem mntmAgendarCita = new JMenuItem("Agendar Cita");
@@ -207,6 +212,7 @@ public class Principal extends JFrame {
 
 		// ========== MENÚ CONSULTAS ==========
 		JMenu mnConsultas = new JMenu("Consultas");
+		mnConsultas.setBackground(new Color(192, 192, 192));
 		menuBar.add(mnConsultas);
 
 		JMenuItem mntmRegConsulta = new JMenuItem("Registrar consulta");
@@ -228,6 +234,7 @@ public class Principal extends JFrame {
 
 		// ========== MENÚ ADMINISTRACIÓN ==========
 		JMenu mnAdministracion = new JMenu("Administración");
+		mnAdministracion.setBackground(new Color(220, 220, 220));
 		menuBar.add(mnAdministracion);
 
 		JMenuItem mntmReportes = new JMenuItem("Reportes");

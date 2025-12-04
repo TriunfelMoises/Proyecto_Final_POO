@@ -17,6 +17,7 @@ import logico.Clinica;
 import logico.Tratamiento;
 import logico.Medicamento;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class GestionTratamientos extends JDialog {
 
@@ -33,6 +34,7 @@ public class GestionTratamientos extends JDialog {
         setModal(true);
 
         getContentPane().setLayout(new BorderLayout());
+        contentPanel.setBackground(new Color(253, 245, 230));
         contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(new BorderLayout(0, 0));
@@ -58,6 +60,7 @@ public class GestionTratamientos extends JDialog {
 
         // BOTONES
         JPanel buttonPane = new JPanel();
+        buttonPane.setBackground(new Color(253, 245, 230));
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -74,6 +77,7 @@ public class GestionTratamientos extends JDialog {
         buttonPane.add(btnVerDetalles);
 
         JButton btnCerrar = new JButton("Cerrar");
+        btnCerrar.setBackground(new Color(240, 255, 255));
         btnCerrar.addActionListener(e -> dispose());
         buttonPane.add(btnCerrar);
 

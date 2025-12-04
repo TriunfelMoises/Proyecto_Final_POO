@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class ListaCitas extends JDialog {
 
@@ -45,6 +46,7 @@ public class ListaCitas extends JDialog {
 		setTitle("Lista de Citas");
 		setBounds(100, 100, 900, 600);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(240, 255, 255));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
@@ -52,6 +54,7 @@ public class ListaCitas extends JDialog {
 
 		// PANEL FILTROS
 		JPanel panelFiltros = new JPanel();
+		panelFiltros.setBackground(new Color(240, 255, 240));
 		contentPanel.add(panelFiltros, BorderLayout.NORTH);
 		panelFiltros.setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -113,6 +116,7 @@ public class ListaCitas extends JDialog {
 
 		// BOTONES
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(240, 255, 255));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -144,6 +148,7 @@ public class ListaCitas extends JDialog {
 		buttonPane.add(btnCancelarCita);
 
 		JButton btnCerrar = new JButton("Cerrar");
+		btnCerrar.setBackground(new Color(255, 239, 213));
 		btnCerrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();

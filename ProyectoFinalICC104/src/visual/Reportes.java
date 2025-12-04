@@ -43,6 +43,7 @@ public class Reportes extends JDialog {
         getContentPane().setLayout(new BorderLayout());
 
         contentPanel = new JPanel();
+        contentPanel.setBackground(new Color(255, 235, 205));
         contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         contentPanel.setLayout(null);
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -70,18 +71,21 @@ public class Reportes extends JDialog {
         contentPanel.add(cbReportes);
 
         JButton btnGenerar = new JButton("Generar");
+        btnGenerar.setBackground(new Color(238, 232, 170));
         btnGenerar.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         btnGenerar.setBounds(400, 70, 120, 35);
         btnGenerar.addActionListener(e -> generarReporte());
         contentPanel.add(btnGenerar);
 
         JButton btnPdf = new JButton("Exportar PDF");
+        btnPdf.setBackground(new Color(175, 238, 238));
         btnPdf.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         btnPdf.setBounds(540, 70, 150, 35);
         btnPdf.addActionListener(e -> exportarPDF());
         contentPanel.add(btnPdf);
 
         panelGrafica = new JPanel();
+        panelGrafica.setBackground(new Color(240, 255, 255));
         panelGrafica.setBounds(20, 130, 940, 460);
         panelGrafica.setLayout(new BorderLayout());
         panelGrafica.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));

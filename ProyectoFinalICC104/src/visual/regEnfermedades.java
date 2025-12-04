@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import logico.Clinica;
 import logico.Enfermedad;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class regEnfermedades extends JDialog {
 
@@ -43,6 +44,7 @@ public class regEnfermedades extends JDialog {
 		setModal(true);
 
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(240, 248, 255));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -56,6 +58,7 @@ public class regEnfermedades extends JDialog {
 		contentPanel.add(lblCodigo);
 
 		txtCodigo = new JTextField();
+		txtCodigo.setBackground(new Color(224, 255, 255));
 		txtCodigo.setEditable(false);
 		txtCodigo.setBounds(120, 20, 150, 22);
 		contentPanel.add(txtCodigo);
@@ -72,6 +75,7 @@ public class regEnfermedades extends JDialog {
 
 		// Bajo vigilancia
 		chkBajoVigilancia = new JCheckBox("Enfermedad bajo vigilancia");
+		chkBajoVigilancia.setBackground(new Color(240, 248, 255));
 		chkBajoVigilancia.setFont(labelFont);
 		chkBajoVigilancia.setBounds(120, 85, 250, 22);
 		contentPanel.add(chkBajoVigilancia);
@@ -153,14 +157,17 @@ public class regEnfermedades extends JDialog {
 
 		// Botones
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(255, 255, 224));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		btnGuardar = new JButton("Registrar");
+		btnGuardar.setBackground(new Color(255, 228, 225));
 		btnGuardar.addActionListener(e -> guardarEnfermedad());
 		buttonPane.add(btnGuardar);
 
 		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setBackground(new Color(255, 239, 213));
 		btnCancelar.addActionListener(e -> dispose());
 		buttonPane.add(btnCancelar);
 

@@ -13,6 +13,7 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class DetalleCita extends JDialog {
 
@@ -26,12 +27,14 @@ public class DetalleCita extends JDialog {
 		setTitle("Detalles de la Cita");
 		setBounds(100, 100, 500, 500);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(253, 245, 230));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
 		// PANEL INFORMACION CITA
 		JPanel panelCita = new JPanel();
+		panelCita.setBackground(new Color(245, 255, 250));
 		panelCita.setBorder(new TitledBorder(null, "Informaci\u00F3n de la Cita", TitledBorder.LEADING,
 				TitledBorder.TOP, null, null));
 		panelCita.setBounds(10, 11, 464, 140);
@@ -61,6 +64,7 @@ public class DetalleCita extends JDialog {
 		panelCita.add(lblHora);
 
 		JLabel lblHoraValor = new JLabel(cita.getHoraCita().toString());
+		lblHoraValor.setBackground(new Color(245, 255, 250));
 		lblHoraValor.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblHoraValor.setBounds(100, 75, 354, 20);
 		panelCita.add(lblHoraValor);
@@ -76,6 +80,7 @@ public class DetalleCita extends JDialog {
 
 		// PANEL PACIENTE
 		JPanel panelPaciente = new JPanel();
+		panelPaciente.setBackground(new Color(245, 255, 250));
 		panelPaciente.setBorder(new TitledBorder(null, "Informaci\u00F3n del Paciente", TitledBorder.LEADING,
 				TitledBorder.TOP, null, null));
 		panelPaciente.setBounds(10, 162, 464, 120);
@@ -111,6 +116,7 @@ public class DetalleCita extends JDialog {
 
 		// PANEL DOCTOR
 		JPanel panelDoctor = new JPanel();
+		panelDoctor.setBackground(new Color(245, 255, 250));
 		panelDoctor.setBorder(new TitledBorder(null, "Informaci\u00F3n del Doctor", TitledBorder.LEADING,
 				TitledBorder.TOP, null, null));
 		panelDoctor.setBounds(10, 293, 464, 90);
@@ -122,6 +128,7 @@ public class DetalleCita extends JDialog {
 		panelDoctor.add(lblNombreDoc);
 
 		JLabel lblNombreDocValor = new JLabel(cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido());
+		lblNombreDocValor.setBackground(new Color(245, 255, 250));
 		lblNombreDocValor.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNombreDocValor.setBounds(100, 25, 354, 20);
 		panelDoctor.add(lblNombreDocValor);
@@ -137,6 +144,7 @@ public class DetalleCita extends JDialog {
 
 		// BOTONES - SOLO CERRAR
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(253, 245, 230));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 

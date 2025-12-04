@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class selecVacunas extends JDialog {
 
@@ -47,6 +48,7 @@ public class selecVacunas extends JDialog {
 		setBounds(100, 100, 550, 500);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(255, 250, 205));
 		contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -87,6 +89,7 @@ public class selecVacunas extends JDialog {
 
 		// ========== PANEL DE CHECKBOXES ==========
 		panelChecks = new JPanel();
+		panelChecks.setBackground(new Color(240, 255, 240));
 		panelChecks.setBorder(
 				new TitledBorder(null, "Vacunas Registradas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelChecks.setLayout(new javax.swing.BoxLayout(panelChecks, javax.swing.BoxLayout.Y_AXIS));
@@ -97,6 +100,7 @@ public class selecVacunas extends JDialog {
 
 		// ========== PANEL DE BOTONES ==========
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(255, 228, 225));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -115,6 +119,7 @@ public class selecVacunas extends JDialog {
 		buttonPane.add(btnOmitir);
 
 		JButton btnFinalizar = new JButton("Finalizar");
+		btnFinalizar.setBackground(new Color(245, 255, 250));
 		btnFinalizar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				finalizarRegistro();

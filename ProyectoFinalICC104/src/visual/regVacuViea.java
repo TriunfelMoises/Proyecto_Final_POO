@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class regVacuViea extends JDialog {
 
@@ -49,6 +50,7 @@ public class regVacuViea extends JDialog {
 		setBounds(100, 100, 420, 249);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(255, 235, 205));
 		contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -85,11 +87,13 @@ public class regVacuViea extends JDialog {
 		contentPanel.add(spnFecha);
 
 		JLabel lblInfoFecha = new JLabel("(Cuando se aplicó)");
+		lblInfoFecha.setBackground(new Color(255, 228, 196));
 		lblInfoFecha.setBounds(180, 126, 200, 20);
 		contentPanel.add(lblInfoFecha);
 
 		// ========== PANEL DE BOTONES ==========
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(240, 248, 255));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 

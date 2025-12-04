@@ -32,6 +32,7 @@ public class regMedicamento extends JDialog {
         setLocationRelativeTo(null);
 
         getContentPane().setLayout(new BorderLayout());
+        contentPanel.setBackground(new Color(255, 235, 205));
         contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
@@ -117,6 +118,7 @@ public class regMedicamento extends JDialog {
         contentPanel.add(spInd);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panelBotones.setBackground(new Color(240, 248, 255));
         getContentPane().add(panelBotones, BorderLayout.SOUTH);
 
         JButton btnGuardar = new JButton("Guardar");

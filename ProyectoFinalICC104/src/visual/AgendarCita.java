@@ -60,12 +60,14 @@ public class AgendarCita extends JDialog {
 		setLocationRelativeTo(null);
 		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(255, 228, 225));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
 		// ========== PANEL PACIENTE ==========
 		JPanel panelPaciente = new JPanel();
+		panelPaciente.setBackground(new Color(255, 228, 225));
 		panelPaciente.setBorder(
 				new TitledBorder(null, "Datos del Paciente", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelPaciente.setBounds(10, 11, 564, 150);
@@ -143,6 +145,7 @@ public class AgendarCita extends JDialog {
 
 		// ========== PANEL CITA ==========
 		JPanel panelCita = new JPanel();
+		panelCita.setBackground(new Color(255, 228, 225));
 		panelCita.setBorder(
 				new TitledBorder(null, "Datos de la Cita", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelCita.setBounds(10, 172, 564, 160);
@@ -186,6 +189,7 @@ public class AgendarCita extends JDialog {
 
 		// ========== PANEL MOTIVO ==========
 		JPanel panelMotivo = new JPanel();
+		panelMotivo.setBackground(new Color(255, 228, 225));
 		panelMotivo.setBorder(
 				new TitledBorder(null, "Motivo de la Cita", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelMotivo.setBounds(10, 343, 564, 120);
@@ -208,6 +212,7 @@ public class AgendarCita extends JDialog {
 
 		// ========== BOTONES ==========
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(255, 248, 220));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
@@ -216,6 +221,7 @@ public class AgendarCita extends JDialog {
 		buttonPane.add(btnAgendar);
 
 		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setBackground(new Color(240, 255, 255));
 		btnCancelar.addActionListener(e -> dispose());
 		buttonPane.add(btnCancelar);
 

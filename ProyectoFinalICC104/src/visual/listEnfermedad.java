@@ -30,6 +30,7 @@ import javax.swing.SwingConstants;
 import logico.Clinica;
 import logico.Enfermedad;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 public class listEnfermedad extends JDialog {
 
@@ -53,6 +54,7 @@ public class listEnfermedad extends JDialog {
 
 		// Panel de filtros
 		JPanel panelFiltros = new JPanel();
+		panelFiltros.setBackground(new Color(240, 248, 255));
 		panelFiltros.setBorder(new EmptyBorder(10, 10, 5, 10));
 		panelFiltros.setLayout(new GridBagLayout());
 		getContentPane().add(panelFiltros, BorderLayout.NORTH);
@@ -135,6 +137,7 @@ public class listEnfermedad extends JDialog {
 		// El resto del código se mantiene igual...
 		// Panel de contenido
 		JPanel contentPanel = new JPanel();
+		contentPanel.setBackground(new Color(240, 255, 255));
 		contentPanel.setBorder(new EmptyBorder(5, 10, 10, 10));
 		contentPanel.setLayout(new BorderLayout());
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -218,7 +221,9 @@ public class listEnfermedad extends JDialog {
 
 		// Panel de botones
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		buttonPane.setBackground(new Color(255, 250, 205));
 		JButton btnModificar = new JButton("Modificar");
+		btnModificar.setBackground(new Color(255, 228, 225));
 		btnModificar.addActionListener(e -> modificarEnfermedad());
 		buttonPane.add(btnModificar);
 
@@ -227,6 +232,7 @@ public class listEnfermedad extends JDialog {
 		buttonPane.add(btnDetalles);
 
 		JButton btnCerrar = new JButton("Cerrar");
+		btnCerrar.setBackground(new Color(230, 230, 250));
 		btnCerrar.addActionListener(e -> dispose());
 		buttonPane.add(btnCerrar);
 

@@ -70,6 +70,7 @@ public class adminVacuna extends JDialog {
 		setTitle("Administrar Vacuna");
 		setBounds(100, 100, 700, 550);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBackground(new Color(255, 235, 205));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
@@ -343,10 +344,12 @@ public class adminVacuna extends JDialog {
 
 		// BOTONES
 		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(224, 255, 255));
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		JButton btnAdministrar = new JButton("Administrar");
+		btnAdministrar.setBackground(new Color(211, 211, 211));
 		btnAdministrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				administrarVacuna();
@@ -355,6 +358,7 @@ public class adminVacuna extends JDialog {
 		buttonPane.add(btnAdministrar);
 
 		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setBackground(new Color(255, 245, 238));
 		btnCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
