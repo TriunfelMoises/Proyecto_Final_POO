@@ -22,6 +22,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
+
+import com.sun.corba.se.spi.activation.Server;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -29,9 +32,13 @@ import javax.swing.JMenuItem;
 import logico.Clinica;
 import logico.Control;
 import logico.Doctor;
+import Server.Servidor;
+
 
 import javax.swing.JOptionPane;
 import java.awt.Color;
+import javax.swing.JButton;
+import javax.swing.JTextField;
 
 public class Principal extends JFrame {
 
@@ -39,8 +46,14 @@ public class Principal extends JFrame {
 	static Socket sfd;
 	static DataInputStream entradaSocket;
 	static DataOutputStream salidaSocket;
+	private final JButton button = new JButton("New button");
 
 	public static void main(String[] args) {
+	    Thread servidorThread = new Thread(() -> {
+	        Servidor.main(new String[] {});
+	    }, "ServidorAutoStarter");
+	    servidorThread.setDaemon(true); 
+	    servidorThread.start();
 		EventQueue.invokeLater(() -> {
 			try {
 				Principal frame = new Principal();
@@ -206,6 +219,8 @@ public class Principal extends JFrame {
 			dialog.setVisible(true);
 		});
 		mnConsultas.add(mntmListarConsultas);
+		
+		
 
 		// ------------------ MENU TRATAMIENTOS ------------------
 
@@ -228,13 +243,46 @@ public class Principal extends JFrame {
 			dialog.setVisible(true);
 		});
 		mnAdministracion.add(mntmRegistrarUsuarios);
-
-		JMenu mnNewMenu = new JMenu("Respaldo");
-		menuBar.add(mnNewMenu);
-
-		JMenuItem mntmNewMenuItem = new JMenuItem("Respaldar datos");
-		mntmNewMenuItem.addActionListener(new ActionListener() {
+		
+		
+		JButton btnNewButton = new JButton("Cerrar sesión");
+		btnNewButton.setBackground(Color.WHITE);
+		menuBar.add(btnNewButton);
+		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
+				Servidor.detenerServidor();
+				dispose();
+				login inicio = new login();
+				inicio.setVisible(true);
+			}
+		});
+
+		if (Control.getLoginUser() != null && !"Administrador".equalsIgnoreCase(Control.getLoginUser().getTipo())) {
+			mnAdministracion.setVisible(false);
+			mnDoctores.setVisible(false);
+		} else {
+			mnPacientes.setVisible(false);
+			mnCitas.setVisible(false);
+			mnConsultas.setVisible(false);
+			mntmRegEnf.setVisible(false);
+			mntmRegVac.setVisible(false);
+			mntmAdminVac.setVisible(false);
+		}
+
+		contentPane = new PanelFondo();
+		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		button.setBounds(10, 954, 1878, 29);
+		contentPane.add(button);
+		
+		
+		// Guardado y respaldo automático
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				guardarTodo();
 				try {
 					sfd = new Socket("127.0.0.1", 7000);
 					DataInputStream aux = new DataInputStream(new FileInputStream(new File("control.dat")));
@@ -255,30 +303,7 @@ public class Principal extends JFrame {
 					System.out.println("Comunicaci�n rechazada");
 					System.exit(1);
 				}
-			}
-		});
-		mnNewMenu.add(mntmNewMenuItem);
-
-		if (Control.getLoginUser() != null && !"Administrador".equalsIgnoreCase(Control.getLoginUser().getTipo())) {
-			mnAdministracion.setVisible(false);
-			mnDoctores.setVisible(false);
-		} else {
-			mnPacientes.setVisible(false);
-			mnCitas.setVisible(false);
-			mnConsultas.setVisible(false);
-			mnEnfermedades.setVisible(false);
-			mnVacunas.setVisible(false);
-		}
-
-		contentPane = new PanelFondo();
-		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
-		contentPane.setLayout(new BorderLayout());
-		setContentPane(contentPane);
-		// Guardado automático
-		addWindowListener(new java.awt.event.WindowAdapter() {
-			@Override
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				guardarTodo();
+				Servidor.detenerServidor();
 			}
 		});
 	}

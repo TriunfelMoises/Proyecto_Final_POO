@@ -37,14 +37,17 @@ public class login extends JFrame {
 	private ObjectOutputStream empresaWrite;
 
 	public static void main(String[] args) {
-		EventQueue.invokeLater(() -> {
-			try {
-				login frame = new login();
-				frame.setVisible(true);
-			} catch (Exception e) {
-				e.printStackTrace(); //
-			}
-		});
+	    new Thread(() -> {
+	        Server.Servidor.main(new String[] {});
+	    }, "ServidorAutoStarter").start();
+	    EventQueue.invokeLater(() -> {
+	        try {
+	            login frame = new login();
+	            frame.setVisible(true);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    });
 	}
 
 	public login() {
