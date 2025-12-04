@@ -50,7 +50,7 @@ public class regEnfermedades extends JDialog {
 		Font labelFont = new Font("Tahoma", Font.PLAIN, 12);
 
 		// Código
-		JLabel lblCodigo = new JLabel("Código:");
+		JLabel lblCodigo = new JLabel("C�digo:");
 		lblCodigo.setFont(labelFont);
 		lblCodigo.setBounds(20, 20, 80, 22);
 		contentPanel.add(lblCodigo);

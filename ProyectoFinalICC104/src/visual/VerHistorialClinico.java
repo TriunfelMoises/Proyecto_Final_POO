@@ -372,9 +372,9 @@ public class VerHistorialClinico extends JDialog {
 		// Si no hay consultas visibles, mostrar mensaje
 		if (modeloConsultas.getRowCount() == 0 && !esAdmin && doctorLogeado != null) {
 			JOptionPane.showMessageDialog(this,
-					"No tiene acceso a las consultas de este paciente.\n"
+					"No hay consultas registradas\n"
 							+ "Solo puede ver consultas que usted realizó o de enfermedades bajo vigilancia.",
-					"Acceso restringido", JOptionPane.INFORMATION_MESSAGE);
+					"Información", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 

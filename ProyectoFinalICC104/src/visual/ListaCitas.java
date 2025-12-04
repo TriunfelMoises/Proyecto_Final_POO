@@ -214,7 +214,7 @@ public class ListaCitas extends JDialog {
 				}
 				// 2. Doctor solo ve sus propias citas
 				else if (doctorLogeado != null && cita.getDoctor() != null) {
-					boolean esCitaDelDoctor = cita.getDoctor().getNumeroLicencia().equals(licenciaDoctorLogeado);
+					boolean esCitaDelDoctor = cita.getDoctor().getNumeroLicencia().equalsIgnoreCase(doctorLogeado.getNumeroLicencia());
 					puedeVer = esCitaDelDoctor;
 				}
 

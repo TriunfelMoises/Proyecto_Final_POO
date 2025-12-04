@@ -140,11 +140,13 @@ public class listPacientes extends JDialog {
 				return resultado;
 			}
 
-			String licenciaDoctor = doctorLogeado.getNumeroLicencia();
-
-			for (Paciente p : Clinica.getInstance().getPacientes()) {
-				if (p.getDoctorRegistrador() != null && p.getDoctorRegistrador().equals(licenciaDoctor)) {
-					resultado.add(p);
+			for (Paciente paci : Clinica.getInstance().getPacientes()) {
+				for (Consulta buscando : paci.getHistoriaClinica().getConsultas()) {
+					if (buscando.getDoctor().getNumeroLicencia().equals(Control.getLicenciaDoctorLogeado())){
+						if (!resultado.contains(paci)) {
+							resultado.add(paci);
+						}
+					}
 				}
 			}
 		}
@@ -190,7 +192,7 @@ public class listPacientes extends JDialog {
 		if (Control.esDoctor()) {
 			Doctor doctorLogeado = Control.getDoctorLogeado();
 			if (doctorLogeado != null && paciente.getDoctorRegistrador() != null) {
-				return paciente.getDoctorRegistrador().equals(doctorLogeado.getNumeroLicencia());
+				return true;
 			}
 		}
 

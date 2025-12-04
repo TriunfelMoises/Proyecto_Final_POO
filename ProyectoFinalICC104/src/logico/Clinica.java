@@ -35,13 +35,13 @@ public class Clinica implements Serializable {
 	private boolean primerIngresp = false;
 	private HashMap<String, Integer> reporteEnfermedades;
 
-	public static int contadorPacientes = 1;
-	public static int contadorDoctores = 1;
-	public static int contadorCitas = 1;
-	public static int contadorConsultas = 1;
-	public static int contadorTratamientos = 1;
-	public static int contadorEnfermedades = 1;
-	public static int contadorVacunas = 1;
+	public int contadorPacientes = 1;
+	public int contadorDoctores = 1;
+	public int contadorCitas = 1;
+	public int contadorConsultas = 1;
+	public int contadorTratamientos = 1;
+	public int contadorEnfermedades = 1;
+	public int contadorVacunas = 1;
 
 	private static final int DURACION_CITA_MINUTOS = 45;
 
@@ -58,8 +58,8 @@ public class Clinica implements Serializable {
 		this.citas = new ArrayList<>();
 		this.alergias = new ArrayList<>();
 		this.interesados = new ArrayList<>();
+		PersistenciaManager.cargarDatos();
 		setarContadores();
-
 		cargarReporteEnfermedades();///////////////////////////////
 
 	}
@@ -562,7 +562,6 @@ public class Clinica implements Serializable {
 		// Todo OK, crear la cita
 		String codigoCita = ("CIT-" + contadorCitas);
 		Cita nuevaCita = new Cita(codigoCita, paciente, doctor, fecha, hora, motivo);
-
 		citas.add(nuevaCita);
 		contadorCitas++;
 		return nuevaCita;
@@ -779,6 +778,14 @@ public class Clinica implements Serializable {
 
 		return citasPorFecha;
 	}
+	
+	public void modificarCita (Cita nueva) {
+		for (Cita buscando: citas) {
+			if (buscando.getCodigoCita().equalsIgnoreCase(nueva.getCodigoCita())) {
+				buscando.setEstadoCita(nueva.getEstadoCita());
+			}
+		}
+	}
 
 	// consultas
 	public Consulta registrarConsulta(String codigoCita, String sintomas, String diagnostico, String codigoTratamiento,
@@ -790,7 +797,7 @@ public class Clinica implements Serializable {
 		}
 
 		Paciente paciente = cita.getPaciente();
-		Doctor doctor = cita.getDoctor();
+		Doctor doctor = Control.getDoctorLogeado();
 
 		Tratamiento tratamiento = buscarTratamientoPorCodigo(codigoTratamiento);
 		if (tratamiento == null) {
@@ -802,7 +809,7 @@ public class Clinica implements Serializable {
 			enfermedad = buscarEnfermedadPorCodigo(codigoEnfermedad);
 		}
 
-		String codigoConsulta = generarCodigoConsulta();
+		String codigoConsulta = generarCodigoConsulta();		
 
 		Consulta nuevaConsulta = new Consulta(codigoConsulta, paciente, doctor, cita, LocalDate.now(), sintomas,
 				diagnostico, tratamiento, notas, enfermedad);
@@ -819,8 +826,11 @@ public class Clinica implements Serializable {
 		}
 
 		paciente.getHistoriaClinica().agregarConsulta(nuevaConsulta);
+		cita.setEstadoCita("Completada");
+		modificarCita(cita);
 
 		cita.cambiarEstado("Completada");
+		
 
 		return nuevaConsulta;
 	}
@@ -938,7 +948,6 @@ public class Clinica implements Serializable {
 			if (p.getHistoriaClinica() == null) {
 				continue;
 			}
-
 			ArrayList<Consulta> consultasPaciente = p.getHistoriaClinica().getConsultas();
 			if (consultasPaciente == null || consultasPaciente.isEmpty()) {
 				continue;
@@ -1132,12 +1141,12 @@ public class Clinica implements Serializable {
 	}
 
 	public void setarContadores() {
-		Clinica.contadorCitas = citas.size() + 1;
-		Clinica.contadorVacunas = vacunas.size() + 1;
-		Clinica.contadorTratamientos = tratamientos.size() + 1;
-		Clinica.contadorEnfermedades = enfermedades.size() + 1;
-		Clinica.contadorPacientes = pacientes.size() + 1;
-		Clinica.contadorDoctores = doctores.size() + 1;
+		contadorCitas = citas.size() + 1;
+		contadorVacunas = vacunas.size() + 1;
+		contadorTratamientos = tratamientos.size() + 1;
+		contadorEnfermedades = enfermedades.size() + 1;
+		contadorPacientes = pacientes.size() + 1;
+		contadorDoctores = doctores.size() + 1;
 
 	}
 
@@ -1608,6 +1617,62 @@ public class Clinica implements Serializable {
 	                + "Interesado -> Paciente Real (" + pacienteReal.getCodigoPaciente() + ")");
 	        }
 	    }
+	}
+
+	public int getContadorPacientes() {
+		return contadorPacientes;
+	}
+
+	public void setContadorPacientes(int contadorPacientes) {
+		this.contadorPacientes = contadorPacientes;
+	}
+
+	public int getContadorDoctores() {
+		return contadorDoctores;
+	}
+
+	public void setContadorDoctores(int contadorDoctores) {
+		this.contadorDoctores = contadorDoctores;
+	}
+
+	public int getContadorCitas() {
+		return contadorCitas;
+	}
+
+	public void setContadorCitas(int contadorCitas) {
+		this.contadorCitas = contadorCitas;
+	}
+
+	public int getContadorConsultas() {
+		return contadorConsultas;
+	}
+
+	public void setContadorConsultas(int contadorConsultas) {
+		this.contadorConsultas = contadorConsultas;
+	}
+
+	public int getContadorTratamientos() {
+		return contadorTratamientos;
+	}
+
+	public void setContadorTratamientos(int contadorTratamientos) {
+		this.contadorTratamientos = contadorTratamientos;
+	}
+
+	public int getContadorEnfermedades() {
+		return contadorEnfermedades;
+	}
+
+	public void setContadorEnfermedades(int contadorEnfermedades) {
+		this.contadorEnfermedades = contadorEnfermedades;
+	}
+
+	public int getContadorVacunas() {
+		return contadorVacunas;
+	}
+
+	public void setContadorVacunas(int contadorVacunas) {
+		this.contadorVacunas = contadorVacunas;
 	}
 
 }

@@ -85,7 +85,7 @@ public class regPaciente extends JDialog {
 
 		setTitle(esInteresado ? "Registrar Paciente (Completar Datos)"
 				: esModificacion ? "Modificar Paciente" : "Registro de Pacientes");
-		setBounds(100, 100, 600, 650);
+		setBounds(100, 100, 600, 558);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -243,15 +243,6 @@ public class regPaciente extends JDialog {
 
 		chckbxAlergias = new JCheckBox("Sí, padezco de alergias");
 		chckbxAlergias.setBounds(222, 349, 200, 25);
-		chckbxAlergias.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if (chckbxAlergias.isSelected()) {
-					tomarAlergias();
-				} else {
-					alegecitas = null;
-				}
-			}
-		});
 		contentPanel.add(chckbxAlergias);
 
 		JLabel lblFecha = new JLabel("Fecha Registro");
@@ -490,6 +481,7 @@ public class regPaciente extends JDialog {
 		else {
 			chckbxAlergias.setSelected(true);
 		}
+		dialogAlergias.dispose();
 	}
 
 	private void procesarPaciente() {
@@ -578,6 +570,9 @@ public class regPaciente extends JDialog {
 				// Crear nuevo paciente REAL
 				Paciente nuevoPaciente = new Paciente(cedulaLimpia, txtNombre.getText().trim(),
 						txtApellido.getText().trim(), telefonoLimpio, txtCodigo.getText(), licenciaDoctor);
+				selecVacunas vacuciejas = new selecVacunas(nuevoPaciente);
+				vacuciejas.setModal(true);
+				vacuciejas.setVisible(true);
 
 				// Configurar datos adicionales
 				nuevoPaciente.setDireccion(txtdireccion.getText().trim());

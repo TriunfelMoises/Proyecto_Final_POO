@@ -222,6 +222,7 @@ public class TomaAlergias extends JDialog {
 				JOptionPane.INFORMATION_MESSAGE);
 			dispose();
 		}
+		dispose();
 	}
 
 	public ArrayList<Alergia> AlergiasSeleccionadas() {

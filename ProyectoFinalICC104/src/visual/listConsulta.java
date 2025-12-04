@@ -48,9 +48,10 @@ public class listConsulta extends JDialog {
 		tableConsultas = new JTable(modelo);
 		tableConsultas.getColumnModel().getColumn(4).setPreferredWidth(200); // Diagnóstico más ancho
 
+		contentPanel.setLayout(new BorderLayout());
 		JScrollPane scrollPane = new JScrollPane(tableConsultas);
+		contentPanel.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setBounds(0, 0, 980, 400);
-		contentPanel.add(scrollPane);
 
 		// ===== BOTONES =====
 		JPanel buttonPane = new JPanel();
@@ -118,12 +119,11 @@ public class listConsulta extends JDialog {
 	}
 
 	private ArrayList<Consulta> obtenerConsultasVisibles() {
-		Clinica clinica = Clinica.getInstance();
 		ArrayList<Consulta> consultasVisibles = new ArrayList<>();
 
 		if (Control.esAdministrador()) {
 			// ADMINISTRADOR: Ve TODAS las consultas
-			for (Paciente p : clinica.getPacientes()) {
+			for (Paciente p : Clinica.getInstance().getPacientes()) {
 				if (p.getHistoriaClinica() != null) {
 					consultasVisibles.addAll(p.getHistoriaClinica().getConsultas());
 				}
@@ -137,11 +137,17 @@ public class listConsulta extends JDialog {
 			// DOCTOR: Ve consultas visibles para él
 			Doctor doctorLogeado = Control.getDoctorLogeado();
 			if (doctorLogeado != null) {
-				consultasVisibles = clinica.listarConsultasVisiblesParaDoctor(doctorLogeado.getNumeroLicencia());
+				for (Paciente pax : Clinica.getInstance().getPacientes()) {
+					for (Consulta consultas : pax.getHistoriaClinica().getConsultas()) {
+						if (consultas.getDoctor().equals(doctorLogeado) || consultas.getEnfermedad().isBajoVigilancia()) {
+							consultasVisibles.add(consultas);
+						}
+					}
+				}
 
 				// Mostrar estadísticas
 				int totalConsultas = consultasVisibles.size();
-				int consultasPropias = clinica.listarConsultasPorDoctor(doctorLogeado.getNumeroLicencia()).size();
+				int consultasPropias = Clinica.getInstance().listarConsultasPorDoctor(doctorLogeado.getNumeroLicencia()).size();
 				int consultasVigilancia = totalConsultas - consultasPropias;
 
 				String mensaje = String.format(

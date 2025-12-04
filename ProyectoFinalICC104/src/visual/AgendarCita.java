@@ -119,18 +119,18 @@ public class AgendarCita extends JDialog {
 
 		txtPaciente = new JTextField();
 		txtPaciente.setEnabled(false);
-		txtPaciente.setBounds(100, 65, 250, 25);
+		txtPaciente.setBounds(100, 65, 166, 25);
 		panelPaciente.add(txtPaciente);
 		txtPaciente.setColumns(10);
 		txtPaciente.setText("");
 
 		JLabel lblApellido = new JLabel("Apellido:");
-		lblApellido.setBounds(360, 65, 80, 20);
+		lblApellido.setBounds(285, 68, 80, 20);
 		panelPaciente.add(lblApellido);
 
 		txtApellido = new JTextField();
 		txtApellido.setEnabled(false);
-		txtApellido.setBounds(430, 65, 124, 25);
+		txtApellido.setBounds(364, 65, 190, 25);
 		panelPaciente.add(txtApellido);
 		txtApellido.setColumns(10);
 
@@ -458,8 +458,8 @@ public class AgendarCita extends JDialog {
 			}
 
 			// Validar nombre y apellido (sin números)
-			if (!txtPaciente.getText().trim().matches("[a-záéíóúñüÁÉÍÓÚÑÜ ]+")
-					|| !txtApellido.getText().trim().matches("[a-záéíóúñüÁÉÍÓÚÑÜ ]+")) {
+			if (!txtPaciente.getText().trim().matches("[a-zA-ZáéíóúñüÁÉÍÓÚÑÜ ]+")
+					|| !txtApellido.getText().trim().matches("[a-zA-ZáéíóúñüÁÉÍÓÚÑÜ ]+")) {
 				JOptionPane.showMessageDialog(this, "Nombre y apellido solo pueden contener letras y espacios", "Error",
 						JOptionPane.ERROR_MESSAGE);
 				return;
@@ -489,7 +489,7 @@ public class AgendarCita extends JDialog {
 
 		try {
 			// Obtener datos
-			Doctor doctorSeleccionado = doctoresActivos.get(cbxDoctor.getSelectedIndex());
+			Doctor doctorSeleccionado = Control.getDoctorLogeado();
 			Date fechaSeleccionada = (Date) spnFecha.getValue();
 			LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			String horaTexto = (String) cbxHora.getSelectedItem();
