@@ -6,7 +6,6 @@ import java.util.ArrayList;
 public class Tratamiento implements Serializable {
     
     private static final long serialVersionUID = 1L;
-    private static int contador = 1;
     
     // CODIGO
     private String codigoTratamiento;
@@ -19,17 +18,8 @@ public class Tratamiento implements Serializable {
     
     // MEDICAMENTOS
     private ArrayList<Medicamento> medicamentos;
-    
-    // ============================================================
-    //              GENERACION DE CODIGO
-    // ============================================================
-    public static String generarCodigo() {
-        return String.format("TRA-%05d", contador++);
-    }
-    
-    public static void setContador(int nuevoContador) {
-        contador = nuevoContador;
-    }
+
+
     
     // ============================================================
     //                     CONSTRUCTOR
